@@ -1,5 +1,5 @@
 {
-  "name": "bscpool-listener",
+  "name": "cryptomango-api",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -20,16 +20,16 @@
   },
   "homepage": "https://github.com/Anhydrite/bscpool-listener#readme",
   "dependencies": {
+    "dateformat": "^4.5.1",
     "ethers": "^5.1.4",
     "express": "^4.17.1",
-    "jsdom": "^16.5.3",
     "mongodb": "^3.6.6",
     "node-fetch": "^2.6.1",
     "typescript-is": "^0.18.2"
   },
   "devDependencies": {
+    "@types/dateformat": "^3.0.1",
     "@types/express": "^4.17.11",
-    "@types/jsdom": "^16.2.10",
     "@types/mongodb": "^3.6.12",
     "@types/node": "^15.3.0",
     "@types/node-fetch": "^2.5.10",
