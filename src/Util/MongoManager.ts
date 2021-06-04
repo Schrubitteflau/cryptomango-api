@@ -1,5 +1,7 @@
 import { Db, MongoClient } from "mongodb";
 
+import { logger } from "./index";
+
 export class MongoManager
 {
     private readonly _client = new MongoClient(this.connectionString, {
@@ -24,7 +26,7 @@ export class MongoManager
     {
         if (!this._client.isConnected())
         {
-            console.log(`Connecting to ${this.connectionString}`);
+            logger.info(`Connecting to ${this.connectionString}`);
             await this._client.connect();
         }
 
