@@ -1,21 +1,40 @@
-export interface IRange {
-    start: number,
-    end: number,
-    range: number
-};
+export class RangeError extends Error { }
 
-export function makeRange(start: number, end: number, maxGap: number): IRange
+export class Range
 {
-    // Si la plage est plus grande que la maximum spécifiée
-    if (end - start > maxGap - 1)
+    public constructor
+    (
+        private readonly _start: number,
+        private readonly _end: number,
+        // Maximum difference allowed between start and end
+        private readonly _maxGap: number
+    )
     {
-        // Alors on réduit end à sa valeur maximale tolérée
-        end = start + maxGap - 1;
+        if (_end < _start)
+        {
+            throw new RangeError("end cannot be lower than start");
+        }
     }
 
-    return {
-        start,
-        end,
-        range: end - start + 1
-    };
+    public get start(): number
+    {
+        return this._start;
+    }
+
+    public get end(): number
+    {
+        // If the difference is bigger than _maxGap
+        if (this._end - this.start > this._maxGap - 1)
+        {
+            // Then end is lowered to its maximum value
+            return (this.start + this._maxGap - 1);
+        }
+
+        return this._end;
+    }
+
+    public get difference(): number
+    {
+        return (this.end - this.start + 1);
+    }
 }
