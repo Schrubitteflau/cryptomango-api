@@ -18,24 +18,15 @@ export abstract class AbstractService extends EventEmitter
         return this._serviceName;
     }
 
-    protected async getDatabase(): Promise<Db>
+    protected async _getDatabase(): Promise<Db>
     {
         return await mongo.selectDatabase("BSC");
     }
 
-    protected async getCollection<T>(): Promise<Collection<T>>
+    protected async _getCollection<T>(): Promise<Collection<T>>
     {
-        const database: Db = await this.getDatabase();
+        const database: Db = await this._getDatabase();
 
         return database.collection<T>(this._collectionName);
     }
-
-    //protected abstract getCollection(): Promise<Collection>;
-
-    /*protected async getCollection(): Promise<Collection>
-    {
-        const database: Db = await this.getDatabase();
-
-        return database.collection(this._collectionName);
-    }*/
 }
