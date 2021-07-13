@@ -1,32 +1,88 @@
+import { providers } from "ethers";
+import { json } from "express";
 import { Db } from "mongodb";
-import { tokenFomoScraper, ITokenFomoTokenList } from "./Modules";
+import { blockRepository, IBlockWithTransactionsSchema } from "./Repositories/BlockRepository";
 import { BlocksProviderService } from "./Services/BlocksProviderService";
 import { jsonRpcProvider, mongo } from "./Util";
 
 //import { mongo, web3Manager } from "./Util";
 
 
-function transformTokenFomoTokenList(tokens: ITokenFomoTokenList): any
+async function findBlock(number: number, db: Db): Promise<IBlockWithTransactionsSchema | null>
 {
-    const t: any = tokens.map((token: any) =>
-    {
-        token._id = token.addr;
-        return token;
-    });
+    const collections = [
+        "blocks",
+        "blocks10",
+        "blocks2",
+        "blocks3",
+        "blocks4",
+        "blocks5",
+        "blocks6",
+        "blocks7",
+        "blocks8",
+        "blocks9"
+    ];
 
-    return t;
+    for (const collection of collections)
+    {
+        const c = await db.collection<IBlockWithTransactionsSchema>(collection).findOne({ _id: number });
+
+        if (c !== null)
+        {
+            console.log(`Block #${number} found in collection ${collection}`);
+            return c;
+        }
+    }
+
+    return null;
 }
 
-// https://docs.soliditylang.org/en/latest/introduction-to-smart-contracts.html#index-8
-/* "If the target account is not set (the transaction does not have a recipient or the
-recipient is set to null), the transaction creates a new contract */
+
 
 async function main(): Promise<void>
 {
-    const a = new BlocksProviderService(10, "latest", 2);
+    //const a = new BlocksProviderService(10, "latest", 2);
     const d = await mongo.selectDatabase("BSC");
 
-    a.on("newBlocks", async (blocks) =>
+    try {
+        await d.dropCollection("theblocks");
+        await d.dropCollection("thetransactions");
+    } catch(e) {}
+
+    const a = new BlocksProviderService(6953700, 6953720, 5);
+
+    // tester cet event si il renvoie bien toutes les transactions avec toutes les datas
+    a.on("contractCreationTransactions", console.log);
+
+    a.start();
+
+    /*const n = 7200000;
+    const b = await findBlock(n, d);
+
+    if (b === null)
+    {
+        console.log(`Cannot find block #${n}, let's download it`);
+    }
+    else
+    {
+
+    }*/
+
+    //const blockWithTxs = await jsonRpcProvider.getBlockWithTransactions(6953711);
+
+    //await blockRepository.storeBlocks([blockWithTxs]);
+    console.log("OK");
+
+    /*for (const tx of blockWithTxs.transactions)
+    {
+        console.log(`${tx.hash} : ${tx.to}`);
+        if (tx.to === null || typeof tx.to === "undefined")
+        {
+            console.log("CONTRACT CREATION HERE");
+        }
+    }*/
+
+    /*a.on("newBlocks", async (blocks) =>
     {
         console.log("newBlocks");
         
@@ -41,7 +97,7 @@ async function main(): Promise<void>
         })
     });
 
-    a.start();
+    a.start();*/
 
 
     //const block = await web3Manager.web3Http.eth.getBlock(6953711, true);

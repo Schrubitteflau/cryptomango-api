@@ -28,6 +28,7 @@ export class MongoManager
         {
             logger.info(`Connecting to ${this.connectionString}`);
             await this._client.connect();
+            logger.info(`Connected to ${this.connectionString}`);
         }
 
         return this._client;
