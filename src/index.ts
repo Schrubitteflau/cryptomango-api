@@ -1,6 +1,7 @@
 import { providers } from "ethers";
 import { json } from "express";
 import { Db } from "mongodb";
+import { exit } from "process";
 import { blockRepository, IBlockWithTransactionsSchema } from "./Repositories/BlockRepository";
 import { BlocksProviderService } from "./Services/BlocksProviderService";
 import { jsonRpcProvider, mongo } from "./Util";
@@ -41,6 +42,9 @@ async function findBlock(number: number, db: Db): Promise<IBlockWithTransactions
 
 async function main(): Promise<void>
 {
+    console.log(process.env);
+    process.exit();
+
     //const a = new BlocksProviderService(10, "latest", 2);
     const d = await mongo.selectDatabase("BSC");
 

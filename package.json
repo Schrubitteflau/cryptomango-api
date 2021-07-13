@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prod": "npx ttsc && node dist/index.js",
-    "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"npx ttsc --watch\" \"nodemon [{main}]\""
+    "prod": "npx ttsc && node -r dotenv-flow/config dist/index.js",
+    "dev": "concurrently -k -n \"Typescript,Node\" -p \"${npm_package_name}\" -c \"blue,green\" \"npx ttsc --watch\" \"nodemon -r dotenv-flow/config ${npm_package_main}\""
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Anhydrite/bscpool-listener#readme",
   "dependencies": {
     "dateformat": "^4.5.1",
+    "dotenv-flow": "^3.2.0",
     "ethers": "^5.1.4",
     "express": "^4.17.1",
     "mongodb": "^3.6.6",
