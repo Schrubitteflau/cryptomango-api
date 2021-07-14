@@ -10,16 +10,16 @@ export class MongoManager
 
     public constructor
     (
-        //private readonly _username: string,
-        //private readonly _password: string,
+        private readonly _username: string,
+        private readonly _password: string,
         private readonly _host: string,
         private readonly _port: number
     ) { }
 
     public get connectionString(): string
     {
-        return `mongodb://${this._host}:${this._port}`;
-        //return `mongodb://${this._username}:${this._password}@${this._host}:${this._port}`;
+        //return `mongodb://${this._host}:${this._port}`;
+        return `mongodb://${encodeURIComponent(this._username)}:${encodeURIComponent(this._password)}@${this._host}:${this._port}`;
     }
 
     private async _getClient(): Promise<MongoClient>
