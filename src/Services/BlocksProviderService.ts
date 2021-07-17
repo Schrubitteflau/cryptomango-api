@@ -1,9 +1,12 @@
 import { AbstractService } from "./AbstractService";
 import { jsonRpcProvider, Range, waitSeconds, logger } from "../Util";
-import { blockRepository, IBlockWithTransactionsSchema, StoreBlocksOperation, StoreBlocksResult, TransformBlockReturn } from "../Repositories/BlockRepository";
-import { ITransactionSchema, StoreTransactionsOperation, StoreTransactionsResult, transactionRepository } from "../Repositories/TransactionRepository";
+import { IBlockWithTransactionsSchema, StoreBlocksOperation, StoreBlocksResult, TransformBlockReturn } from "../Repositories/BlockRepository";
+import { ITransactionSchema, StoreTransactionsOperation, StoreTransactionsResult } from "../Repositories/TransactionRepository";
 
-import type { BlockWithTransactions, TransactionResponse } from "../Types/EthersTypes";
+import type { BlockWithTransactions } from "../Types/EthersTypes";
+import { Network } from "../Networks";
+import { chownSync } from "fs";
+import { exit } from "process";
 
 export interface IRangeBlocksWithTransactions {
     range: Range,
@@ -81,10 +84,11 @@ export class BlocksProviderService extends AbstractService
         private readonly _startBlock: number | "auto",
         private readonly _endBlock: number | "latest",
         // The exact number of blocks to download at the same time
-        private readonly _downloadRange: number
+        private readonly _downloadRange: number,
+        _network: Network
     )
     {
-        super("blocks");
+        super(_network);
 
         if (this._downloadRange === 1)
         {
@@ -122,7 +126,7 @@ export class BlocksProviderService extends AbstractService
         if (this._startBlock === "auto")
         {
             logger.info("Start block is set to 'auto', fetching the latest stored block...");
-            const lastBlock: IBlockWithTransactionsSchema | null = await blockRepository.getLatestStoredBlock();
+            const lastBlock: IBlockWithTransactionsSchema | null = await this._blockRepository.getLatestStoredBlock();
             if (lastBlock === null)
             {
                 this._currentBlock = 0;
@@ -141,16 +145,21 @@ export class BlocksProviderService extends AbstractService
         }
     }
 
+    /**
+     * Aggregate the blocks and the transactions in order to insert
+     * all of them with a single database query
+     * @param transformed 
+     * @returns 
+     */
     private _aggregateBlocksAndTransactions(transformed: Array<TransformBlockReturn>): AggregateBlocksAndTransactionsReturn
     {
-        // Aggregate the blocks and the transactions in order to insert all of them with a single database query
         const aggregatedBlocks: Array<IBlockWithTransactionsSchema> = [];
         const aggregatedTransactions: Array<ITransactionSchema> = [];
 
         for (const { transformedBlock, contractCreationTransactions } of transformed)
         {
             aggregatedBlocks.push(transformedBlock);
-            aggregatedTransactions.push(...transactionRepository.transformTransactions(contractCreationTransactions));
+            aggregatedTransactions.push(...this._transactionRepository.transformTransactionsOfTheSameBlock(contractCreationTransactions, transformedBlock.timestamp));
         }
 
         return {
@@ -159,16 +168,16 @@ export class BlocksProviderService extends AbstractService
         };
     }
 
-    private async _download(range: Range)
+    private async _download(range: Range): Promise<void>
     {
         logger.info(`Downloading blocks #${range.start} to #${range.end}...`);
         const rangeBlocks: IRangeBlocksWithTransactions = await this._downloadBlocksRange(range);
         logger.info(`Successfully downloaded ${range.difference} blocks`);
 
-        const transformedBlocks: Array<TransformBlockReturn> = blockRepository.transformBlocks(rangeBlocks.blocks);
+        const transformedBlocks: Array<TransformBlockReturn> = this._blockRepository.transformBlocks(rangeBlocks.blocks);
         const { blocks, transactions } = this._aggregateBlocksAndTransactions(transformedBlocks);
 
-        const storeBlocksOperationResult: StoreBlocksOperation = await blockRepository.storeBlocks(blocks);
+        const storeBlocksOperationResult: StoreBlocksOperation = await this._blockRepository.storeBlocks(blocks);
         if (storeBlocksOperationResult.success === true)
         {
             const storeBlocksResult: StoreBlocksResult = storeBlocksOperationResult.data;
@@ -182,7 +191,7 @@ export class BlocksProviderService extends AbstractService
             logger.error(`Error while storing blocks : ${storeBlocksOperationResult.error.message}`);
         }
 
-        const storeTransactionsOperationResult: StoreTransactionsOperation = await transactionRepository.storeTransactions(transactions);
+        const storeTransactionsOperationResult: StoreTransactionsOperation = await this._transactionRepository.storeTransactions(transactions);
         if (storeTransactionsOperationResult.success === true)
         {
             const storeTransactionResult: StoreTransactionsResult = storeTransactionsOperationResult.data;
@@ -198,7 +207,7 @@ export class BlocksProviderService extends AbstractService
 
     public async start(): Promise<void>
     {
-        logger.info("Starting BlocksProviderService");
+        logger.info(`Starting BlocksProviderService for the ${this._network.getName()} network`);
         logger.info(`Syncing until block #${this._endBlock}`);
 
         await this._prepareStartingBlock();

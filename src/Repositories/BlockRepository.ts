@@ -26,11 +26,11 @@ export type StoreBlocksResult = {
 
 export type StoreBlocksOperation = ErrorifyOperation<StoreBlocksResult>;
 
-class BlockRepository extends AbstractRepository<IBlockWithTransactionsSchema>
+export class BlockRepository extends AbstractRepository<IBlockWithTransactionsSchema>
 {
-    protected _getCollectionName(): string
+    public constructor(collectionName: string)
     {
-        return "theblocks";
+        super(collectionName);
     }
 
     public async getLatestStoredBlock(): Promise<IBlockWithTransactionsSchema | null>
@@ -115,5 +115,3 @@ class BlockRepository extends AbstractRepository<IBlockWithTransactionsSchema>
         } 
     }
 }
-
-export const blockRepository: BlockRepository = new BlockRepository();
