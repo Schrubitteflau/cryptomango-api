@@ -18,7 +18,6 @@ export class MongoManager
 
     public get connectionString(): string
     {
-        //return `mongodb://${this._host}:${this._port}`;
         return `mongodb://${encodeURIComponent(this._username)}:${encodeURIComponent(this._password)}@${this._host}:${this._port}`;
     }
 
@@ -34,10 +33,15 @@ export class MongoManager
         return this._client;
     }
 
-    public async selectDatabase(databaseName: string): Promise<Db>
+    private async _selectDatabase(databaseName: string): Promise<Db>
     {
         const connectedClient: MongoClient = await this._getClient();
 
         return connectedClient.db(databaseName);
+    }
+
+    public selectDatabase(): Promise<Db>
+    {
+        return this._selectDatabase(process.env.MONGO_DATABASE);
     }
 }
