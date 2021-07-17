@@ -9,7 +9,8 @@
             { "transform": "typescript-is/lib/transform-inline/transformer" }
         ],
         "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "strictNullChecks": true
     },
     "include": [
         "src/**/*",
