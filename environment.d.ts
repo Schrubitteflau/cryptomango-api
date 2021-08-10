@@ -1,4 +1,3 @@
-
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -8,7 +7,7 @@ declare global {
             MONGO_HOST: string,
             MONGO_DATABASE: string,
 
-            PROVIDER_BSC_RPC: string,
+            BSC_PROVIDER_RPC: string,
         }
     }
 }

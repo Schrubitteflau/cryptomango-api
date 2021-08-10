@@ -10,7 +10,8 @@
         ],
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "lib": [ "ES2020.String" ]
     },
     "include": [
         "src/**/*",

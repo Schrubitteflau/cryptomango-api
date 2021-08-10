@@ -22,7 +22,7 @@
   "dependencies": {
     "dateformat": "^4.5.1",
     "dotenv-flow": "^3.2.0",
-    "ethers": "^5.1.4",
+    "ethers": "^5.4.1",
     "express": "^4.17.1",
     "mongodb": "^3.6.6",
     "node-fetch": "^2.6.1",

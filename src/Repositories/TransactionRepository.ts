@@ -2,51 +2,28 @@ import { Collection, InsertWriteOpResult, WithId } from "mongodb";
 
 import { AbstractRepository } from "./AbstractRepository";
 
-import type { TransactionResponse } from "../Types/EthersTypes";
 import { ErrorifyOperation } from "../Types";
 import { toError } from "../Util";
-
-
-export interface ITransactionSchema extends Omit<TransactionResponse, "confirmations"> {
-    // Hash of the transaction
-    _id: string,
-    // Timestamp of the block in which is included the transaction
-    blockTimestamp: number
-}
+import { IContractCreationTransactionSchema } from "../Schemas/IContractCreationTransactionSchema";
 
 export type StoreTransactionsResult = {
-    storedTransactions: Array<ITransactionSchema>,
+    storedTransactions: Array<IContractCreationTransactionSchema>,
     storedCount: number
 };
 
 export type StoreTransactionsOperation = ErrorifyOperation<StoreTransactionsResult>;
 
-export class TransactionRepository extends AbstractRepository<ITransactionSchema>
+export class ContractCreationTransactionRepository extends AbstractRepository<IContractCreationTransactionSchema>
 {
     public constructor(collectionName: string)
     {
         super(collectionName);
     }
 
-    // Converts a TransactionResponse object to a ITransactionSchema object
-    public transformTransaction(transaction: TransactionResponse, blockTimestamp: number): ITransactionSchema
+    private async _storeTransactions(transactions: Array<IContractCreationTransactionSchema>): Promise<StoreTransactionsResult>
     {
-        return {
-            ...transaction,
-            _id: transaction.hash,
-            blockTimestamp
-        };
-    }
-
-    public transformTransactionsOfTheSameBlock(transactions: Array<TransactionResponse>, blockTimestamp: number): Array<ITransactionSchema>
-    {
-        return transactions.map((transaction: TransactionResponse) => this.transformTransaction(transaction, blockTimestamp));
-    }
-
-    private async _storeTransactions(transactions: Array<ITransactionSchema>): Promise<StoreTransactionsResult>
-    {
-        const collection: Collection<ITransactionSchema> = await this._getCollection();
-        const insertionResult: InsertWriteOpResult<WithId<ITransactionSchema>> = await collection.insertMany(transactions);
+        const collection: Collection<IContractCreationTransactionSchema> = await this._getCollection();
+        const insertionResult: InsertWriteOpResult<WithId<IContractCreationTransactionSchema>> = await collection.insertMany(transactions);
 
         return {
             storedTransactions: insertionResult.ops,
@@ -54,7 +31,7 @@ export class TransactionRepository extends AbstractRepository<ITransactionSchema
         };
     }
 
-    public async storeTransactions(transactions: Array<ITransactionSchema>): Promise<ErrorifyOperation<StoreTransactionsResult>>
+    public async storeTransactions(transactions: Array<IContractCreationTransactionSchema>): Promise<ErrorifyOperation<StoreTransactionsResult>>
     {
         if (transactions.length === 0)
         {

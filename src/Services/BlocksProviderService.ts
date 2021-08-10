@@ -1,12 +1,15 @@
+import { providers } from "ethers";
+
 import { AbstractService } from "./AbstractService";
-import { jsonRpcProvider, Range, waitSeconds, logger } from "../Util";
-import { IBlockWithTransactionsSchema, StoreBlocksOperation, StoreBlocksResult, TransformBlockReturn } from "../Repositories/BlockRepository";
-import { ITransactionSchema, StoreTransactionsOperation, StoreTransactionsResult } from "../Repositories/TransactionRepository";
+import { Range, waitSeconds, logger } from "../Util";
+import { StoreBlocksOperation, StoreBlocksResult } from "../Repositories/BlockRepository";
 
 import type { BlockWithTransactions } from "../Types/EthersTypes";
 import { Network } from "../Networks";
-import { chownSync } from "fs";
-import { exit } from "process";
+import { StoreTransactionsOperation, StoreTransactionsResult } from "../Repositories/TransactionRepository";
+import { IBlockWithTransactionsSchema, IContractCreationTransactionSchema } from "../Schemas";
+import { FormatBlockReturn } from "../Formatters/BlockWithTransactionsFormatter";
+import { formatBlockBulk, formatTransactionBulk } from "../Formatters";
 
 export interface IRangeBlocksWithTransactions {
     range: Range,
@@ -15,16 +18,16 @@ export interface IRangeBlocksWithTransactions {
 
 type AggregateBlocksAndTransactionsReturn = {
     blocks: Array<IBlockWithTransactionsSchema>,
-    transactions: Array<ITransactionSchema>
+    transactions: Array<IContractCreationTransactionSchema>,
 };
 export declare interface BlocksProviderService {
     // Raw downloaded blocks, with all transactions data
     on(event: "newBlocksRange", listener: (blocks: IRangeBlocksWithTransactions) => void): this;
     // Only the transactions which deploys a smart contract
-    on(event: "contractCreationTransactions", listener: (transactions: Array<ITransactionSchema>, insertionCount: number) => void): this;
+    on(event: "contractCreationTransactions", listener: (transactions: Array<IContractCreationTransactionSchema>, insertionCount: number) => void): this;
 
     emit(event: "newBlocksRange", blocks: IRangeBlocksWithTransactions): any;
-    emit(event: "contractCreationTransactions", transactions: Array<ITransactionSchema>, insertionCount: number): any;
+    emit(event: "contractCreationTransactions", transactions: Array<IContractCreationTransactionSchema>, insertionCount: number): any;
 }
 
 class BlockRangeDownloader
@@ -34,7 +37,8 @@ class BlockRangeDownloader
     public constructor
     (
         private readonly _start: number,
-        private readonly _end: number
+        private readonly _end: number,
+        private readonly _jsonRpcProvider: providers.JsonRpcProvider
     )
     {
         if (_start > _end)
@@ -45,7 +49,7 @@ class BlockRangeDownloader
 
     private async _getBlockWithTransactions(block: number): Promise<BlockWithTransactions>
     {
-        return await jsonRpcProvider.getBlockWithTransactions(block);
+        return await this._jsonRpcProvider.getBlockWithTransactions(block);
     }
 
     private _downloadBlocks(): Promise<Array<BlockWithTransactions>>
@@ -98,7 +102,7 @@ export class BlocksProviderService extends AbstractService
 
     private async _getLastBlockNumber(): Promise<number>
     {
-        return await jsonRpcProvider.getBlockNumber();
+        return await this._network.getJsonRpcProvider().getBlockNumber();
     }
 
     private async _computeRange(): Promise<Range>
@@ -113,7 +117,7 @@ export class BlocksProviderService extends AbstractService
 
     private async _downloadBlocksRange(range: Range): Promise<IRangeBlocksWithTransactions>
     {
-        const downloader: BlockRangeDownloader = new BlockRangeDownloader(range.start, range.end);
+        const downloader: BlockRangeDownloader = new BlockRangeDownloader(range.start, range.end, this._network.getJsonRpcProvider());
 
         return {
             range,
@@ -134,8 +138,8 @@ export class BlocksProviderService extends AbstractService
             }
             else
             {
-                this._currentBlock = lastBlock.number + 1;
-                logger.info(`Retrieved block ${lastBlock.number}, starting from #${lastBlock.number + 1}`);
+                this._currentBlock = lastBlock._id + 1;
+                logger.info(`Retrieved block ${lastBlock._id}, starting from #${lastBlock._id + 1}`);
             }
         }
         else
@@ -146,20 +150,19 @@ export class BlocksProviderService extends AbstractService
     }
 
     /**
-     * Aggregate the blocks and the transactions in order to insert
-     * all of them with a single database query
+     * Aggregate the blocks and the transactions in order to insert all of them with a single database query
      * @param transformed 
      * @returns 
      */
-    private _aggregateBlocksAndTransactions(transformed: Array<TransformBlockReturn>): AggregateBlocksAndTransactionsReturn
+    private _aggregateBlocksAndTransactions(transformed: Array<FormatBlockReturn>): AggregateBlocksAndTransactionsReturn
     {
         const aggregatedBlocks: Array<IBlockWithTransactionsSchema> = [];
-        const aggregatedTransactions: Array<ITransactionSchema> = [];
+        const aggregatedTransactions: Array<IContractCreationTransactionSchema> = [];
 
-        for (const { transformedBlock, contractCreationTransactions } of transformed)
+        for (const { block, contractCreationTransactions } of transformed)
         {
-            aggregatedBlocks.push(transformedBlock);
-            aggregatedTransactions.push(...this._transactionRepository.transformTransactionsOfTheSameBlock(contractCreationTransactions, transformedBlock.timestamp));
+            aggregatedBlocks.push(block);
+            aggregatedTransactions.push(...contractCreationTransactions);
         }
 
         return {
@@ -174,8 +177,8 @@ export class BlocksProviderService extends AbstractService
         const rangeBlocks: IRangeBlocksWithTransactions = await this._downloadBlocksRange(range);
         logger.info(`Successfully downloaded ${range.difference} blocks`);
 
-        const transformedBlocks: Array<TransformBlockReturn> = this._blockRepository.transformBlocks(rangeBlocks.blocks);
-        const { blocks, transactions } = this._aggregateBlocksAndTransactions(transformedBlocks);
+        const formattedBlocks: Array<FormatBlockReturn> = formatBlockBulk(rangeBlocks.blocks);
+        const { blocks, transactions } = this._aggregateBlocksAndTransactions(formattedBlocks);
 
         const storeBlocksOperationResult: StoreBlocksOperation = await this._blockRepository.storeBlocks(blocks);
         if (storeBlocksOperationResult.success === true)
@@ -191,7 +194,7 @@ export class BlocksProviderService extends AbstractService
             logger.error(`Error while storing blocks : ${storeBlocksOperationResult.error.message}`);
         }
 
-        const storeTransactionsOperationResult: StoreTransactionsOperation = await this._transactionRepository.storeTransactions(transactions);
+        const storeTransactionsOperationResult: StoreTransactionsOperation = await this._contractCreationTransactionRepository.storeTransactions(transactions);
         if (storeTransactionsOperationResult.success === true)
         {
             const storeTransactionResult: StoreTransactionsResult = storeTransactionsOperationResult.data;

@@ -2,7 +2,7 @@ import EventEmitter from "events";
 
 import { Network } from "../Networks";
 import { BlockRepository } from "../Repositories/BlockRepository";
-import { TransactionRepository } from "../Repositories/TransactionRepository";
+import { ContractCreationTransactionRepository } from "../Repositories/TransactionRepository";
 
 export abstract class AbstractService extends EventEmitter
 {
@@ -19,7 +19,7 @@ export abstract class AbstractService extends EventEmitter
         return this._network.getBlockRepository();
     }
 
-    protected get _transactionRepository(): TransactionRepository
+    protected get _contractCreationTransactionRepository(): ContractCreationTransactionRepository
     {
         return this._network.getTransactionRepository();
     }
