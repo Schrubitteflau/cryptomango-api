@@ -1,0 +1,6 @@
+# Don't track any file inside this folder
+*
+
+# Except .gitignore and README.md
+!.gitignore
+!README.md
