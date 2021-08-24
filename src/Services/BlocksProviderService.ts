@@ -2,14 +2,11 @@ import { providers } from "ethers";
 
 import { AbstractService } from "./AbstractService";
 import { Range, waitSeconds, logger } from "../Util";
-import { StoreBlocksOperation, StoreBlocksResult } from "../Repositories/BlockRepository";
-
 import type { BlockWithTransactions } from "../Types/EthersTypes";
 import { Network } from "../Networks";
-import { StoreTransactionsOperation, StoreTransactionsResult } from "../Repositories/TransactionRepository";
 import { IBlockWithTransactionsSchema, IContractCreationTransactionSchema } from "../Schemas";
-import { FormatBlockReturn } from "../Formatters/BlockWithTransactionsFormatter";
-import { formatBlockBulk, formatTransactionBulk } from "../Formatters";
+import { FormatBlockReturn, formatBlockBulk } from "../Formatters";
+import { StoreManyOperation, StoreManyResult } from "../Repositories";
 
 export interface IRangeBlocksWithTransactions {
     range: Range,
@@ -20,14 +17,15 @@ type AggregateBlocksAndTransactionsReturn = {
     blocks: Array<IBlockWithTransactionsSchema>,
     transactions: Array<IContractCreationTransactionSchema>,
 };
+
 export declare interface BlocksProviderService {
     // Raw downloaded blocks, with all transactions data
     on(event: "newBlocksRange", listener: (blocks: IRangeBlocksWithTransactions) => void): this;
     // Only the transactions which deploys a smart contract
-    on(event: "contractCreationTransactions", listener: (transactions: Array<IContractCreationTransactionSchema>, insertionCount: number) => void): this;
+    on(event: "contractCreationTransactions", listener: (transactions: Array<IContractCreationTransactionSchema>) => void): this;
 
     emit(event: "newBlocksRange", blocks: IRangeBlocksWithTransactions): any;
-    emit(event: "contractCreationTransactions", transactions: Array<IContractCreationTransactionSchema>, insertionCount: number): any;
+    emit(event: "contractCreationTransactions", transactions: Array<IContractCreationTransactionSchema>): any;
 }
 
 class BlockRangeDownloader
@@ -180,31 +178,31 @@ export class BlocksProviderService extends AbstractService
         const formattedBlocks: Array<FormatBlockReturn> = formatBlockBulk(rangeBlocks.blocks);
         const { blocks, transactions } = this._aggregateBlocksAndTransactions(formattedBlocks);
 
-        const storeBlocksOperationResult: StoreBlocksOperation = await this._blockRepository.storeBlocks(blocks);
-        if (storeBlocksOperationResult.success === true)
+        const storeBlocksOperation: StoreManyOperation<IBlockWithTransactionsSchema> = await this._blockRepository.storeMany(blocks);
+        if (storeBlocksOperation.success === true)
         {
-            const storeBlocksResult: StoreBlocksResult = storeBlocksOperationResult.data;
+            const storeBlocksResult: StoreManyResult<IBlockWithTransactionsSchema> = storeBlocksOperation.operationData;
             this._currentBlock = rangeBlocks.range.end + 1;
 
-            logger.info(`Successfully stored ${storeBlocksResult.storedCount} blocks`);
+            logger.info(`Successfully stored ${storeBlocksResult.count} blocks`);
             this.emit("newBlocksRange", rangeBlocks);
         }
         else
         {
-            logger.error(`Error while storing blocks : ${storeBlocksOperationResult.error.message}`);
+            logger.error(`Error while storing blocks : ${storeBlocksOperation.error.message}`);
         }
 
-        const storeTransactionsOperationResult: StoreTransactionsOperation = await this._contractCreationTransactionRepository.storeTransactions(transactions);
-        if (storeTransactionsOperationResult.success === true)
+        const storeTransactionsOperation: StoreManyOperation<IContractCreationTransactionSchema> = await this._contractCreationTransactionRepository.storeMany(transactions);
+        if (storeTransactionsOperation.success === true)
         {
-            const storeTransactionResult: StoreTransactionsResult = storeTransactionsOperationResult.data;
+            const storeTransactionResult: StoreManyResult<IContractCreationTransactionSchema> = storeTransactionsOperation.operationData;
 
-            logger.info(`Successfully stored ${storeTransactionResult.storedCount} transactions`);
-            this.emit("contractCreationTransactions", storeTransactionResult.storedTransactions, storeTransactionResult.storedCount);
+            logger.info(`Successfully stored ${storeTransactionResult.count} transactions`);
+            this.emit("contractCreationTransactions", storeTransactionResult.data);
         }
         else
         {
-            logger.error(`Error while storing transactions : ${storeTransactionsOperationResult.error.message}`);
+            logger.error(`Error while storing transactions : ${storeTransactionsOperation.error.message}`);
         }
     }
 
