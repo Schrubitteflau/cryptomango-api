@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Anhydrite/bscpool-listener.git"
+    "url": "git+https://github.com/cryptomangoFi/cryptomango-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Anhydrite/bscpool-listener/issues"
+    "url": "https://github.com/cryptomangoFi/cryptomango-api/issues"
   },
-  "homepage": "https://github.com/Anhydrite/bscpool-listener#readme",
+  "homepage": "https://github.com/cryptomangoFi/cryptomango-api#readme",
   "dependencies": {
     "dateformat": "^4.5.1",
     "dotenv-flow": "^3.2.0",
