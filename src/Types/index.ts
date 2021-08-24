@@ -1,2 +1,2 @@
 export * as EthersTypes from "./EthersTypes";
-export { ErrorifyOperation } from "./ErrorifyOperation";
+export { Operation } from "./Operation";
