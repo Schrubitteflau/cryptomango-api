@@ -56,7 +56,7 @@ export class BytecodeAnalyzer
         return true;
     }
 
-    public isERC20(): boolean
+    public isERC20Implemented(): boolean
     {
         return (this.isInterfaceImplemented(ERC20));
     }
