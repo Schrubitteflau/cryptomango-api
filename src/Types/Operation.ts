@@ -1,6 +1,6 @@
 type SuccessfulOperation<T> = {
     success: true,
-    data: T
+    operationData: T
 }
 
 type FailedOperation = {
@@ -8,4 +8,4 @@ type FailedOperation = {
     error: Error
 }
 
-export type ErrorifyOperation<T> = SuccessfulOperation<T> | FailedOperation;
+export type Operation<T> = SuccessfulOperation<T> | FailedOperation;
