@@ -1,8 +1,7 @@
 import EventEmitter from "events";
 
 import { Network } from "../Networks";
-import { BlockRepository } from "../Repositories/BlockRepository";
-import { ContractCreationTransactionRepository } from "../Repositories/TransactionRepository";
+import { BlockRepository, ContractCreationTransactionRepository } from "../Repositories";
 
 export abstract class AbstractService extends EventEmitter
 {
