@@ -1,6 +1,8 @@
 export {
     StoreOneOperation,
-    StoreManyOperation
+    StoreManyOperation,
+    StoreOneResult,
+    StoreManyResult
 } from "./AbstractRepository";
 
 export {
