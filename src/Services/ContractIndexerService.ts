@@ -77,7 +77,8 @@ export class ContractIndexerService extends AbstractService
         const wrapper = new ERC20Wrapper(token);
         const tokenData: IERC20TokenSchema = {
             _id: transaction.contractAddress,
-            tokenCreationTransaction: transaction._id,
+            creationTransaction: transaction._id,
+            creationTimestamp: transaction.blockTimestamp,
             decimals: await wrapper.decimals(),
             name: await wrapper.name(),
             symbol: await wrapper.symbol()
@@ -88,15 +89,15 @@ export class ContractIndexerService extends AbstractService
         if (storeOperation.success === true)
         {
             const stored: IERC20TokenSchema = storeOperation.operationData.data;
-            const { name, symbol, tokenCreationTransaction } = stored;
+            const { name, symbol, creationTransaction } = stored;
 
-            logger.info(`Successfully stored ERC20 token ${name} $${symbol} at ${tokenCreationTransaction} tx`);
+            logger.info(`Successfully stored ERC20 token ${name} $${symbol} at ${creationTransaction} tx`);
             this.emit("ERC20Token", stored, transaction);
         }
         else
         {
-            const { name, symbol, tokenCreationTransaction } = tokenData;
-            logger.info(`Cannot store ERC20 token ${name} $${symbol} at ${tokenCreationTransaction} tx : ${storeOperation.error.message}`);
+            const { name, symbol, creationTransaction } = tokenData;
+            logger.info(`Cannot store ERC20 token ${name} $${symbol} at ${creationTransaction} tx : ${storeOperation.error.message}`);
         }
     }
 }
