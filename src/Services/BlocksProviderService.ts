@@ -197,7 +197,7 @@ export class BlocksProviderService extends AbstractService
         {
             const storeTransactionResult: StoreManyResult<IContractCreationTransactionSchema> = storeTransactionsOperation.operationData;
 
-            logger.info(`Successfully stored ${storeTransactionResult.count} transactions`);
+            logger.info(`Successfully stored ${storeTransactionResult.count} contract creation transactions`);
             this.emit("contractCreationTransactions", storeTransactionResult.data);
         }
         else
