@@ -1,6 +1,13 @@
-import { assertValidBlockHash, assertValidChecksumAddress, assertValidContractBytecode, assertValidTransactionHash, toChecksumAddress } from "../EVM/Types";
-import { IContractCreationTransactionSchema } from "../Schemas/IContractCreationTransactionSchema";
-import { TransactionResponse, BlockWithTransactions } from "../Types/EthersTypes";
+import {
+    assertValidBlockHash,
+    assertValidChecksumAddress,
+    assertValidContractBytecode,
+    assertValidTransactionHash,
+    toChecksumAddress
+} from "@EVM/Types";
+
+import type { IContractCreationTransactionSchema } from "@Schemas";
+import type { TransactionResponse, BlockWithTransactions } from "@Types/EthersTypes";
 
 export class TransactionResponseFormatter
 {

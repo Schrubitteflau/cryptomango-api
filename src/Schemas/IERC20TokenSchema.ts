@@ -1,4 +1,4 @@
-import { ChecksumAddress, TransactionHash } from "../EVM/Types";
+import { ChecksumAddress, TransactionHash } from "@EVM/Types";
 
 export interface IERC20TokenSchema {
     // Address of the contract

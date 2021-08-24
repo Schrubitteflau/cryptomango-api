@@ -1,13 +1,13 @@
 import { AbstractService } from "./AbstractService";
-import { Network } from "../Networks";
+import { Network } from "@Networks";
 import { BlocksProviderService } from "./BlocksProviderService";
-import { ContractBytecode } from "../EVM/Types";
-import { BytecodeAnalyzer } from "../EVM/BytecodeAnalyzer";
-import { IERC20TokenSchema, IContractCreationTransactionSchema } from "../Schemas";
-import { ERC20, ERC20__factory } from "../EVM/Contracts";
-import { ERC20Wrapper } from "../EVM/ContractsWrappers";
-import { ERC20TokenRepository, StoreOneOperation } from "../Repositories";
-import { logger } from "../Util";
+import { ContractBytecode } from "@EVM/Types";
+import { BytecodeAnalyzer } from "@EVM/BytecodeAnalyzer";
+import { IERC20TokenSchema, IContractCreationTransactionSchema } from "@Schemas";
+import { ERC20, ERC20__factory } from "@EVM/Contracts";
+import { ERC20Wrapper } from "@EVM/ContractsWrappers";
+import { ERC20TokenRepository, StoreOneOperation } from "@Repositories";
+import { logger } from "@Util";
 
 export enum ContractType {
     ERC20Token = "erc20",

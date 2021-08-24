@@ -1,4 +1,4 @@
-import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash } from "../EVM/Types";
+import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash } from "@EVM/Types";
 
 // Schema of a transaction which results in a contract creation
 export interface IContractCreationTransactionSchema {

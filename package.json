@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "gen-contracts-types": "npx typechain --target=ethers-v5 --out-dir 'src/EVM/Contracts' 'ABIs/**/*.json'",
-    "prod": "npx tsc && node -r dotenv-flow/config dist/index.js",
+    "prod": "npx tsc && node -r module-alias/register -r dotenv-flow/config dist/index.js",
     "dev": "concurrently -k -n \"Typescript,Node\" -p \"${npm_package_name}\" -c \"blue,green\" \"npx tsc --watch\" \"nodemon -r dotenv-flow/config ${npm_package_main}\""
   },
   "repository": {
@@ -26,7 +26,8 @@
     "ethers": "^5.4.1",
     "express": "^4.17.1",
     "mongodb": "^3.6.6",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "module-alias": "^2.2.2"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^7.0.1",
@@ -39,5 +40,15 @@
     "nodemon": "^2.0.7",
     "typechain": "^5.1.2",
     "typescript": "^4.2.4"
+  },
+  "_moduleAliases": {
+    "@EVM": "dist/EVM",
+    "@Formatters": "dist/Formatters",
+    "@Networks": "dist/Networks",
+    "@Repositories": "dist/Repositories",
+    "@Schemas": "dist/Schemas",
+    "@Services": "dist/Services",
+    "@Types": "dist/Repositories",
+    "@Util": "dist/Util"
   }
 }

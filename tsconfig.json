@@ -5,13 +5,22 @@
         "strict": true,
         "moduleResolution": "node",
         "module": "commonjs",
-        "plugins": [
-            { "transform": "typescript-is/lib/transform-inline/transformer" }
-        ],
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "strictNullChecks": true,
-        "lib": [ "ES2020.String" ]
+        "lib": [ "ES2020.String" ],
+        "baseUrl": "./src",
+        "paths": {
+            "@EVM/*": [ "EVM/*" ],
+            "@Formatters": [ "Formatters/index.ts" ],
+            "@Networks": [ "Networks/index.ts" ],
+            "@Repositories": [ "Repositories/index.ts" ],
+            "@Schemas": [ "Schemas/index.ts" ],
+            "@Services": [ "Services/index.ts" ],
+            "@Types/*": [ "Types/*" ],
+            "@Types": [ "Types/index.ts" ],
+            "@Util": [ "Util/index.ts" ]
+        }
     },
     "include": [
         "src/**/*",

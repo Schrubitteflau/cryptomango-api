@@ -1,4 +1,4 @@
-import { BlockHash, TransactionHash } from "../EVM/Types";
+import { BlockHash, TransactionHash } from "@EVM/Types";
 
 export interface IBlockWithTransactionsSchema {
     // Block number

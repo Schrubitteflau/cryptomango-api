@@ -1,12 +1,12 @@
 import { providers } from "ethers";
 
 import { AbstractService } from "./AbstractService";
-import { Range, waitSeconds, logger } from "../Util";
-import type { BlockWithTransactions } from "../Types/EthersTypes";
-import { Network } from "../Networks";
-import { IBlockWithTransactionsSchema, IContractCreationTransactionSchema } from "../Schemas";
-import { FormatBlockReturn, formatBlockBulk } from "../Formatters";
-import { StoreManyOperation, StoreManyResult } from "../Repositories";
+import { Range, waitSeconds, logger } from "@Util";
+import type { BlockWithTransactions } from "@Types/EthersTypes";
+import { Network } from "@Networks";
+import { IBlockWithTransactionsSchema, IContractCreationTransactionSchema } from "@Schemas";
+import { FormatBlockReturn, formatBlockBulk } from "@Formatters";
+import { StoreManyOperation, StoreManyResult } from "@Repositories";
 
 export interface IRangeBlocksWithTransactions {
     range: Range,

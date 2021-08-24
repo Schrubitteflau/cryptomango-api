@@ -1,4 +1,4 @@
-import { logger } from "../../Util";
+import { logger } from "@Util";
 import { ERC20 } from "../Contracts";
 
 export class ERC20Wrapper

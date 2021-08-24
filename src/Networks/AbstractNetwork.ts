@@ -1,6 +1,6 @@
 import { providers } from "ethers";
 
-import { BlockRepository, ERC20TokenRepository, ContractCreationTransactionRepository } from "../Repositories"
+import { BlockRepository, ERC20TokenRepository, ContractCreationTransactionRepository } from "@Repositories"
 
 export abstract class AbstractNetwork
 {

@@ -1,7 +1,8 @@
-import { assertValidBlockHash, assertValidTransactionHash, BlockHash, TransactionHash } from "../EVM/Types";
-import { IBlockWithTransactionsSchema, IContractCreationTransactionSchema } from "../Schemas";
-import { BlockWithTransactions, TransactionResponse } from "../Types/EthersTypes";
+import { assertValidBlockHash, assertValidTransactionHash, BlockHash, TransactionHash } from "@EVM/Types";
+import { IBlockWithTransactionsSchema, IContractCreationTransactionSchema } from "@Schemas";
 import { TransactionResponseFormatter } from "./TransactionResponseFormatter";
+
+import type { BlockWithTransactions, TransactionResponse } from "@Types/EthersTypes";
 
 export type FormatBlockReturn = {
     block: IBlockWithTransactionsSchema,
