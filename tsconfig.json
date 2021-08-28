@@ -15,11 +15,12 @@
             "@Formatters": [ "Formatters/index.ts" ],
             "@Networks": [ "Networks/index.ts" ],
             "@Repositories": [ "Repositories/index.ts" ],
-            "@Schemas": [ "Schemas/index.ts" ],
+            "@Schemas": [ "Database/Schemas/index.ts" ],
             "@Services": [ "Services/index.ts" ],
             "@Types/*": [ "Types/*" ],
             "@Types": [ "Types/index.ts" ],
-            "@Util": [ "Util/index.ts" ]
+            "@Util": [ "Util/index.ts" ],
+            "@Database": [ "Database/index.ts" ]
         }
     },
     "include": [

@@ -1,7 +1,8 @@
 import { Collection, Db, InsertWriteOpResult, InsertOneWriteOpResult, WithId  } from "mongodb";
 
 import type { Operation } from "@Types";
-import { mongo, toError } from "@Util";
+import { toError } from "@Util";
+import { mongo } from "@Database"
 
 // T corresponds to the schema of data stored in the collection, see src/Schemas
 

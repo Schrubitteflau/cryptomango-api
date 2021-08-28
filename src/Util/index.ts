@@ -1,14 +1,5 @@
-import { MongoManager } from "./MongoManager";
-import { Logger } from "./Logger";
+import { Logger, LogLevel } from "./Logger";
 export { Range } from "./Range";
-
-//export const mongo: MongoManager = new MongoManager("bsc", "bep20", "localhost", 27017);
-export const mongo: MongoManager = new MongoManager(
-    process.env.MONGO_USER,
-    process.env.MONGO_PASSWORD,
-    process.env.MONGO_HOST,
-    parseInt(process.env.MONGO_PORT, 10)
-);
 
 export function waitSeconds(seconds: number): Promise<void>
 {
@@ -28,4 +19,4 @@ export function toError(error: any): Error
     return new Error(error);
 }
 
-export const logger: Logger = new Logger();
+export const logger: Logger = new Logger(LogLevel.LEVEL_DEBUG);

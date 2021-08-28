@@ -1,6 +1,6 @@
 import dateFormat from "dateformat";
 
-enum LogLevel {
+export enum LogLevel {
     LEVEL_DEBUG,
     LEVEL_INFO,
     LEVEL_WARNING,
@@ -13,7 +13,11 @@ export class Logger
     private readonly _colors: Array<string> = [ "\x1b[37m", "\x1b[34m", "\x1b[33m", "\x1b[31m" ];
     private readonly _resetColor: string = "\x1b[0m";
     private readonly _dateFormat: string = "HH:mm:ss";
-    private _logLevel: LogLevel = LogLevel.LEVEL_DEBUG;
+
+    public constructor
+    (
+        private _logLevel: LogLevel
+    ) { }
 
     public set logLevel(newLogLevel: LogLevel)
     {

@@ -1,6 +1,6 @@
 import type { Collection, Cursor } from "mongodb";
 
-import type { IBlockWithTransactionsSchema } from "../Schemas/IBlockWithTransactionsSchema";
+import type { IBlockWithTransactionsSchema } from "@Schemas";
 import { AbstractRepository } from "./AbstractRepository";
 
 export class BlockRepository extends AbstractRepository<IBlockWithTransactionsSchema>

@@ -46,9 +46,10 @@
     "@Formatters": "dist/Formatters",
     "@Networks": "dist/Networks",
     "@Repositories": "dist/Repositories",
-    "@Schemas": "dist/Schemas",
+    "@Schemas": "dist/Database/Schemas",
     "@Services": "dist/Services",
     "@Types": "dist/Repositories",
-    "@Util": "dist/Util"
+    "@Util": "dist/Util",
+    "@Database": "dist/Database"
   }
 }

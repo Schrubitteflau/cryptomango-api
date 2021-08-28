@@ -1,6 +1,6 @@
 import { Db, MongoClient } from "mongodb";
 
-import { logger } from "./index";
+import { logger } from "@Util";
 
 export class MongoManager
 {
