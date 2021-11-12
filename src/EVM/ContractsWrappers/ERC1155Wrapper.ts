@@ -1,31 +1,18 @@
 import { logger, toError } from "@Util";
-import { ERC20 } from "../Contracts";
+import { ERC1155 } from "../Contracts";
 
 export class ERC20Wrapper
 {
     public constructor
     (
-        private readonly _erc20: ERC20
+        private readonly _erc1155: ERC1155
     ) { }
-
-    public async decimals(): Promise<number | null>
-    {
-        try
-        {
-            return await this._erc20.decimals();
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
-    }
 
     public async name(): Promise<string | null>
     {
         try
         {
-            return await this._erc20.name();
+            return await this._erc1155.name();
         }
         catch (error)
         {
@@ -38,7 +25,7 @@ export class ERC20Wrapper
     {
         try
         {
-            return await this._erc20.symbol();
+            return await this._erc1155.symbol();
         }
         catch (error)
         {
