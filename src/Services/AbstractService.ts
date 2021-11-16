@@ -22,4 +22,9 @@ export abstract class AbstractService extends EventEmitter
     {
         return this._network.getTransactionRepository();
     }
+
+    public get network(): Network
+    {
+        return this._network;
+    }
 }

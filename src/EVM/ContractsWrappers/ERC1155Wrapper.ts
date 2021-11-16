@@ -1,7 +1,7 @@
 import { logger, toError } from "@Util";
 import { ERC1155 } from "../Contracts";
 
-export class ERC20Wrapper
+export class ERC1155Wrapper
 {
     public constructor
     (

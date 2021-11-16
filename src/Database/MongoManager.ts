@@ -14,10 +14,26 @@ export class MongoManager
         private readonly _password: string,
         private readonly _host: string,
         private readonly _port: number
-    ) { }
+    )
+    {
+        if (this._username.length === 0)
+        {
+            logger.warning(`Empty database username provided`);
+        }
+
+        if (this._password.length === 0)
+        {
+            logger.warning(`Empty database password provided`);
+        }
+    }
 
     public get connectionString(): string
     {
+        if (this._username.length === 0 || this._password.length === 0)
+        {
+            return `mongodb://${this._host}:${this._port}`;
+        }
+
         return `mongodb://${encodeURIComponent(this._username)}:${encodeURIComponent(this._password)}@${this._host}:${this._port}`;
     }
 

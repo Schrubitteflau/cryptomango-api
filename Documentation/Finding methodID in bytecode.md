@@ -76,6 +76,11 @@ la method id correspond à celle qu'on a appelée, soit 0x70a08231 donc balanceO
 
 PUSH4 : 0x63
 EQ : 0x14
-On peut donc rechercher le schéma [63{4 bytes}14] et partir du principe que les 4 bytes correspondent à une
-method id, même si ce n'est pas forcément le cas. Mais les probabilités d'obtenir de faux positifs restent
-très faibles à mon avis.
+On peut donc rechercher le schéma [63{4 bytes}14] et partir du principe que les 4 bytes correspondent à une method id, même si ce n'est pas forcément le cas. Mais les probabilités d'obtenir de faux positifs restent très faibles.
+
+Attention, il se trouve que si la method id commence par un ou plusieurs octets nuls (0x00), le comportement est différent. Par exemple, la signature `balanceOf(address,uint256)` trouvée dans le standard `ERC1155` donne la method id `00fdd58e`.
+
+Malheuresement, il n'existe visiblement pas d'instruction `PUSH4 0x00fdd58e` dans le code des 
+contrats qui l'implémentent (en tout cas, pas dans `0x76be3b62873462d2142405439777e971754e8e77`). On trouve `PUSH3 0xfdd58e` à la place, ce qui donne la suite hexadécimale `62fdd58e`. Voir : https://etherscan.io/address/0x76be3b62873462d2142405439777e971754e8e77#code
+
+Pour prévenir cela, la solution actuelle est de tester `PUSH4 0x00fdd58e` et l'option optimisée, donc `PUSH3`, `PUSH2` ou `PUSH1` en fonction du nombre d'octets forts à 0.
