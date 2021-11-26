@@ -1,18 +1,28 @@
 import { providers } from "ethers";
 
-import { BlockRepository, ERC20TokenRepository, ContractCreationTransactionRepository } from "@Repositories"
+import {
+    BlockRepository,
+    ContractCreationTransactionRepository,
+    ERC20ContractRepository,
+    ERC721ContractRepository,
+    ERC1155ContractRepository
+} from "@Repositories"
 
 export abstract class AbstractNetwork
 {
     private _blockRepository: BlockRepository | null = null;
     private _contractCreationTransactionRepository: ContractCreationTransactionRepository | null = null;
-    private _ERC20TokenRepository: ERC20TokenRepository | null = null;
+    private _ERC20ContractRepository: ERC20ContractRepository | null = null;
+    private _ERC721ContractRepository: ERC721ContractRepository | null = null;
+    private _ERC1155ContractRepository: ERC1155ContractRepository | null = null;
     private _jsonRpcProvider: providers.JsonRpcProvider | null = null;
 
     // Collections names for storing the data of this network in the database
     public abstract getBlocksCollectionName(): string;
     public abstract getContractCreationTransactionsCollectionName(): string;
-    public abstract getERC20TokensCollectionName(): string
+    public abstract getERC20ContractCollectionName(): string;
+    public abstract getERC721ContractCollectionName(): string;
+    public abstract getERC1155ContractCollectionName(): string;
 
     // Full name of the network
     public abstract getName(): string;
@@ -53,13 +63,33 @@ export abstract class AbstractNetwork
         return this._contractCreationTransactionRepository;
     }
 
-    public getERC20ContractRepository(): ERC20TokenRepository
+    public getERC20ContractRepository(): ERC20ContractRepository
     {
-        if (this._ERC20TokenRepository === null)
+        if (this._ERC20ContractRepository === null)
         {
-            this._ERC20TokenRepository = new ERC20TokenRepository(this.getERC20TokensCollectionName());
+            this._ERC20ContractRepository = new ERC20ContractRepository(this.getERC20ContractCollectionName());
         }
 
-        return this._ERC20TokenRepository;
+        return this._ERC20ContractRepository;
+    }
+
+    public getERC721ContractRepository(): ERC721ContractRepository
+    {
+        if (this._ERC721ContractRepository === null)
+        {
+            this._ERC721ContractRepository = new ERC721ContractRepository(this.getERC721ContractCollectionName());
+        }
+
+        return this._ERC721ContractRepository;
+    }
+    
+    public getERC1155ContractRepository(): ERC1155ContractRepository
+    {
+        if (this._ERC1155ContractRepository === null)
+        {
+            this._ERC1155ContractRepository = new ERC1155ContractRepository(this.getERC1155ContractCollectionName());
+        }
+
+        return this._ERC1155ContractRepository;
     }
 }

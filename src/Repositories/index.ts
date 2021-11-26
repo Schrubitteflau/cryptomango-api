@@ -10,8 +10,16 @@ export {
 } from "./BlockRepository";
 
 export {
-    ERC20TokenRepository,
-} from "./ERC20TokenRepository";
+    ERC20ContractRepository,
+} from "./ERC20ContractRepository";
+
+export {
+    ERC721ContractRepository
+} from "./ERC721ContractRepository";
+
+export {
+    ERC1155ContractRepository
+} from "./ERC1155ContractRepository";
 
 export {
     ContractCreationTransactionRepository,

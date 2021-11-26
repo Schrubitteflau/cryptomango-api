@@ -12,9 +12,19 @@ export class BSCNetwork extends AbstractNetwork
         return "BSC_contract_creation_transactions";
     }
 
-    public getERC20TokensCollectionName(): string
+    public getERC20ContractCollectionName(): string
     {
         return "BSC_ERC20_contracts";
+    }
+
+    public getERC721ContractCollectionName(): string
+    {
+        return "BSC_ERC721_contracts";
+    }
+
+    public getERC1155ContractCollectionName(): string
+    {
+        return "BSC_ERC1155_contracts";
     }
 
     public getName(): string

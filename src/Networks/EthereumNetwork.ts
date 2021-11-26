@@ -12,9 +12,19 @@ export class EthereumNetwork extends AbstractNetwork
         return "Ethereum_contract_creation_transactions";
     }
 
-    public getERC20TokensCollectionName(): string
+    public getERC20ContractCollectionName(): string
     {
         return "Ethereum_ERC20_contracts";
+    }
+
+    public getERC721ContractCollectionName(): string
+    {
+        return "Ethereum_ERC721_contracts";
+    }
+
+    public getERC1155ContractCollectionName(): string
+    {
+        return "Ethereum_ERC1155_contracts";
     }
 
     public getName(): string
