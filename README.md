@@ -11,3 +11,10 @@ Node v14
 npm run gen-contracts-types
 npm run prod
 ```
+
+## Testing
+
+```
+node scripts/fetchEtherscanTokensContractsAddresses.js
+npm run test
+```̀
