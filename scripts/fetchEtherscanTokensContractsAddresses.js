@@ -9,7 +9,8 @@ const cheerio = require("cheerio");
 const contracts = require("../test/EVM/BytecodeAnalyzerCache/contracts.json");
 
 /**
- * 
+ * Returns a list of known addresses according to the specified contract type
+ * The addresses are scraped for etherscan.io
  * @param { "erc20" | "erc721" | "erc1155" } contractType
  * @returns { Promise<Array<string>> } addresses
  */
@@ -73,8 +74,9 @@ async function main()
     contracts.erc1155 = getUpdatedContractsCache("erc1155", erc1155Contracts);
 
     const contractsPath = path.join(__dirname, "..", "test", "EVM", "BytecodeAnalyzerCache", "contracts.json");
+    const json = JSON.stringify(contracts, null, 4);
 
-    fs.writeFileSync(contractsPath, JSON.stringify(contracts), "utf-8");
+    fs.writeFileSync(contractsPath, json, "utf-8");
 }
 
 main();

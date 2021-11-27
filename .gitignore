@@ -1,6 +1,4 @@
-test/EVM/BytecodeAnalyzerCache/*
-!test/EVM/BytecodeAnalyzerCache/README.md
-!test/EVM/BytecodeAnalyzerCache/contracts.json
+test/EVM/BytecodeAnalyzerCache/cache
 
 # Logs
 logs
