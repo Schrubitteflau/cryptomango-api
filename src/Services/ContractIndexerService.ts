@@ -78,15 +78,15 @@ export class ContractIndexerService extends AbstractService
         if (storeOperation.success === true)
         {
             const stored: IERC20TokenSchema = storeOperation.operationData.data;
-            const { name, symbol, creationTransaction } = stored;
+            const { _id, name, symbol, creationTransaction } = stored;
 
-            logger.debug(`Successfully stored ERC20 token ${name} $${symbol} at ${creationTransaction} tx`);
+            logger.debug(`Successfully stored ERC20 token ${name} $${symbol} at address ${_id} with tx ${creationTransaction}`);
             this.emit("ERC20Token", stored, transaction);
         }
         else
         {
-            const { name, symbol, creationTransaction } = tokenData;
-            logger.error(`Cannot store ERC20 token ${name} $${symbol} at ${creationTransaction} tx : ${storeOperation.error.message}`);
+            const { _id, name, symbol, creationTransaction } = tokenData;
+            logger.error(`Cannot store ERC20 token ${name} $${symbol} at address ${_id} with tx ${creationTransaction} : ${storeOperation.error.message}`);
         }
     }
 
@@ -110,15 +110,15 @@ export class ContractIndexerService extends AbstractService
         if (storeOperation.success === true)
         {
             const stored: IERC721TokenSchema = storeOperation.operationData.data;
-            const { name, symbol, creationTransaction } = stored;
+            const { _id, name, symbol, creationTransaction } = stored;
 
-            logger.debug(`Successfully stored ERC721 token ${name} $${symbol} at ${creationTransaction} tx`);
+            logger.debug(`Successfully stored ERC721 token ${name} $${symbol} at address ${_id} with tx ${creationTransaction}`);
             this.emit("ERC721Token", stored, transaction);
         }
         else
         {
-            const { name, symbol, creationTransaction } = tokenData;
-            logger.error(`Cannot store ERC721 token ${name} $${symbol} at ${creationTransaction} tx : ${storeOperation.error.message}`);
+            const { _id, name, symbol, creationTransaction } = tokenData;
+            logger.error(`Cannot store ERC721 token ${name} $${symbol} at address ${_id} with tx ${creationTransaction} : ${storeOperation.error.message}`);
         }
     }
 
@@ -142,15 +142,15 @@ export class ContractIndexerService extends AbstractService
         if (storeOperation.success === true)
         {
             const stored: IERC1155TokenSchema = storeOperation.operationData.data;
-            const { name, symbol, creationTransaction } = stored;
+            const { _id, name, symbol, creationTransaction } = stored;
 
-            logger.debug(`Successfully stored ERC1155 token ${name} $${symbol} at ${creationTransaction} tx`);
+            logger.debug(`Successfully stored ERC1155 token ${name} $${symbol} at address ${_id} with tx ${creationTransaction}`);
             this.emit("ERC1155Token", stored, transaction);
         }
         else
         {
-            const { name, symbol, creationTransaction } = tokenData;
-            logger.error(`Cannot store ERC1155 token ${name} $${symbol} at ${creationTransaction} tx : ${storeOperation.error.message}`);
+            const { _id, name, symbol, creationTransaction } = tokenData;
+            logger.error(`Cannot store ERC1155 token ${name} $${symbol} at address ${_id} with tx ${creationTransaction} : ${storeOperation.error.message}`);
         }
     }
 }
