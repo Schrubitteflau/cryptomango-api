@@ -68,6 +68,7 @@ export class ContractIndexerService extends AbstractService
             _id: transaction.contractAddress,
             creationTransaction: transaction._id,
             creationTimestamp: transaction.blockTimestamp,
+            creationTransactionIndex: transaction.indexInBlock,
             decimals: await wrapper.decimals(),
             name: await wrapper.name(),
             symbol: await wrapper.symbol()
@@ -101,6 +102,7 @@ export class ContractIndexerService extends AbstractService
             _id: transaction.contractAddress,
             creationTransaction: transaction._id,
             creationTimestamp: transaction.blockTimestamp,
+            creationTransactionIndex: transaction.indexInBlock,
             name: await wrapper.name(),
             symbol: await wrapper.symbol()
         };
@@ -133,6 +135,7 @@ export class ContractIndexerService extends AbstractService
             _id: transaction.contractAddress,
             creationTransaction: transaction._id,
             creationTimestamp: transaction.blockTimestamp,
+            creationTransactionIndex: transaction.indexInBlock,
             name: await wrapper.name(),
             symbol: await wrapper.symbol()
         };

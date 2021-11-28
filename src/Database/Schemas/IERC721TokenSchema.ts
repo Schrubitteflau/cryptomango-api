@@ -1,14 +1,8 @@
-import { ChecksumAddress, TransactionHash } from "@EVM/Types";
+import { ITokenSchema } from "./ITokenSchema";
 
-export interface IERC721TokenSchema {
-    // Address of the contract
-    _id: ChecksumAddress,
-    // Transaction which created this ERC20 contract
-    creationTransaction: TransactionHash,
-    // Timestamp when the transaction was added to the blockchain
-    creationTimestamp: number,
+export interface IERC721TokenSchema extends ITokenSchema {
     // Name, null if name() function is not implemented
-    name: string | null,
+    name: string | null;
     // Symbol, null if symbol() function is not implemented
-    symbol: string | null
+    symbol: string | null;
 }

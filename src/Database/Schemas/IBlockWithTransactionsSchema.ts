@@ -2,13 +2,13 @@ import { BlockHash, TransactionHash } from "@EVM/Types";
 
 export interface IBlockWithTransactionsSchema {
     // Block number
-    _id: number,
+    _id: number;
     // Block hash
-    hash: BlockHash,
+    hash: BlockHash;
     // Timestamp when it was added to the blockchain (mined or validated)
-    timestamp: number,
+    timestamp: number;
     // Transactions hashes
-    transactions: Array<TransactionHash>,
+    transactions: Array<TransactionHash>;
     // Contract creation transactions hashes
-    contractCreationTransactions: Array<TransactionHash>
+    contractCreationTransactions: Array<TransactionHash>;
 }

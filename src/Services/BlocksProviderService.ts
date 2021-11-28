@@ -9,13 +9,13 @@ import { FormatBlockReturn, formatBlockBulk } from "@Formatters";
 import { StoreManyOperation, StoreManyResult } from "@Repositories";
 
 export interface IRangeBlocksWithTransactions {
-    range: Range,
-    blocks: Array<BlockWithTransactions>
+    range: Range;
+    blocks: Array<BlockWithTransactions>;
 }
 
 type AggregateBlocksAndTransactionsReturn = {
-    blocks: Array<IBlockWithTransactionsSchema>,
-    transactions: Array<IContractCreationTransactionSchema>,
+    blocks: Array<IBlockWithTransactionsSchema>;
+    transactions: Array<IContractCreationTransactionSchema>;
 };
 
 export declare interface BlocksProviderService {
@@ -195,10 +195,10 @@ export class BlocksProviderService extends AbstractService
         const storeTransactionsOperation: StoreManyOperation<IContractCreationTransactionSchema> = await this._contractCreationTransactionRepository.storeMany(transactions);
         if (storeTransactionsOperation.success === true)
         {
-            const storeTransactionResult: StoreManyResult<IContractCreationTransactionSchema> = storeTransactionsOperation.operationData;
+            const storeTransactionsResult: StoreManyResult<IContractCreationTransactionSchema> = storeTransactionsOperation.operationData;
 
-            logger.info(`Successfully stored ${storeTransactionResult.count} contract creation transactions`);
-            this.emit("contractCreationTransactions", storeTransactionResult.data);
+            logger.info(`Successfully stored ${storeTransactionsResult.count} contract creation transactions`);
+            this.emit("contractCreationTransactions", storeTransactionsResult.data);
         }
         else
         {

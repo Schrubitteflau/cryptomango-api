@@ -53,8 +53,9 @@ export class TransactionResponseFormatter
 
         try
         {
-            const contractAddress = toChecksumAddress(creates);
-            const senderAddress = toChecksumAddress(from);
+            const contractAddress: string = toChecksumAddress(creates);
+            const senderAddress: string = toChecksumAddress(from);
+            const indexInBlock: number = this._block.transactions.indexOf(this._transaction);
 
             assertValidTransactionHash(txHash);
             assertValidBlockHash(blockHash);
@@ -69,10 +70,11 @@ export class TransactionResponseFormatter
                 from: senderAddress,
                 creationBytecode: data,
                 contractAddress,
-                blockTimestamp: this._block.timestamp
+                blockTimestamp: this._block.timestamp,
+                indexInBlock: indexInBlock
             };
         }
-        catch (e)
+        catch (error)
         {
             return null;
         }

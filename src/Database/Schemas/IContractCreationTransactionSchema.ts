@@ -3,17 +3,19 @@ import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash } from "@
 // Schema of a transaction which results in a contract creation
 export interface IContractCreationTransactionSchema {
     // Hash of the transaction
-    _id: TransactionHash,
+    _id: TransactionHash;
     // Hash of the block
-    blockHash: BlockHash,
+    blockHash: BlockHash;
     // Number of the block
-    blockNumber: number,
+    blockNumber: number;
     // Address of the sender
-    from: ChecksumAddress,
+    from: ChecksumAddress;
     // Bytecode of contract creation
-    creationBytecode: ContractBytecode,
+    creationBytecode: ContractBytecode;
     // Address of the created contract
-    contractAddress: ChecksumAddress,
+    contractAddress: ChecksumAddress;
     // Timestamp of the block where the transaction was mined
-    blockTimestamp: number
+    blockTimestamp: number;
+    // Index of the transaction in the block (0 for the first, 1 for the second...)
+    indexInBlock: number;
 }
