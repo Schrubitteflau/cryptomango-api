@@ -20,7 +20,9 @@
             "@Types/*": [ "Types/*" ],
             "@Types": [ "Types/index.ts" ],
             "@Util": [ "Util/index.ts" ],
-            "@Database": [ "Database/index.ts" ]
+            "@Database": [ "Database/index.ts" ],
+            "@Models": [ "Database/Models/index.ts" ],
+            "@API": [ "API/index.ts" ]
         }
     },
     "include": [

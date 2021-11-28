@@ -26,18 +26,29 @@
     "dotenv-flow": "^3.2.0",
     "ethers": "^5.4.1",
     "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "express-jwt": "^6.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.2",
     "mongodb": "^3.6.6",
+    "mongoose": "^6.0.13",
+    "mongoose-unique-validator": "^3.0.0",
     "node-fetch": "^2.6.1",
-    "module-alias": "^2.2.2"
+    "uuid": "^8.3.2",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^7.0.1",
     "@types/dateformat": "^3.0.1",
     "@types/express": "^4.17.11",
+    "@types/express-jwt": "^6.0.2",
     "@types/jest": "^27.0.2",
+    "@types/jsonwebtoken": "^8.5.6",
     "@types/mongodb": "^3.6.12",
     "@types/node": "^15.3.0",
     "@types/node-fetch": "^2.5.10",
+    "@types/uuid": "^8.3.3",
+    "@types/validator": "^13.7.0",
     "cheerio": "^1.0.0-rc.10",
     "concurrently": "^6.1.0",
     "jest": "^27.3.1",
@@ -55,6 +66,8 @@
     "@Services": "dist/Services",
     "@Types": "dist/Repositories",
     "@Util": "dist/Util",
-    "@Database": "dist/Database"
+    "@Database": "dist/Database",
+    "@Models": "dist/Database/Models",
+    "@API": "dist/API"
   }
 }
