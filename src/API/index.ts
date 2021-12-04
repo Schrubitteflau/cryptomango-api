@@ -1,4 +1,4 @@
-export { authErrorHandler} from "./authErrorHandler";
-export { mongooseErrorHandler } from "./mongooseErrorHandler";
-export { globalErrorHandler } from "./globalErrorHandler";
-export { authRouter } from "./authRouter";
+export { authErrorHandler} from "./ErrorHandlers/authErrorHandler";
+export { mongooseErrorHandler } from "./ErrorHandlers/mongooseErrorHandler";
+export { globalErrorHandler } from "./ErrorHandlers/globalErrorHandler";
+export { authRouter } from "./Routers/authRouter";
