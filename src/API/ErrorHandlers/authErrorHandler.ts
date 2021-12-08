@@ -8,7 +8,7 @@ export function authErrorHandler(error: any, req: express.Request, res: express.
     if (error instanceof UnauthorizedError)
     {
         res.status(403).json({
-            message: "Access denied"
+            error: "Access denied"
         });
     }
     else

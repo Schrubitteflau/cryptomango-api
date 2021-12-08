@@ -1,78 +1,77 @@
 import express from "express";
-import jwt from "express-jwt";
 import { sign as jwtSign } from "jsonwebtoken";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
-import { User } from "@Models";
+import { TokenSwipe, User } from "@Models";
+import { UserSession, UserSessionFactory, userSessionsManager } from "@API/Users";
 
-const authRouter: express.Router = express.Router();
+export const authRouter: express.Router = express.Router();
 
-const middleware = jwt({
-    secret: "secret",
-    algorithms: [ "HS256" ],
-    credentialsRequired: true
-});
-
-authRouter.get("/protected", middleware, (req: express.Request, res) =>
+export interface IJwtBody
 {
-    console.log(req.user);
-    res.json({
-        message: "bravo"
-    });
-})
+    userId: string;
+    iat: number;
+    exp: number;
+    jti: string;
+}
 
-// Authorization: Bearer [token]
-
-authRouter.post("/login", async (req: express.Request, res: express.Response) =>
+authRouter.post("/signin", async (req: express.Request, res: express.Response) =>
 {
     const { username, password } = req.body;
     const userValidate = new User({
         username,
         password
     });
+    // Validate the data before searching the user in the database
     const error = userValidate.validateSync([
         "username",
         "password"
     ]);
 
+    // If the validation fails
     if (error instanceof Error)
     {
         throw error;
     }
 
+    // Actually fetching the user
     const user = await User.findOne({
         username,
         password
     }).orFail();
 
+    // Build the JWT payload
     const jwtPayload = {
         userId: user._id
     };
-
+    // And sign it
     const jwt: string = jwtSign(jwtPayload, "secret", {
         algorithm: "HS256",
         expiresIn: "1h",
         jwtid: uuidv4()
     });
 
+    // Build the user's session
+    const userSessionFactory: UserSessionFactory = new UserSessionFactory(user._id);
+    const userSession: UserSession = await userSessionFactory.buildUserSession();
+    userSessionsManager.addUserSession(userSession);
+
     res.json({
         accessToken: jwt
     });
 })
 
-authRouter.post("/register", async (req: express.Request, res: express.Response) =>
+.post("/signup", async (req: express.Request, res: express.Response) =>
 {
     const { email, password, username } = req.body;
 
-    await User.create({
+    const user = await User.create({
         email,
         password,
         username
     });
 
     res.status(200).json({
-        message: "User created, please log in"
+        message: "User created, you can sign in"
     });
 });
-
-export { authRouter };

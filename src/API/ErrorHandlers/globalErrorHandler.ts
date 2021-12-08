@@ -6,6 +6,6 @@ export function globalErrorHandler(error: any, req: express.Request, res: expres
 
     console.log(error);
     res.status(500).json({
-        message: "Internal error"
+        error: "Internal error : " + error.message
     });
 }

@@ -1,0 +1,32 @@
+import { UserSession } from "./UserSession";
+
+// todo : regularily check expired sessions and clean them
+class UserSessionsManager
+{
+    // Key : user's id in the database ("_id" field)
+    private readonly _users = new Map<string, UserSession>();
+
+    public hasUserSession(userId: string): boolean
+    {
+        return this._users.has(userId);
+    }
+
+    public getUserSession(userId: string): UserSession | null
+    {
+        return this._users.get(userId) || null;
+    }
+
+    public addUserSession(userSession: UserSession): void
+    {
+        const id = userSession.getId();
+
+        if (this.hasUserSession(id))
+        {
+            throw new Error("Cannot add overwrite existing user session");
+        }
+
+        this._users.set(id, userSession);
+    }
+}
+
+export const userSessionsManager: UserSessionsManager = new UserSessionsManager();

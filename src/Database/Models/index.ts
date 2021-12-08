@@ -1,2 +1,2 @@
-export { User } from "./User";
-export { TokenSwipe } from "./TokenSwipe";
+export { User, IUser } from "./User";
+export { TokenSwipe, ITokenSwipe } from "./TokenSwipe";

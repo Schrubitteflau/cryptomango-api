@@ -7,8 +7,8 @@ export function mongooseErrorHandler(error: any, req: express.Request, res: expr
 
     if (error instanceof MongooseError.ValidationError)
     {
-        res.status(200).json({
-            message: error.message
+        res.status(422).json({
+            error: error.message
         });
 
         /*for (const errorPath in error.errors)
@@ -20,7 +20,7 @@ export function mongooseErrorHandler(error: any, req: express.Request, res: expr
     else if (error instanceof MongooseError.DocumentNotFoundError)
     {
         res.status(404).json({
-            message: error.message
+            error: error.message
         });
     }
     else
