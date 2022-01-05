@@ -1,7 +1,7 @@
 import { IERC20TokenSchema } from "@Schemas";
-import { AbstractRepository } from "./AbstractRepository";
+import { AbstractTokenRepository } from "./AbstractTokenRepository";
 
-export class ERC20ContractRepository extends AbstractRepository<IERC20TokenSchema>
+export class ERC20ContractRepository extends AbstractTokenRepository<IERC20TokenSchema>
 {
 
 }

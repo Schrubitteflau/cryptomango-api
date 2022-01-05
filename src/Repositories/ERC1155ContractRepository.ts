@@ -1,7 +1,7 @@
 import { IERC1155TokenSchema } from "@Schemas";
-import { AbstractRepository } from "./AbstractRepository";
+import { AbstractTokenRepository } from "./AbstractTokenRepository";
 
-export class ERC1155ContractRepository extends AbstractRepository<IERC1155TokenSchema>
+export class ERC1155ContractRepository extends AbstractTokenRepository<IERC1155TokenSchema>
 {
 
 }

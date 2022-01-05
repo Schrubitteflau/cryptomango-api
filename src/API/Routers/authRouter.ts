@@ -42,7 +42,7 @@ authRouter.post("/signin", async (req: express.Request, res: express.Response) =
 
     // Build the JWT payload
     const jwtPayload = {
-        userId: user._id
+        userId: user.id
     };
     // And sign it
     const jwt: string = jwtSign(jwtPayload, "secret", {
@@ -51,10 +51,13 @@ authRouter.post("/signin", async (req: express.Request, res: express.Response) =
         jwtid: uuidv4()
     });
 
-    // Build the user's session
-    const userSessionFactory: UserSessionFactory = new UserSessionFactory(user._id);
-    const userSession: UserSession = await userSessionFactory.buildUserSession();
-    userSessionsManager.addUserSession(userSession);
+    // Build the user's session if it doesn't exists
+    if (userSessionsManager.hasUserSession(user.id) === false)
+    {
+        const userSessionFactory: UserSessionFactory = new UserSessionFactory(user.id);
+        const userSession: UserSession = await userSessionFactory.buildUserSession();
+        userSessionsManager.addUserSession(userSession);
+    }
 
     res.json({
         accessToken: jwt

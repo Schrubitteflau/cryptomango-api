@@ -7,6 +7,7 @@ import {
     ERC721ContractRepository,
     ERC1155ContractRepository
 } from "@Repositories"
+import { TokenSwipeService } from "@Services";
 
 export abstract class AbstractNetwork
 {
@@ -15,6 +16,7 @@ export abstract class AbstractNetwork
     private _ERC20ContractRepository: ERC20ContractRepository | null = null;
     private _ERC721ContractRepository: ERC721ContractRepository | null = null;
     private _ERC1155ContractRepository: ERC1155ContractRepository | null = null;
+    private _tokenSwipeService: TokenSwipeService | null = null;
     private _jsonRpcProvider: providers.JsonRpcProvider | null = null;
 
     // Collections names for storing the data of this network in the database
@@ -32,6 +34,11 @@ export abstract class AbstractNetwork
 
     // JsonRpc provider URL used for the network
     public abstract getJsonRpcProviderURL(): string;
+
+    public getUniqueId(): string
+    {
+        return this.getChainID().toString();
+    }
 
     public getJsonRpcProvider(): providers.JsonRpcProvider
     {
@@ -91,5 +98,15 @@ export abstract class AbstractNetwork
         }
 
         return this._ERC1155ContractRepository;
+    }
+
+    public getTokenSwipeService(): TokenSwipeService
+    {
+        if (this._tokenSwipeService === null)
+        {
+            this._tokenSwipeService = new TokenSwipeService(this);
+        }
+
+        return this._tokenSwipeService;
     }
 }

@@ -1,4 +1,4 @@
-import { Collection, Db, InsertWriteOpResult, InsertOneWriteOpResult, WithId  } from "mongodb";
+import { Collection, Db, InsertWriteOpResult, InsertOneWriteOpResult, WithId } from "mongodb";
 
 import type { Operation } from "@Types";
 import { toError } from "@Util";

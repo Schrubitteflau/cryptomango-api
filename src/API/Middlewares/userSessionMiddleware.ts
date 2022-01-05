@@ -20,8 +20,7 @@ export function userSessionMiddleware(
     }
 
     const { userId } = req.jwtDecoded;
-    console.log("Resolving user's session with user id = " + userId);
-    const userSession: UserSession | null = userSessionsManager.getUserSession(userId);
+    const userSession: UserSession | null = userSessionsManager.getUserSession(userId);
 
     if (userSession === null)
     {

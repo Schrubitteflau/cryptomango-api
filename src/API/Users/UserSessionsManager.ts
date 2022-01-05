@@ -13,16 +13,16 @@ class UserSessionsManager
 
     public getUserSession(userId: string): UserSession | null
     {
-        return this._users.get(userId) || null;
+        return this._users.get(userId) || null;
     }
 
     public addUserSession(userSession: UserSession): void
     {
-        const id = userSession.getId();
+        const id: string = userSession.getId();
 
         if (this.hasUserSession(id))
         {
-            throw new Error("Cannot add overwrite existing user session");
+            throw new Error("Cannot add overwrite an existing user session");
         }
 
         this._users.set(id, userSession);

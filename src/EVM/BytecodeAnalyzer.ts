@@ -3,9 +3,17 @@ import { ethers } from "ethers";
 import { ContractBytecode, ContractMethodId, assertValidContractMethodId } from "./Types";
 import { ERC20, ERC721WithoutSafeTransferFrom, ERC1155, ERC721SafeTransferFromV1, ERC721SafeTransferFromV2 } from "./Interfaces";
 
-type methodIdByteLength = 1 | 2 | 3 | 4;
+type methodIdByteLength = 1 | 2 | 3 | 4;
 
-export enum ContractType {
+export enum StrictContractType
+{
+    ERC20Token = "erc20",
+    ERC721NFT = "erc721",
+    ERC1155MultiToken = "erc1155"
+};
+
+export enum ContractType
+{
     ERC20Token = "erc20",
     ERC721NFT = "erc721",
     ERC1155MultiToken = "erc1155",

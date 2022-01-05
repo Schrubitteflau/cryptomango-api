@@ -1,0 +1,8 @@
+[
+    {
+        "chainId": 56,
+        "fullName": "Binance Smart Chain",
+        "providers": [ "https://bsc-dataseed.binance.org/" ],
+        "collectionPrefix": "bsc"
+    }
+]

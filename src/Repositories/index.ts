@@ -6,6 +6,11 @@ export {
 } from "./AbstractRepository";
 
 export {
+    AbstractTokenRepository,
+    AllowedSchemas
+} from "./AbstractTokenRepository";
+
+export {
     BlockRepository,
 } from "./BlockRepository";
 

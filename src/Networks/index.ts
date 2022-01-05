@@ -7,3 +7,17 @@ export {
     BSC,
     Ethereum
 };
+
+export function getByChainId(chainId: number): Network | null
+{
+    if (chainId === 1)
+    {
+        return Ethereum;
+    }
+    else if (chainId === 56)
+    {
+        return BSC;
+    }
+
+    return null;
+}
