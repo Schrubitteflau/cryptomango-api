@@ -8,7 +8,7 @@
     "build-scripts": "npx tsc scripts/*.ts",
     "gen-contracts-types": "npx typechain --target=ethers-v5 --out-dir 'src/EVM/Contracts' 'ABIs/**/*.json'",
     "prod": "npx tsc && node -r module-alias/register -r dotenv-flow/config dist/index.js",
-    "dev": "concurrently -k -n \"Typescript,Node\" -p \"${npm_package_name}\" -c \"blue,green\" \"npx tsc --watch\" \"nodemon -r dotenv-flow/config ${npm_package_main}\""
+    "dev": "concurrently -k -n \"Typescript,Node\" -p \"${npm_package_name}\" -c \"blue,green\" \"npx tsc --watch\" \"nodemon -r module-alias/register -r dotenv-flow/config ${npm_package_main}\""
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,6 @@
     "express-jwt": "^6.1.0",
     "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.2",
-    "mongodb": "^3.6.6",
     "mongoose": "^6.0.13",
     "mongoose-unique-validator": "^3.0.0",
     "node-fetch": "^2.6.1",
@@ -71,6 +70,7 @@
     "@Util": "dist/Util",
     "@Database": "dist/Database",
     "@Models": "dist/Database/Models",
-    "@API": "dist/API"
+    "@API": "dist/API",
+    "@Config": "dist/Config"
   }
 }
