@@ -45,8 +45,6 @@
     "@types/express-jwt": "^6.0.2",
     "@types/jest": "^27.0.2",
     "@types/jsonwebtoken": "^8.5.6",
-    "@types/mongodb": "^3.6.12",
-    "@types/mongoose": "^5.11.97",
     "@types/node": "^15.3.0",
     "@types/node-fetch": "^2.5.10",
     "@types/uuid": "^8.3.3",
@@ -65,12 +63,13 @@
     "@Networks": "dist/Networks",
     "@Repositories": "dist/Repositories",
     "@Schemas": "dist/Database/Schemas",
-    "@Services": "dist/Services",
+    "@NetworkServices": "dist/NetworkServices",
     "@Types": "dist/Repositories",
     "@Util": "dist/Util",
-    "@Database": "dist/Database",
+    "@Database/init": "dist/Database/init",
     "@Models": "dist/Database/Models",
     "@API": "dist/API",
-    "@Config": "dist/Config"
+    "@Config": "dist/Config",
+    "@ModelFactories": "dist/Database/ModelFactories"
   }
 }
