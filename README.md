@@ -17,4 +17,4 @@ npm run prod
 ```
 node scripts/fetchEtherscanTokensContractsAddresses.js
 npm run test
-```̀
+```
