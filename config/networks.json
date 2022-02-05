@@ -1,0 +1,19 @@
+[
+    {
+        "chainId": 56,
+        "fullName": "Binance Smart Chain",
+        "jsonRpcProviderUrl": "https://bsc-dataseed.binance.org/",
+        "collectionPrefix": "bsc",
+        "isActive": true,
+        "blocksDownloading": {
+            "fromBlock": 11643830,
+            "toBlock": "latest",
+            "onError": {
+                "restartAfterSeconds": 60
+            },
+            "onSync": {
+                "cooldownSeconds": 60
+            }
+        }
+    }
+]
