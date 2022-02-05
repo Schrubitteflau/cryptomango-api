@@ -15,15 +15,17 @@
             "@EVM/*": [ "EVM/*" ],
             "@Formatters": [ "Formatters/index.ts" ],
             "@Networks": [ "Networks/index.ts" ],
-            "@Repositories": [ "Repositories/index.ts" ],
+            "@Repositories": [ "Database/Repositories/index.ts" ],
             "@Schemas": [ "Database/Schemas/index.ts" ],
-            "@Services": [ "Services/index.ts" ],
+            "@NetworkServices": [ "NetworkServices/index.ts" ],
             "@Types/*": [ "Types/*" ],
             "@Types": [ "Types/index.ts" ],
             "@Util": [ "Util/index.ts" ],
-            "@Database": [ "Database/index.ts" ],
+            "@Database/init": [ "Database/init.ts" ],
             "@Models": [ "Database/Models/index.ts" ],
-            "@API/*": [ "API/*" ]
+            "@API/*": [ "API/*" ],
+            "@Config": [ "Config/index.ts" ],
+            "@ModelFactories": [ "Database/ModelFactories/index.ts" ]
         }
     },
     "include": [
