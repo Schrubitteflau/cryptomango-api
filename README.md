@@ -5,14 +5,14 @@ The back-end part of the CryptoMango application
 
 Node v14
 
-## Start
+## Start
 
 ```
 npm run gen-contracts-types
 npm run prod
 ```
 
-## Testing
+## Testing
 
 ```
 node scripts/fetchEtherscanTokensContractsAddresses.js
