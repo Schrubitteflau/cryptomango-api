@@ -1,5 +1,8 @@
-export type { IBlockWithTransactionsSchema } from "./IBlockWithTransactionsSchema";
-export type { IContractCreationTransactionSchema } from "./IContractCreationTransactionSchema";
-export type { IERC20TokenSchema } from "./IERC20TokenSchema";
-export type { IERC721TokenSchema } from "./IERC721TokenSchema";
-export type { IERC1155TokenSchema } from "./IERC1155TokenSchema";
+export { ITokenSwipe, tokenSwipeSchema } from "./TokenSwipeSchema";
+export { IUser, userSchema } from "./UserSchema";
+export { IBlockWithTransactions, blockWithTransactionsSchema } from "./BlockWithTransactionsSchema";
+export { IContractCreationTransaction, contractCreationTransactionSchema } from "./ContractCreationTransactionSchema";
+export { IBaseToken, baseTokenSchema } from "./BaseTokenSchema";
+export { IERC20Token, erc20TokenSchema } from "./ERC20TokenSchema";
+export { IERC721NFT, erc721NFTSchema } from "./ERC721NFTSchema";
+export { IERC1155MultiToken, erc1155MultiTokenSchema } from "./ERC1155MultiTokenSchema";
