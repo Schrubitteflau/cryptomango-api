@@ -8,6 +8,9 @@ export class ERC1155Wrapper
         private readonly _erc1155: ERC1155
     ) { }
 
+    /**
+     * @alwaysResolve
+     */
     public async name(): Promise<string | null>
     {
         try
@@ -21,6 +24,9 @@ export class ERC1155Wrapper
         }
     }
 
+    /**
+     * @alwaysResolve
+     */
     public async symbol(): Promise<string | null>
     {
         try

@@ -9,6 +9,9 @@ export class ERC20Wrapper
         private readonly _erc20: ERC20
     ) { }
 
+    /**
+     * @alwaysResolve
+     */
     public async decimals(): Promise<number | null>
     {
         try
@@ -22,6 +25,9 @@ export class ERC20Wrapper
         }
     }
 
+    /**
+     * @alwaysResolve
+     */
     public async name(): Promise<string | null>
     {
         try
@@ -35,6 +41,9 @@ export class ERC20Wrapper
         }
     }
 
+    /**
+     * @alwaysResolve
+     */
     public async symbol(): Promise<string | null>
     {
         try
@@ -48,6 +57,9 @@ export class ERC20Wrapper
         }
     }
 
+    /**
+     * @alwaysResolve
+     */
     public async balanceOf(owner: string): Promise<BigNumber | null>
     {
         try

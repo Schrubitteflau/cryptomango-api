@@ -8,6 +8,9 @@ export class ERC721Wrapper
         private readonly _erc721: ERC721
     ) { }
 
+    /**
+     * @alwaysResolve
+     */
     public async tokenURI(tokenId: number): Promise<string | null>
     {
         try
@@ -21,6 +24,9 @@ export class ERC721Wrapper
         }
     }
 
+    /**
+     * @alwaysResolve
+     */
     public async name(): Promise<string | null>
     {
         try
@@ -34,6 +40,9 @@ export class ERC721Wrapper
         }
     }
 
+    /**
+     * @alwaysResolve
+     */
     public async symbol(): Promise<string | null>
     {
         try
