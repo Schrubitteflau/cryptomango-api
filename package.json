@@ -61,7 +61,7 @@
     "@EVM": "dist/EVM",
     "@Formatters": "dist/Formatters",
     "@Networks": "dist/Networks",
-    "@Repositories": "dist/Repositories",
+    "@Repositories": "dist/Database/Repositories",
     "@Schemas": "dist/Database/Schemas",
     "@NetworkServices": "dist/NetworkServices",
     "@Types": "dist/Repositories",
