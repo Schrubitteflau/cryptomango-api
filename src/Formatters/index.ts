@@ -2,11 +2,9 @@ export {
     BlockWithTransactionsFormatter,
     FormatBlockReturn,
     format as formatBlock,
-    formatBulk as formatBlockBulk
 } from "./BlockWithTransactionsFormatter";
 
 export {
     TransactionResponseFormatter,
-    format as formatTransaction,
-    formatBulk as formatTransactionBulk
+    format as formatContractCreationTransaction,
 } from "./TransactionResponseFormatter";

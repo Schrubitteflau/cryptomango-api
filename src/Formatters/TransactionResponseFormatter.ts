@@ -6,8 +6,22 @@ import {
     toChecksumAddress
 } from "@EVM/Types";
 
-import type { IContractCreationTransactionSchema } from "@Schemas";
+import type { IContractCreationTransaction } from "@Schemas";
 import type { TransactionResponse, BlockWithTransactions } from "@Types/EthersTypes";
+import { isNull, isNullOrUndefined, isUndefined } from "@Util";
+
+interface ISuccessfulFormatTransactionResult
+{
+    isSuccessful: true;
+    contractCreationTransaction: IContractCreationTransaction;
+}
+
+interface IFailedFormatTransactionResult
+{
+    isSuccessful: false;
+}
+
+export type FormatTransactionResult = ISuccessfulFormatTransactionResult | IFailedFormatTransactionResult;
 
 export class TransactionResponseFormatter
 {
@@ -24,10 +38,10 @@ export class TransactionResponseFormatter
         /* https://docs.soliditylang.org/en/latest/introduction-to-smart-contracts.html#index-8
         If the target account is not set (the transaction does not have a recipient or the recipient is set to null),
         the transaction creates a new contract */
-        return (to === null || typeof(to) === "undefined");
+        return isNullOrUndefined(to);
     }
 
-    public format(): IContractCreationTransactionSchema | null
+    public format(): IContractCreationTransaction
     {
         // The property "creates" is valid but does not appear in TypeScript definition
         const {
@@ -38,56 +52,56 @@ export class TransactionResponseFormatter
             creates
         } = this._transaction as (TransactionResponse & { "creates": string | undefined });
 
-        // The transaction must have been mined an included in the this block
-        // If the condition if false, we can rely on this._block properties
+        // The transaction must have been mined and included in the this block
+        // If the blockHashes are equals, we can rely on this._block properties
         if (blockHash !== this._block.hash)
         {
-            return null;
+            throw new Error("Different block hashes");
         }
 
         // It's not a contract creation transaction
-        if (!this._isToNull() || typeof(creates) === "undefined")
+        if (!this._isToNull() || isUndefined(creates))
         {
-            return null;
+            throw new Error("Not a contract creation transaction");
         }
 
-        try
-        {
-            const contractAddress: string = toChecksumAddress(creates);
-            const senderAddress: string = toChecksumAddress(from);
-            const indexInBlock: number = this._block.transactions.indexOf(this._transaction);
+        const contractAddress: string = toChecksumAddress(creates);
+        const senderAddress: string = toChecksumAddress(from);
+        const indexInBlock: number = this._block.transactions.indexOf(this._transaction);
 
-            assertValidTransactionHash(txHash);
-            assertValidBlockHash(blockHash);
-            assertValidChecksumAddress(senderAddress);
-            assertValidContractBytecode(data);
-            assertValidChecksumAddress(contractAddress);
+        assertValidTransactionHash(txHash);
+        assertValidBlockHash(blockHash);
+        assertValidChecksumAddress(senderAddress);
+        assertValidContractBytecode(data);
+        assertValidChecksumAddress(contractAddress);
 
-            return {
-                _id: txHash,
-                blockHash,
-                blockNumber: this._block.number,
-                from: senderAddress,
-                creationBytecode: data,
-                contractAddress,
-                blockTimestamp: this._block.timestamp,
-                indexInBlock: indexInBlock
-            };
-        }
-        catch (error)
-        {
-            return null;
-        }
+        return {
+            hash: txHash,
+            blockHash,
+            blockNumber: this._block.number,
+            from: senderAddress,
+            creationBytecode: data,
+            contractAddress,
+            blockTimestamp: this._block.timestamp,
+            indexInBlock: indexInBlock
+        };
     }
 }
 
-export function format(tx: TransactionResponse, block: BlockWithTransactions): IContractCreationTransactionSchema | null
+export function format(tx: TransactionResponse, block: BlockWithTransactions): FormatTransactionResult
 {
-    const formatter = new TransactionResponseFormatter(tx, block);
-    return formatter.format();
-}
-
-export function formatBulk(tx: Array<TransactionResponse>, block: BlockWithTransactions): Array<IContractCreationTransactionSchema | null>
-{
-    return tx.map((tx: TransactionResponse) => format(tx, block));
+    try
+    {
+        const formatter = new TransactionResponseFormatter(tx, block);
+        return {
+            isSuccessful: true,
+            contractCreationTransaction: formatter.format()
+        }
+    }
+    catch (error)
+    {
+        return {
+            isSuccessful: false
+        };
+    }
 }

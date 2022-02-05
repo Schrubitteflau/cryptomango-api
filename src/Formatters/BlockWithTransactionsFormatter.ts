@@ -1,13 +1,27 @@
 import { assertValidBlockHash, assertValidTransactionHash, BlockHash, TransactionHash } from "@EVM/Types";
-import { IBlockWithTransactionsSchema, IContractCreationTransactionSchema } from "@Schemas";
-import { TransactionResponseFormatter } from "./TransactionResponseFormatter";
+import { format as formatContractCreationTransaction, FormatTransactionResult } from "./TransactionResponseFormatter";
 
 import type { BlockWithTransactions, TransactionResponse } from "@Types/EthersTypes";
+import { IBlockWithTransactions, IContractCreationTransaction } from "@Schemas";
+import { logger } from "@Util";
 
-export type FormatBlockReturn = {
-    block: IBlockWithTransactionsSchema,
-    contractCreationTransactions: Array<IContractCreationTransactionSchema>
-};
+interface IFormatResult
+{
+    block: IBlockWithTransactions;
+    contractCreationTransactions: ReadonlyArray<IContractCreationTransaction>;
+}
+
+interface ISuccessfulFormatBlockReturn extends IFormatResult
+{
+    isSuccessful: true;
+}
+
+interface IFailedFormatBlockReturn
+{
+    isSuccessful: false;
+}
+
+export type FormatBlockReturn = ISuccessfulFormatBlockReturn | IFailedFormatBlockReturn;
 
 export class BlockWithTransactionsFormatter
 {
@@ -33,29 +47,27 @@ export class BlockWithTransactionsFormatter
         return this._blockWithTransactions.timestamp;
     }
 
-    private _extractContractCreationTransactions(): Array<IContractCreationTransactionSchema>
+    private _extractContractCreationTransactions(): Array<IContractCreationTransaction>
     {
         const txs: Array<TransactionResponse> = this._blockWithTransactions.transactions;
-        const contractCreationTxs: Array<IContractCreationTransactionSchema> = [];
+        const contractCreationTxs: Array<IContractCreationTransaction> = [];
 
-        // More efficient than map() and then filter()
         for (const tx of txs)
         {
-            const formatter = new TransactionResponseFormatter(tx, this._blockWithTransactions);
-            const formatted = formatter.format();
+            const result: FormatTransactionResult = formatContractCreationTransaction(tx, this._blockWithTransactions);
 
-            if (formatted !== null)
+            if (result.isSuccessful)
             {
-                contractCreationTxs.push(formatted);
+                contractCreationTxs.push(result.contractCreationTransaction);
             }
         }
 
         return contractCreationTxs;
     }
 
-    private _extractAllTransactionHashes(): Array<TransactionHash>
+    private _extractAllTransactionHashes(): ReadonlyArray<TransactionHash>
     {
-        const txs: Array<TransactionResponse> = this._blockWithTransactions.transactions;
+        const txs: ReadonlyArray<TransactionResponse> = this._blockWithTransactions.transactions;
 
         return txs.map((tx: TransactionResponse) =>
         {
@@ -65,14 +77,14 @@ export class BlockWithTransactionsFormatter
         });
     }
 
-    public format(): FormatBlockReturn
+    public format(): IFormatResult
     {
-        const contractCreationTxs: Array<IContractCreationTransactionSchema> = this._extractContractCreationTransactions();
-        const contractCreationTxsHashes: Array<TransactionHash> = contractCreationTxs.map((tx: IContractCreationTransactionSchema) => tx._id);
-        const allTxsHashes: Array<TransactionHash> = this._extractAllTransactionHashes();
+        const contractCreationTxs: ReadonlyArray<IContractCreationTransaction> = this._extractContractCreationTransactions();
+        const contractCreationTxsHashes: ReadonlyArray<TransactionHash> = contractCreationTxs.map((tx: IContractCreationTransaction) => tx.hash);
+        const allTxsHashes: ReadonlyArray<TransactionHash> = this._extractAllTransactionHashes();
 
-        const formattedBlock: IBlockWithTransactionsSchema = {
-            _id: this._blockNumber,
+        const formattedBlock: IBlockWithTransactions = {
+            number: this._blockNumber,
             hash: this._blockHash,
             timestamp: this._timestamp,
             transactions: allTxsHashes,
@@ -88,11 +100,19 @@ export class BlockWithTransactionsFormatter
 
 export function format(blockWithTransactions: BlockWithTransactions): FormatBlockReturn
 {
-    const formatter = new BlockWithTransactionsFormatter(blockWithTransactions);
-    return formatter.format();
-}
+    try
+    {
+        const formatter = new BlockWithTransactionsFormatter(blockWithTransactions);
 
-export function formatBulk(blockWithTransactions: Array<BlockWithTransactions>): Array<FormatBlockReturn>
-{
-    return blockWithTransactions.map((block: BlockWithTransactions) => format(block));
+        return {
+            isSuccessful: true,
+            ...formatter.format()
+        };
+    }
+    catch (error)
+    {
+        return {
+            isSuccessful: false
+        }
+    }
 }
