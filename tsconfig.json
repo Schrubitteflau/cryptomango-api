@@ -10,7 +10,7 @@
         "strictNullChecks": true,
         "lib": [ "ES2020.String" ],
         "baseUrl": "./src",
-        "typeRoots": [ "@types" ],
+        "typeRoots": [ "@types", "./node_modules/@types" ],
         "paths": {
             "@EVM/*": [ "EVM/*" ],
             "@Formatters": [ "Formatters/index.ts" ],
