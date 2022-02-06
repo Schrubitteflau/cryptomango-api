@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
 
 import { ContractBytecode, ContractMethodId, assertValidContractMethodId } from "./Types";
-import { ERC20, ERC721WithoutSafeTransferFrom, ERC1155, ERC721SafeTransferFromV1, ERC721SafeTransferFromV2 } from "./Interfaces";
+import { ERC20, ERC721WithoutSafeTransferFrom, ERC721SafeTransferFromV1, ERC721SafeTransferFromV2, ERC1155 } from "./Interfaces";
 
-type methodIdByteLength = 1 | 2 | 3 | 4;
+type MethodIdByteLength = 1 | 2 | 3 | 4;
 
 export enum StrictContractType
 {
@@ -29,17 +29,17 @@ export class BytecodeAnalyzer
         private readonly _bytecode: ContractBytecode
     ) { }
 
-    private _extractMethodIds(byteLength: methodIdByteLength): Array<ContractMethodId>
+    private _extractMethodIds(byteLength: MethodIdByteLength): Array<ContractMethodId>
     {
         /* https://hackage.haskell.org/package/evm-opcodes-0.1.0/docs/EVM-Opcode-Internal.html
             PUSH1 - PUSH32 -> 0x60 - 0x7f
             EQ -> 0x14
         */
-        const pushOpcode = 59 + byteLength;
+        const pushOpcode: number = 59 + byteLength;
         // Example for byteLength = 4, with PUSH4 : /63(?<methodId>[0-9A-Fa-f]{8})14/g
         const regex = new RegExp(`${pushOpcode}(?<methodId>[0-9A-Fa-f]{${byteLength * 2}})14`, "g");
         const methodIds: Array<ContractMethodId> = [];
-        const matches = this._bytecode.matchAll(regex);
+        const matches: IterableIterator<RegExpMatchArray> = this._bytecode.matchAll(regex);
 
         for (const match of matches)
         {
