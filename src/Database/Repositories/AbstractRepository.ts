@@ -1,8 +1,11 @@
 import { Document, Error, HydratedDocument, Model } from "mongoose";
 
-import { isNullOrUndefined } from "@Util";
+import { isNull, isNullOrUndefined } from "@Util/TypeUtils";
+import { logger } from "@Util";
 
 type DataOrDocument<T> = T | HydratedDocument<T>;
+
+type RequireId<T> = HydratedDocument<T>["_id"];
 
 type SuccessfulValidationResult = {
     isValid: true
@@ -12,6 +15,8 @@ type FailedValidationResult = {
     isValid: false;
     validationError: Error.ValidationError
 };
+
+type FindOneCriteriasType<T> = Partial<T> & { _id?: RequireId<T> };
 
 export type ValidationResult = SuccessfulValidationResult | FailedValidationResult;
 
@@ -106,9 +111,59 @@ export abstract class AbstractRepository<T>
     }
 
     // @TODO blinder avec findOneResult
-    public findOne(criterias: Partial<T>): Promise<HydratedDocument<T> | null>
+    public findOne(criterias: FindOneCriteriasType<T>): Promise<HydratedDocument<T> | null>
     {
         return this._model.findOne(criterias).exec();
+    }
+
+    public findById(id: RequireId<T>)
+    {
+        const emptyCriterias: Partial<T> = {};
+        const idCriteria: { _id: RequireId<T> } = {
+            _id: id
+        };
+        const criterias: FindOneCriteriasType<T> = {
+            ...emptyCriterias,
+            ...idCriteria
+        };
+
+        // Argument of type '{ _id: RequireId<T>; }' is not assignable to parameter of type 'FindOneCriteriasType<T>'.
+        // Type '{ _id: RequireId<T>; }' is not assignable to type 'Partial<T>'.ts(2345)
+        // this.findOne({ _id: id });
+
+        return this.findOne(criterias);
+    }
+
+    // @TODO bad code
+    public async findOneOrInsert(data: T): Promise<HydratedDocument<T> | null>
+    {
+        const foundDocument: HydratedDocument<T> | null = await this.findOne(data);
+
+        if (!isNull(foundDocument))
+        {
+            return foundDocument;
+        }
+
+        if (this._toInsert.length > 0)
+        {
+            logger.warning(`findOneOrInsert : _toInsert is not empty`);
+        }
+
+        const validationResult: ValidationResult = this.insert(data);
+
+        if (!validationResult.isValid)
+        {
+            return null;
+        }
+
+        const documents: ReadonlyArray<HydratedDocument<T>> = await this._doInsert();
+
+        if (documents.length > 0)
+        {
+            return documents[0];
+        }
+
+        return null;
     }
 
     public async flush(): Promise<FlushResult<T>>
