@@ -1,4 +1,4 @@
-import { isUndefined } from "@Util";
+import { isUndefined } from "@Util/TypeUtils";
 import { Schema, ValidateFn } from "mongoose";
 
 export function stringType()

@@ -1,5 +1,6 @@
 import { Network } from "@Networks";
-import { isNull, isPositiveInteger, logger, throwRandomErrorIfEnabled, waitSeconds } from "@Util";
+import { logger, throwRandomErrorIfEnabled, waitSeconds } from "@Util";
+import { isNull, isPositiveInteger } from "@Util/TypeUtils";
 import { AbstractNetworkService } from "./AbstractNetworkService";
 import type { BlockWithTransactions } from "@Types/EthersTypes";
 

@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { logger, toError } from "@Util";
+import { toError } from "@Util/TypeUtils";
+import { logger } from "@Util";
 import { ERC20 } from "../Contracts";
 
 export class ERC20Wrapper

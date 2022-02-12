@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { BlockHash, isValidBlockHash, isValidTransactionHash, TransactionHash } from "@EVM/Types";
+import { BlockHash, isValidBlockHash, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
 import { required, requiredPositiveInteger, requiredStringWithValidator, stringType, unique, validate } from "./PropertyValidators";
 
 export interface IBlockWithTransactions

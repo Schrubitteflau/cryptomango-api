@@ -1,4 +1,4 @@
-import { isPositiveInteger } from "@Util";
+import { isPositiveInteger } from "@Util/TypeUtils";
 
 describe("testing isPositiveInteger", () =>
 {

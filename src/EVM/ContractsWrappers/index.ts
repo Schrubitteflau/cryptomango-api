@@ -1,7 +1,7 @@
 import { providers } from "ethers";
 
 import { ERC1155__factory, ERC20__factory, ERC721__factory } from "@EVM/Contracts";
-import { ChecksumAddress } from "@EVM/Types";
+import { ChecksumAddress } from "@Util/TypeUtils/EVM";
 import { ERC20Wrapper } from "./ERC20Wrapper";
 import { ERC721Wrapper } from "./ERC721Wrapper";
 import { ERC1155Wrapper } from "./ERC1155Wrapper";

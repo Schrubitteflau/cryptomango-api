@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { isValidChecksumAddress, isValidTransactionHash } from "@EVM/Types";
+import { isValidChecksumAddress, isValidTransactionHash } from "@Util/TypeUtils/EVM";
 import { IBaseToken } from "./BaseTokenSchema";
 import { notRequired, requiredPositiveInteger, requiredStringWithValidator, stringType, unique } from "./PropertyValidators";
 

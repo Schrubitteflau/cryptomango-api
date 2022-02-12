@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { ChecksumAddress, isValidChecksumAddress, isValidTransactionHash, TransactionHash } from "@EVM/Types";
+import { ChecksumAddress, isValidChecksumAddress, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
 import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
 
 export interface IBaseToken

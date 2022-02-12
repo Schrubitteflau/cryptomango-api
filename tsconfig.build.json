@@ -21,6 +21,7 @@
             "@Types/*": [ "Types/*" ],
             "@Types": [ "Types/index.ts" ],
             "@Util": [ "Util/index.ts" ],
+            "@Util/*": [ "Util/*" ],
             "@Database/init": [ "Database/init.ts" ],
             "@Models": [ "Database/Models/index.ts" ],
             "@API/*": [ "API/*" ],

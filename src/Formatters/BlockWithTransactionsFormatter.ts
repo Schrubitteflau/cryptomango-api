@@ -1,8 +1,9 @@
-import { assertValidBlockHash, assertValidTransactionHash, BlockHash, TransactionHash } from "@EVM/Types";
+import { assertValidBlockHash, assertValidTransactionHash, BlockHash, TransactionHash } from "@Util/TypeUtils/EVM";
 import { format as formatContractCreationTransaction, FormatTransactionResult } from "./TransactionResponseFormatter";
 
 import type { BlockWithTransactions, TransactionResponse } from "@Types/EthersTypes";
 import { IBlockWithTransactions, IContractCreationTransaction } from "@Schemas";
+import { toError } from "@Util/TypeUtils";
 import { logger } from "@Util";
 
 interface IFormatResult
@@ -19,6 +20,7 @@ interface ISuccessfulFormatBlockReturn extends IFormatResult
 interface IFailedFormatBlockReturn
 {
     isSuccessful: false;
+    error: Error;
 }
 
 export type FormatBlockReturn = ISuccessfulFormatBlockReturn | IFailedFormatBlockReturn;
@@ -112,7 +114,8 @@ export function format(blockWithTransactions: BlockWithTransactions): FormatBloc
     catch (error)
     {
         return {
-            isSuccessful: false
+            isSuccessful: false,
+            error: toError(error)
         }
     }
 }

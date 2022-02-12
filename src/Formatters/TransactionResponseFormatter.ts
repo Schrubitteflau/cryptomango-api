@@ -4,11 +4,11 @@ import {
     assertValidContractBytecode,
     assertValidTransactionHash,
     toChecksumAddress
-} from "@EVM/Types";
+} from "@Util/TypeUtils/EVM";
 
-import type { IContractCreationTransaction } from "@Schemas";
+import { IContractCreationTransaction } from "@Schemas";
 import type { TransactionResponse, BlockWithTransactions } from "@Types/EthersTypes";
-import { isNull, isNullOrUndefined, isUndefined } from "@Util";
+import { isNullOrUndefined, isUndefined } from "@Util/TypeUtils";
 
 interface ISuccessfulFormatTransactionResult
 {

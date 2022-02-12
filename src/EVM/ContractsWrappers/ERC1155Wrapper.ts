@@ -1,4 +1,5 @@
-import { logger, toError } from "@Util";
+import { toError } from "@Util/TypeUtils";
+import { logger } from "@Util";
 import { ERC1155 } from "../Contracts";
 
 export class ERC1155Wrapper

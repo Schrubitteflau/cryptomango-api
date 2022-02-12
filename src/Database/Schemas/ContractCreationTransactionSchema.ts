@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash, isValidTransactionHash, isValidBlockHash, isValidChecksumAddress, isValidContractBytecode } from "@EVM/Types";
+import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash, isValidTransactionHash, isValidBlockHash, isValidChecksumAddress, isValidContractBytecode } from "@Util/TypeUtils/EVM";
 import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
 
 // Schema of a transaction which results in a contract creation

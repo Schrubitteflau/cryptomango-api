@@ -1,16 +1,9 @@
 import { ethers } from "ethers";
 
-import { ContractBytecode, ContractMethodId, assertValidContractMethodId } from "./Types";
+import { ContractBytecode, ContractMethodId, assertValidContractMethodId } from "@Util/TypeUtils/EVM";
 import { ERC20, ERC721WithoutSafeTransferFrom, ERC721SafeTransferFromV1, ERC721SafeTransferFromV2, ERC1155 } from "./Interfaces";
 
 type MethodIdByteLength = 1 | 2 | 3 | 4;
-
-export enum StrictContractType
-{
-    ERC20Token = "erc20",
-    ERC721NFT = "erc721",
-    ERC1155MultiToken = "erc1155"
-};
 
 export enum ContractType
 {
