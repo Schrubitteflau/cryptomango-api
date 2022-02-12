@@ -11,7 +11,7 @@ interface ITokenSwipePayload
 
 export interface ITokenSwipe
 {
-    user: PopulatedDoc<IUser>;    
+    user: PopulatedDoc<IUser>;
     erc20: ITokenSwipePayload;
     erc721: ITokenSwipePayload;
     erc1155: ITokenSwipePayload;
