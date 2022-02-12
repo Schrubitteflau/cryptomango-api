@@ -1,30 +1,17 @@
+import { ChecksumAddress, isValidChecksumAddress } from "@Util/TypeUtils/EVM";
 import { Schema } from "mongoose";
-import isEmail from "validator/lib/isEmail";
 
-import { minlength, required, requiredStringWithValidator, stringType, unique } from "./PropertyValidators";
+import { requiredStringWithValidator, unique } from "./PropertyValidators";
 
 export interface IUser
 {
-    username: string;
-    email: string;
-    password: string;
+    address: ChecksumAddress;
 }
 
 export const userSchema = new Schema<IUser>({
-    username: {
-        type: stringType(),
+    address: {
         unique: unique(),
-        required: required(),
-        minlength: minlength(5)
-    },
-    email: {
-        unique: unique(),
-        ...requiredStringWithValidator(isEmail)
-    },
-    password: {
-        type: stringType(),
-        required: required(),
-        minlength: minlength(6)
+        ...requiredStringWithValidator(isValidChecksumAddress)
     }
 }, {
     timestamps: true
