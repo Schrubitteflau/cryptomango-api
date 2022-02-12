@@ -1,22 +1,8 @@
 import { Logger, LogLevel } from "./Logger";
 export { waitSeconds } from "./TimeUtils";
-export {
-    PositiveInteger,
-    assertPositiveInteger,
-    isPositiveInteger,
-    isNull,
-    isNullOrUndefined,
-    isPrimitiveValue,
-    isUndefined,
-    toError
-} from "./TypeUtils";
+export { throwRandomErrorIfEnabled } from "./Misc";
 
-export function throwRandomErrorIfEnabled(): void
-{
-    if (process.env.THROW_RANDOM_ERRORS === "true" && Math.random() * 10 < parseInt(process.env.THROW_RANDOM_ERRORS_RATE, 10))
-    {
-        throw new Error("Potential Error");
-    }
-}
+// create @Logger namespace !
 
+// @TODO remove all logic in index.ts !
 export const logger: Logger = new Logger(LogLevel.LEVEL_DEBUG);
