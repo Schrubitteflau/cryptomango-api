@@ -1,9 +1,11 @@
 import express from "express";
 import { Error as MongooseError } from "mongoose";
 
+// @TODO check if still useful
+
 export function mongooseErrorHandler(error: any, req: express.Request, res: express.Response, next: express.NextFunction): void
 {
-    console.log("mongooseErrorHandler");
+    //console.log("mongooseErrorHandler");
 
     if (error instanceof MongooseError.ValidationError)
     {
@@ -26,5 +28,5 @@ export function mongooseErrorHandler(error: any, req: express.Request, res: expr
     else
     {
         next(error);
-    }   
+    }
 }
