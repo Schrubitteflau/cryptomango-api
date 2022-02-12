@@ -5,7 +5,9 @@ declare global
         interface ProcessEnv
         {
             MONGO_DATABASE_URL: string;
-            MODE: string;
+            TESTING_MONGO_DATABASE_URL: string;
+
+            APP_MODE: "api_only" | "api_sync" | "fast_sync_no_api";
             API_PORT: string;
             JWT_SECRET: string;
 
