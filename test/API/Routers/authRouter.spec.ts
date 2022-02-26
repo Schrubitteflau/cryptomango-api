@@ -1,9 +1,10 @@
-import { app } from "@API/init";
-
 import { Axios } from "axios";
 import { ethers } from "ethers";
+import BLNS from "big-list-of-naughty-strings";
+
+import { app } from "@API/init";
+
 import { walletAuth, apiExpectations, database, axiosHelper, auth, expressApp, dataSamples } from "../helpers";
-import { isUndefined } from "@Util/TypeUtils";
 
 interface IInvalidUserDataTestCase
 {
@@ -32,16 +33,30 @@ const invalidUserDataTestCases: ReadonlyArray<IInvalidUserDataTestCase> = [
     { address: dataSamples.VALID_ADDRESS, signature: function() {}, ...apiExpectations.invalidSignature },
     { address: dataSamples.VALID_ADDRESS, signature: dataSamples.INVALID_SIGNATURES[0], ...apiExpectations.invalidSignature },
     { address: dataSamples.VALID_ADDRESS, signature: dataSamples.INVALID_SIGNATURES[1], ...apiExpectations.invalidSignature },
-    { address: dataSamples.VALID_ADDRESS, signature: dataSamples.INVALID_SIGNATURES[2], ...apiExpectations.invalidSignature }
+    { address: dataSamples.VALID_ADDRESS, signature: dataSamples.INVALID_SIGNATURES[2], ...apiExpectations.invalidSignature },
+    /*...BLNS.map((naughtyString: string) => {
+        return {
+            address: naughtyString,
+            signature: VALID_SIGNATURE,
+            ...apiExpectations.invalidAddress
+        }
+    }),
+    ...BLNS.map((naughtyString: string) => {
+        return {
+            address: VALID_ADDRESS,
+            signature: naughtyString,
+            ...apiExpectations.invalidSignature
+        }
+    })*/
 ] as const;
 
 describe("testing authRouter", () =>
 {
-    let _axios: Axios = axiosHelper.createAxios();
-    let _wallet: ethers.Wallet = walletAuth.getRandomWallet();
-    let _walletAddress: string = _wallet.address;
-    let _baseUrl: string = expressApp.getBaseUrl();
-    let _connectWalletUrl: string = `${_baseUrl}/auth/connectWallet`;
+    const _axios: Axios = axiosHelper.createAxios();
+    const _wallet: ethers.Wallet = walletAuth.getRandomWallet();
+    const _walletAddress: string = _wallet.address;
+    const _baseUrl: string = expressApp.getBaseUrl();
+    const _connectWalletUrl: string = `${_baseUrl}/auth/connectWallet`;
 
     function _doConnectWalletRequest(address?: any, signature?: any)
     {
@@ -67,11 +82,6 @@ describe("testing authRouter", () =>
     {
         test.each(invalidUserDataTestCases)("Request { Body { address: $address, signature: $signature } } => Response { code: $expectedStatus, error: $expectedErrorMessage }", async (testCase: IInvalidUserDataTestCase) =>
         {
-            const body: any = {};
-            // No explicit undefined
-            if (!isUndefined(testCase.address)) body.address = testCase.address;
-            if (!isUndefined(testCase.signature)) body.signature = testCase.signature;
-
             const response = await _doConnectWalletRequest(testCase.address, testCase.signature);
             expect(response.status).toBe(testCase.expectedStatus);
             expect(response.data.error).toBe(testCase.expectedErrorMessage);

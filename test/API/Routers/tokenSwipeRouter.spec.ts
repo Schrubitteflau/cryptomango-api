@@ -1,7 +1,8 @@
-import { app } from "@API/init";
-
 import { Axios } from "axios";
 import { ethers } from "ethers";
+
+import { app } from "@API/init";
+
 import { apiExpectations, axiosHelper, walletAuth, database, expressApp } from "../helpers";
 
 const authenticationRequiredEndpoints: ReadonlyArray<string> = [
@@ -12,13 +13,13 @@ const authenticationRequiredEndpoints: ReadonlyArray<string> = [
 
 describe("testing tokenSwipeRouter", () =>
 {
-    let _axiosNoAuth: Axios = axiosHelper.createAxios();
+    const _axiosNoAuth: Axios = axiosHelper.createAxios();
+    const _wallet: ethers.Wallet = walletAuth.getRandomWallet();
+    const _walletAddress: string = _wallet.address;
+    const _getNextTokensUrl: string = expressApp.getEndpointUrl("/tokenSwipe/getNextTokens");
+    const _dismissTokenUrl: string = expressApp.getEndpointUrl("/tokenSwipe/dismissToken");
+    const _followTokenUrl: string = expressApp.getEndpointUrl("/tokenSwipe/followToken");
     let _axiosAuth: Axios;
-    let _wallet: ethers.Wallet = walletAuth.getRandomWallet();
-    let _walletAddress: string = _wallet.address;
-    let _getNextTokensUrl: string = expressApp.getEndpointUrl("/tokenSwipe/getNextTokens");
-    let _dismissTokenUrl: string = expressApp.getEndpointUrl("/tokenSwipe/dismissToken");
-    let _followTokenUrl: string = expressApp.getEndpointUrl("/tokenSwipe/followToken");
 
     function _doGetNextTokensRequest(chainId: string, type: string)
     {
@@ -57,7 +58,7 @@ describe("testing tokenSwipeRouter", () =>
 
     describe("/<endpoint> - authentication required", () =>
     {
-        test.each(authenticationRequiredEndpoints)("/$endpoint - authentication required", async (endpoint: string) =>
+        test.each(authenticationRequiredEndpoints)("%s - authentication required", async (endpoint: string) =>
         {
             const response = await _axiosNoAuth.get(expressApp.getEndpointUrl(endpoint));
             apiExpectations.expectErrorResponse(response, apiExpectations.accessDenied);
