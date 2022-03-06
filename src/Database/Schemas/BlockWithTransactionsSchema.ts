@@ -5,6 +5,8 @@ import { required, requiredPositiveInteger, requiredStringWithValidator, stringT
 
 export interface IBlockWithTransactions
 {
+    // The id is the block number
+    _id: number;
     // Block number
     number: number;
     // Block hash
@@ -18,6 +20,9 @@ export interface IBlockWithTransactions
 }
 
 export const blockWithTransactionsSchema = new Schema<IBlockWithTransactions>({
+    _id: {
+        ...requiredPositiveInteger()
+    },
     number: {
         unique: unique(),
         ...requiredPositiveInteger()

@@ -6,6 +6,8 @@ import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./
 // Schema of a transaction which results in a contract creation
 export interface IContractCreationTransaction
 {
+    // The id is the hash of the transaction
+    _id: TransactionHash;
     // Hash of the transaction
     hash: TransactionHash;
     // Hash of the block
@@ -25,13 +27,15 @@ export interface IContractCreationTransaction
 }
 
 export const contractCreationTransactionSchema = new Schema<IContractCreationTransaction>({
+    _id: {
+        ...requiredStringWithValidator(isValidTransactionHash)
+    },
     hash: {
         unique: unique(),
         ...requiredStringWithValidator(isValidTransactionHash)
     },
     blockHash: requiredStringWithValidator(isValidBlockHash),
     blockNumber: {
-        unique: unique(),
         ...requiredPositiveInteger()
     },
     from: requiredStringWithValidator(isValidChecksumAddress),
