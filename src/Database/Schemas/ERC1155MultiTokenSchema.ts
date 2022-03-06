@@ -1,8 +1,7 @@
 import { Schema } from "mongoose";
 
-import { isValidChecksumAddress, isValidTransactionHash } from "@Util/TypeUtils/EVM";
-import { IBaseToken } from "./BaseTokenSchema";
-import { notRequired, requiredPositiveInteger, requiredStringWithValidator, stringType, unique } from "./PropertyValidators";
+import { baseTokenSchemaSpecs, IBaseToken } from "./BaseTokenSchema";
+import { notRequired, stringType } from "./PropertyValidators";
 
 export interface IERC1155MultiToken extends IBaseToken
 {
@@ -13,13 +12,7 @@ export interface IERC1155MultiToken extends IBaseToken
 }
 
 export const erc1155MultiTokenSchema = new Schema<IERC1155MultiToken>({
-    address: {
-        unique: unique(),
-        ...requiredStringWithValidator(isValidChecksumAddress)
-    },
-    creationTransaction: requiredStringWithValidator(isValidTransactionHash),
-    creationTimestamp: requiredPositiveInteger(),
-    creationTransactionIndex: requiredPositiveInteger(),
+    ...baseTokenSchemaSpecs,
     name: {
         type: stringType(),
         ...notRequired(null)

@@ -1,10 +1,10 @@
-import { Schema } from "mongoose";
-
 import { ChecksumAddress, isValidChecksumAddress, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
 import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
 
 export interface IBaseToken
 {
+    // The id is the address
+    _id: ChecksumAddress;
     // Address of the contract
     address: ChecksumAddress;
     // Transaction which created this ERC20 contract
@@ -15,7 +15,10 @@ export interface IBaseToken
     creationTransactionIndex: number;
 }
 
-export const baseTokenSchema = new Schema<IBaseToken>({
+export const baseTokenSchemaSpecs = {
+    _id: {
+        ...requiredStringWithValidator(isValidChecksumAddress)
+    },
     address: {
         unique: unique(),
         ...requiredStringWithValidator(isValidChecksumAddress)
@@ -23,4 +26,4 @@ export const baseTokenSchema = new Schema<IBaseToken>({
     creationTransaction: requiredStringWithValidator(isValidTransactionHash),
     creationTimestamp: requiredPositiveInteger(),
     creationTransactionIndex: requiredPositiveInteger()
-});
+} as const;

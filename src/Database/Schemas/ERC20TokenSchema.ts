@@ -1,8 +1,7 @@
 import { Schema } from "mongoose";
 
-import { isValidChecksumAddress, isValidTransactionHash } from "@Util/TypeUtils/EVM";
-import { IBaseToken } from "./BaseTokenSchema";
-import { notRequired, numberType, requiredPositiveInteger, requiredStringWithValidator, stringType, unique } from "./PropertyValidators";
+import { baseTokenSchemaSpecs, IBaseToken } from "./BaseTokenSchema";
+import { notRequired, numberType, stringType } from "./PropertyValidators";
 
 export interface IERC20Token extends IBaseToken
 {
@@ -15,13 +14,7 @@ export interface IERC20Token extends IBaseToken
 }
 
 export const erc20TokenSchema = new Schema<IERC20Token>({
-    address: {
-        unique: unique(),
-        ...requiredStringWithValidator(isValidChecksumAddress)
-    },
-    creationTransaction: requiredStringWithValidator(isValidTransactionHash),
-    creationTimestamp: requiredPositiveInteger(),
-    creationTransactionIndex: requiredPositiveInteger(),
+    ...baseTokenSchemaSpecs,
     decimals: {
         type: numberType(),
         ...notRequired(null)
