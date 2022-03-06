@@ -6,7 +6,8 @@ let _mongoose: Mongoose;
 
 export async function beforeAll(): Promise<void>
 {
-    _mongoose = await connectMongoose(process.env.TESTING_MONGO_DATABASE_URL);
+    const databaseUrl: string = process.env.TESTING_MONGO_DATABASE_URL;
+    _mongoose = await connectMongoose(databaseUrl);
 
     const collections = await _mongoose.connection.db.listCollections().toArray();
 
@@ -14,7 +15,7 @@ export async function beforeAll(): Promise<void>
     {
         // @TODO see how we can exit and cancel all the tests, because it doesn't work
         // the tests are still executed but they crash because of some undefined variables
-        throw new Error("Can't use a not empty database for tests");
+        throw new Error(`Can't use a not empty database for tests (using : ${databaseUrl}`);
     }
 }
 
