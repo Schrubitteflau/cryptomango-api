@@ -1,14 +1,15 @@
 import { IRawNetwork, networksConfig } from "@Config";
+import { ChainId } from "@Util/TypeUtils/EVM";
 import { Network } from "./Network";
 
 class NetworksManager
 {
-    private _networks: ReadonlyArray<Network> = this._parseNetworks();
+    private _networks: ReadonlyArray<Network> = this._instanciateNetworks();
 
     /**
      * Create Network instances from raw data, only if rawNetwork.isActive is true
      */
-    private _parseNetworks(): ReadonlyArray<Network>
+    private _instanciateNetworks(): ReadonlyArray<Network>
     {
         return networksConfig
             .filter((rawNetwork: IRawNetwork) => rawNetwork.isActive)
@@ -21,7 +22,7 @@ class NetworksManager
      * @param chainId The unique chain id of the network we are looking for 
      * @returns The found Network, or null
      */
-    public getByChainId(chainId: number): Network | null
+    public getByChainId(chainId: ChainId): Network | null
     {
         return this._networks.find((network: Network) => network.getChainId() === chainId) || null;
     }
