@@ -1,9 +1,11 @@
 import { AssertTypeError } from "../AssertTypeError";
 
 import { ethers } from "ethers";
+import { assertValidHexString } from "../hexString";
 
 declare const validChecksumAddress: unique symbol;
 
+// TODO rename ChecksumAddress into ChecksummedAddress
 export type ChecksumAddress = string & {
     [validChecksumAddress]: true
 };
@@ -36,8 +38,7 @@ export function assertValidChecksumAddress(address: string): asserts address is 
  */
 export function toChecksumAddress(address: string): ChecksumAddress
 {
-    // TODO gérer le cas où address est pas bonne (ex: chaine aléatoire comme "gijre")
-    // car là ça peut thorw une erreur normale et on veut pas, on veut que des AssertTypeError
+    assertValidHexString(address, 42);
     const checksumAddress: string = ethers.utils.getAddress(address.toLowerCase());
     assertValidChecksumAddress(checksumAddress);
     return checksumAddress;

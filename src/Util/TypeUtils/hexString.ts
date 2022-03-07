@@ -1,4 +1,5 @@
 import { AssertTypeError } from "./AssertTypeError";
+import { isUndefined } from "./undefined";
 
 declare const validHexString: unique symbol;
 
@@ -13,10 +14,15 @@ export function isValidHexString(string: string): string is HexString
     return (regex.test(string));
 }
 
-export function assertValidHexString(string: string): asserts string is HexString
+export function assertValidHexString(string: string, requiredLength?: number): asserts string is HexString
 {
     if (!isValidHexString(string))
     {
         throw new AssertTypeError(string, "hexadecimal string");
+    }
+
+    if (!isUndefined(requiredLength) && string.length !== requiredLength)
+    {
+        throw new AssertTypeError(string, `${requiredLength} character length hex string`);
     }
 }
