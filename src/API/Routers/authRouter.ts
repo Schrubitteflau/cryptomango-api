@@ -9,9 +9,8 @@ import { HydratedDocument } from "mongoose";
 import { isNull } from "@Util/TypeUtils";
 import { assertValidChecksumAddress, ChecksumAddress, isValidChecksumAddress } from "@Util/TypeUtils/EVM";
 import { ethers } from "ethers";
-import { InvalidUserDataError } from "@API/Errors/InvalidUserDataError";
-import { isValidMessageSignature } from "@Util/TypeUtils/EVM/MessageSignature";
-import { WalletSignatureAuthError } from "@API/Errors/WalletSignatureAuthError";
+import { InvalidUserDataError, WalletSignatureAuthError } from "../Errors";
+import { isValidMessageSignature } from "@Util/TypeUtils/EVM";
 
 export interface IJwtPayload
 {
@@ -103,7 +102,7 @@ authRouter.post("/connectWallet", async (req: express.Request, res: express.Resp
         userSessionsManager.addUserSession(userSession);
     }
 
-    res.json({
+    res.status(200).json({
         accessToken: jwt
     });
 });
