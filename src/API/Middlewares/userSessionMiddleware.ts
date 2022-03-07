@@ -1,6 +1,7 @@
 import express from "express";
 
 import { UserSession, userSessionsManager } from "../Users";
+import { isNull, isObject } from "@Util/TypeUtils";
 
 export interface IUserSessionResponseLocals
 {
@@ -13,16 +14,16 @@ export function userSessionMiddleware(
     next: express.NextFunction
 ): void
 {
-    if (typeof (req.jwtDecoded) !== "object")
+    if (!isObject(req.jwtDecoded))
     {
-        next(new Error("Cannot read req.jwtDecoded property"));
+        next(new Error("Cannot read req.jwtDecoded property properly"));
         return;
     }
 
     const { userId } = req.jwtDecoded;
     const userSession: UserSession | null = userSessionsManager.getUserSession(userId);
 
-    if (userSession === null)
+    if (isNull(userSession))
     {
         next(new Error(`UserSession for user #${userId} does not exist`));
         return;
