@@ -4,12 +4,12 @@ import express from "express";
 import cors from "cors";
 import "express-async-errors";
 
-import { apiRouter, authRouter } from "./Routers";
+import { authRouter, tokenSwipeRouter } from "./Routers";
 import { authErrorHandler, invalidUserDataErrorHandler, globalErrorHandler, mongooseErrorHandler } from "./ErrorHandlers";
 
 
 export const app: express.Application = express();
-const PORT: number = parseInt(process.env.API_PORT, 10);
+export const LISTEN_PORT: number = parseInt(process.env.API_PORT, 10);
 
 interface IListenResult
 {
@@ -21,10 +21,10 @@ export function listen(): Promise<IListenResult>
 {
     return new Promise((resolve) =>
     {
-        const server: Server = app.listen(PORT, () => {
+        const server: Server = app.listen(LISTEN_PORT, () => {
             resolve({
                 server,
-                port: PORT
+                port: LISTEN_PORT
             });
         });
     });
@@ -37,7 +37,7 @@ app
 
     // Routers
     .use("/auth", authRouter)
-    .use("/api", apiRouter)
+    .use("/tokenSwipe", tokenSwipeRouter)
 
     // Error handlers
     .use(invalidUserDataErrorHandler)
