@@ -17,6 +17,6 @@ export function assertValidTransactionHash(hash: string): asserts hash is Transa
 {
     if (!isValidTransactionHash(hash))
     {
-        throw new AssertTypeError(`${hash} is not a valid transaction hash`);
+        throw new AssertTypeError(hash, "transaction hash");
     }
 }

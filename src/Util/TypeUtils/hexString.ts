@@ -17,6 +17,6 @@ export function assertValidHexString(string: string): asserts string is HexStrin
 {
     if (!isValidHexString(string))
     {
-        throw new AssertTypeError(`'${string}' is not valid a valid hex string`);
+        throw new AssertTypeError(string, "hexadecimal string");
     }
 }

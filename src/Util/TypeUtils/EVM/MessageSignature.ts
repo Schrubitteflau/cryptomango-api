@@ -16,6 +16,6 @@ export function assertValidMessageSignature(signature: string): asserts signatur
 {
     if (!isValidMessageSignature(signature))
     {
-        throw new AssertTypeError(`'${signature}' is not a valid message signature`);
+        throw new AssertTypeError(signature, "message signature");
     }
 }

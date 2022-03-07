@@ -15,6 +15,6 @@ export function assertPositiveInteger(number: number): asserts number is Positiv
 {
     if (!isPositiveInteger(number))
     {
-        throw new AssertTypeError(`${number} is not a positive integer`);
+        throw new AssertTypeError(number, "positive integer");
     }
 }

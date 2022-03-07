@@ -17,6 +17,6 @@ export function assertValidContractMethodId(methodId: string): asserts methodId 
 {
     if (!isValidContractMethodId(methodId))
     {
-        throw new AssertTypeError(`${methodId} is not a valid contract method id`);
+        throw new AssertTypeError(methodId, "method identifier");
     }
 }

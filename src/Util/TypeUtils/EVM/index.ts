@@ -1,5 +1,7 @@
-export { ContractBytecode, assertValidContractBytecode, isValidContractBytecode } from "./ContractBytecode";
-export { ContractMethodId, assertValidContractMethodId, isValidContractMethodId } from "./ContractMethodId";
-export { ChecksumAddress, assertValidChecksumAddress, isValidChecksumAddress, toChecksumAddress } from "./ChecksumAddress";
-export { TransactionHash, assertValidTransactionHash, isValidTransactionHash } from "./TransactionHash";
-export { BlockHash, assertValidBlockHash, isValidBlockHash } from "./BlockHash";
+export { ContractBytecode, isValidContractBytecode, assertValidContractBytecode } from "./ContractBytecode";
+export { ContractMethodId, isValidContractMethodId, assertValidContractMethodId } from "./ContractMethodId";
+export { ChecksumAddress, isValidChecksumAddress, assertValidChecksumAddress, toChecksumAddress } from "./ChecksumAddress";
+export { TransactionHash, isValidTransactionHash, assertValidTransactionHash } from "./TransactionHash";
+export { BlockHash, isValidBlockHash, assertValidBlockHash } from "./BlockHash";
+export { MessageSignature, isValidMessageSignature, assertValidMessageSignature} from "./MessageSignature";
+export { ChainId, isValidChainId, assertValidChainId } from "./ChainId";

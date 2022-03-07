@@ -16,6 +16,6 @@ export function assertValidContractBytecode(bytecode: string): asserts bytecode 
 {
     if (!isValidContractBytecode(bytecode))
     {
-        throw new AssertTypeError(`'${bytecode}' is not a valid contract bytecode`);
+        throw new AssertTypeError(bytecode, "contract bytecode");
     }
 }

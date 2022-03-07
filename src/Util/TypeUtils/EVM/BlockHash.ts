@@ -17,6 +17,6 @@ export function assertValidBlockHash(hash: string): asserts hash is BlockHash
 {
     if (!isValidBlockHash(hash))
     {
-        throw new AssertTypeError(`${hash} is not valid block hash`);
+        throw new AssertTypeError(hash, "block hash");
     }
 }

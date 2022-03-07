@@ -2,10 +2,11 @@ export class AssertTypeError extends Error
 {
     public constructor
     (
-        message: string
+        value: any,
+        valueName: string
     )
     {
-        super(message);
+        super(`${value} is not a valid ${valueName}`);
         this.name = "AssertTypeError";
     }
 }
