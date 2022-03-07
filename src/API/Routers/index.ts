@@ -1,2 +1,2 @@
-export { apiRouter } from "./apiRouter";
+export { tokenSwipeRouter } from "./tokenSwipeRouter";
 export { authRouter } from "./authRouter";
