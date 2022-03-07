@@ -5,8 +5,6 @@ import { WalletSignatureAuthError } from "../Errors/WalletSignatureAuthError";
 
 export function authErrorHandler(error: any, req: express.Request, res: express.Response, next: express.NextFunction): void
 {
-    //console.log("authErrorHandler");
-
     if (error instanceof UnauthorizedError)
     {
         res.status(403).json({

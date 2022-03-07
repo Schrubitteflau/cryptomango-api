@@ -5,8 +5,6 @@ import { Error as MongooseError } from "mongoose";
 
 export function mongooseErrorHandler(error: any, req: express.Request, res: express.Response, next: express.NextFunction): void
 {
-    //console.log("mongooseErrorHandler");
-
     if (error instanceof MongooseError.ValidationError)
     {
         res.status(422).json({
