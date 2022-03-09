@@ -3,8 +3,6 @@ import express from "express";
 
 export function globalErrorHandler(error: any, req: express.Request, res: express.Response, next: express.NextFunction): void
 {
-    console.log(error);
-
     if (error instanceof NotFoundError)
     {
         res.status(404).json({
