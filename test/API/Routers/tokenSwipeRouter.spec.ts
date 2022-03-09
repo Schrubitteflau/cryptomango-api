@@ -25,12 +25,22 @@ const tokenAddressTestValues: ReadonlyArray<any> = fuzz.createFuzzValuesSet(fuzz
 const chainIdTestValues: ReadonlyArray<any> = fuzz.createFuzzValuesSet(fuzz.INVALID_CHAIN_IDS);
 const contractTypeTestValues: ReadonlyArray<any> = fuzz.createFuzzValuesSet(fuzz.INVALID_CONTRACT_TYPES);
 
-const invalidGetNextTokensParamsTestCases: api.ExpectedApiResponseForParams<IGetNextTokensParams> = api.buildErrorTestCases<IGetNextTokensParams>({
+const invalidGetNextTokensParamsTestCases = api.buildErrorTestCases<IGetNextTokensParams>({
     // Testing chainId param
     invalidChainId: misc.multiplyProperty({ chainId: chainIdTestValues, contractType: undefined }, "chainId"),
     chainIdNotFound: [ { chainId: "9999", contractType: undefined } ],
     // Testing contractType param
     invalidContractType: misc.multiplyProperty({ chainId: fuzz.VALID_CHAIN_ID, contractType: contractTypeTestValues }, "contractType")
+});
+
+const invalidDismissTokenParamsTestCases = api.buildErrorTestCases<IDismissTokenParams>({
+    // Testing chainId param
+    invalidChainId: misc.multiplyProperty({ chainId: chainIdTestValues, contractType: undefined, tokenAddress: undefined }, "chainId"),
+    chainIdNotFound: [ { chainId: "9999", contractType: undefined, tokenAddress: undefined } ],
+    // Testing contractType param
+    invalidContractType: misc.multiplyProperty({ chainId: fuzz.VALID_CHAIN_ID, contractType: contractTypeTestValues, tokenAddress: undefined }, "contractType"),
+    // Testing tokenAddress param
+    invalidAddress: misc.multiplyProperty({ chainId: fuzz.VALID_CHAIN_ID, contractType: fuzz.VALID_CONTRACT_TYPE, tokenAddress: tokenAddressTestValues }, "tokenAddress")
 });
 
 describe("testing tokenSwipeRouter", () =>
@@ -42,13 +52,17 @@ describe("testing tokenSwipeRouter", () =>
     const _dismissTokenUrl: string = expressApp.getEndpointUrl(endpoints.dismissToken.endpoint);
     let _axiosAuth: Axios;
 
-    function _doGetNextTokensRequest(chainId: any, contractType: any)
+    function _doGetNextTokensRequest(params: IGetNextTokensParams)
     {
         return _axiosAuth.get(_getNextTokensUrl, {
-            params: {
-                chainId,
-                contractType
-            }
+            params
+        });
+    }
+
+    function _doDismissTokenRequest(params: IDismissTokenParams)
+    {
+        return _axiosAuth.get(_dismissTokenUrl, {
+            params
         });
     }
 
@@ -94,7 +108,18 @@ describe("testing tokenSwipeRouter", () =>
     {
         test.each(invalidGetNextTokensParamsTestCases)("Request { Query { chainId: $chainId, contractType: $contractType } } => Response $expectedResponse", async (testCase) =>
         {
-            const response = await _doGetNextTokensRequest(testCase.chainId, testCase.contractType);
+            const { chainId, contractType } = testCase;
+            const response = await _doGetNextTokensRequest({ chainId, contractType });
+            api.expectErrorResponse(response, testCase.expectedResponse);
+        });
+    });
+
+    describe("/dismissToken - invalid query params", () =>
+    {
+        test.each(invalidDismissTokenParamsTestCases)("Request { Query { chainId: $chainId, contractType: $contractType, tokenAddress: $tokenAddress } } => Response $expectedResponse", async (testCase) =>
+        {
+            const { chainId, contractType, tokenAddress } = testCase;
+            const response = await _doDismissTokenRequest({ chainId, contractType, tokenAddress });
             api.expectErrorResponse(response, testCase.expectedResponse);
         });
     });

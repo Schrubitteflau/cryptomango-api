@@ -4,8 +4,6 @@ export const INVALID_ADDRESSES: ReadonlyArray<string> = [
     "3f349bBaFEc1551819B8be1EfEA2fC46cA749aA1",
     // "j" is not a hexadecimal character
     "0xjf349bBaFEc1551819B8be1EfEA2fC46cA749aA1",
-    // Not a checksummed address
-    VALID_ADDRESS.toLowerCase(),
     "<invalid format>"
 ] as const;
 
@@ -34,6 +32,7 @@ export const INVALID_CONTRACT_TYPES: ReadonlyArray<string> = [
     "<invalid contractType>",
     "erc21"
 ] as const;
+export const VALID_CONTRACT_TYPE: string = "erc20" as const;
 
 export const DEFAULT_FUZZ_VALUES: ReadonlyArray<any> = [
     undefined, null, {}, -1, true, function() {}

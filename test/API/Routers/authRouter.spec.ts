@@ -14,7 +14,7 @@ interface IConnectWalletParams
 const addressTestValues: ReadonlyArray<any> = fuzz.createFuzzValuesSet(fuzz.INVALID_ADDRESSES);
 const signatureTestValues: ReadonlyArray<any> = fuzz.createFuzzValuesSet(fuzz.INVALID_SIGNATURES);
 
-const invalidConnectWalletParamsTestCases: api.ExpectedApiResponseForParams<IConnectWalletParams> = api.buildErrorTestCases<IConnectWalletParams>({
+const invalidConnectWalletParamsTestCases = api.buildErrorTestCases<IConnectWalletParams>({
     // Testing address param
     invalidAddress: misc.multiplyProperty({ address: addressTestValues, signature: undefined }, "address"),
     // Testing contractType param
