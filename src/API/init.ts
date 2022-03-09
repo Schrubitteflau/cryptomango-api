@@ -5,7 +5,7 @@ import cors from "cors";
 import "express-async-errors";
 
 import { authRouter, tokenSwipeRouter } from "./Routers";
-import { authErrorHandler, invalidUserDataErrorHandler, globalErrorHandler, mongooseErrorHandler } from "./ErrorHandlers";
+import { authErrorHandler, invalidUserDataErrorHandler, globalErrorHandler } from "./ErrorHandlers";
 
 
 export const app: express.Application = express();
@@ -42,6 +42,5 @@ app
     // Error handlers
     .use(invalidUserDataErrorHandler)
     .use(authErrorHandler)
-    .use(mongooseErrorHandler)
     .use(globalErrorHandler)
 ;
