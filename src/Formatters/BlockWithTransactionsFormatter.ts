@@ -4,7 +4,6 @@ import { format as formatContractCreationTransaction, FormatTransactionResult } 
 import type { BlockWithTransactions, TransactionResponse } from "@Types/EthersTypes";
 import { IBlockWithTransactions, IContractCreationTransaction } from "@Schemas";
 import { toError } from "@Util/TypeUtils";
-import { logger } from "@Util";
 
 interface IFormatResult
 {
@@ -86,6 +85,7 @@ export class BlockWithTransactionsFormatter
         const allTxsHashes: ReadonlyArray<TransactionHash> = this._extractAllTransactionHashes();
 
         const formattedBlock: IBlockWithTransactions = {
+            _id: this._blockNumber,
             number: this._blockNumber,
             hash: this._blockHash,
             timestamp: this._timestamp,

@@ -76,6 +76,7 @@ export class TransactionResponseFormatter
         assertValidChecksumAddress(contractAddress);
 
         return {
+            _id: txHash,
             hash: txHash,
             blockHash,
             blockNumber: this._block.number,
