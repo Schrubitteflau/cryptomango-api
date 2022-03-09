@@ -54,18 +54,4 @@ tokenSwipeRouter
     res.status(200).json({
         message: "oui!"
     });
-})
-
-.get("/followToken", async (
-    req: RequestWithQuery<IFollowTokenQuery>,
-    res: ResponseWithLocals<IUserSessionResponseLocals>
-): Promise<void> =>
-{
-    const network: Network = extractNetworkFromString(req.query.chainId);
-    const contractType: ContractType = extractContractTypeFromString(req.query.contractType);
-    const tokenAddress: ChecksumAddress = extractChecksumAddressFromString(req.query.tokenAddress);
-
-    res.status(200).json({
-        message: "oui!"
-    });
 });
