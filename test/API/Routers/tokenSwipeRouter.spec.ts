@@ -16,13 +16,10 @@ interface IDismissTokenParams extends IGetNextTokensParams
     tokenAddress: any;
 }
 
-interface IFollowTokenParams extends IDismissTokenParams { }
-
-const authenticationRequiredEndpoints: ReadonlyArray<string> = [
-    "/tokenSwipe/getNextTokens",
-    "/tokenSwipe/dismissToken",
-    "/tokenSwipe/followToken"
-] as const;
+const endpoints = {
+    getNextTokens: { endpoint: "/tokenSwipe/getNextTokens", isAuthenticationRequired: true },
+    dismissToken: { endpoint: "/tokenSwipe/dismissToken", isAuthenticationRequired: true }
+};
 
 const tokenAddressTestValues: ReadonlyArray<any> = fuzz.createFuzzValuesSet(fuzz.INVALID_ADDRESSES);
 const chainIdTestValues: ReadonlyArray<any> = fuzz.createFuzzValuesSet(fuzz.INVALID_CHAIN_IDS);
@@ -41,9 +38,8 @@ describe("testing tokenSwipeRouter", () =>
     const _axiosNoAuth: Axios = axiosHelper.createAxios();
     const _wallet: ethers.Wallet = walletAuth.getRandomWallet();
     const _walletAddress: string = _wallet.address;
-    const _getNextTokensUrl: string = expressApp.getEndpointUrl("/tokenSwipe/getNextTokens");
-    const _dismissTokenUrl: string = expressApp.getEndpointUrl("/tokenSwipe/dismissToken");
-    const _followTokenUrl: string = expressApp.getEndpointUrl("/tokenSwipe/followToken");
+    const _getNextTokensUrl: string = expressApp.getEndpointUrl(endpoints.getNextTokens.endpoint);
+    const _dismissTokenUrl: string = expressApp.getEndpointUrl(endpoints.dismissToken.endpoint);
     let _axiosAuth: Axios;
 
     function _doGetNextTokensRequest(chainId: any, contractType: any)
@@ -83,7 +79,11 @@ describe("testing tokenSwipeRouter", () =>
 
     describe("/<endpoint> - authentication required", () =>
     {
-        test.each(authenticationRequiredEndpoints)("%s - authentication required", async (endpoint: string) =>
+        const _endpoints: ReadonlyArray<string> = Object.values(endpoints)
+            .filter(endpoint => endpoint.isAuthenticationRequired === true)
+            .map(endpoint => endpoint.endpoint);
+
+        test.each(_endpoints)("%s - authentication required", async (endpoint: string) =>
         {
             const response = await _axiosNoAuth.get(expressApp.getEndpointUrl(endpoint));
             api.expectErrorResponse(response, api.errorResponses.accessDenied);
