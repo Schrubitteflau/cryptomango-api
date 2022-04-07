@@ -1,5 +1,5 @@
 import { AssertTypeError } from "../AssertTypeError";
-import { isValidHexString } from "../hexString";
+import { isValidHexString } from "../HexString";
 
 declare const validContractBytecode: unique symbol;
 

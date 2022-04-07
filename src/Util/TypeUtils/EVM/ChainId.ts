@@ -1,4 +1,4 @@
-import { isPositiveInteger } from "../positiveInteger";
+import { isValidPositiveInteger } from "../PositiveInteger";
 import { AssertTypeError } from "../AssertTypeError";
 
 declare const validChainId: unique symbol;
@@ -9,7 +9,7 @@ export type ChainId = number & {
 
 export function isValidChainId(chainId: number): chainId is ChainId
 {
-    return (isPositiveInteger(chainId));
+    return (isValidPositiveInteger(chainId));
 }
 
 export function assertValidChainId(chainId: number): asserts chainId is ChainId

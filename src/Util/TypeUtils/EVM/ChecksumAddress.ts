@@ -1,7 +1,7 @@
 import { AssertTypeError } from "../AssertTypeError";
 
 import { ethers } from "ethers";
-import { assertValidHexString } from "../hexString";
+import { assertValidHexString } from "../HexString";
 
 declare const validChecksumAddress: unique symbol;
 
