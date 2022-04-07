@@ -2,15 +2,13 @@ import { isPositiveInteger } from "@Util/TypeUtils";
 
 describe("testing isPositiveInteger", () =>
 {
+    const notPositiveIntegerValues: ReadonlyArray<any> = [
+        0, -1, null, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, {}, "", []
+    ];
 
-    it("isPositiveInteger(0) - returns false", () =>
+    it.each(notPositiveIntegerValues)("isPositiveInteger(%s) - returns false", (value: any) =>
     {
-        expect(isPositiveInteger(0)).toBe(false);
-    });
-
-    it("isPositiveInteger(-1) - returns false", () =>
-    {
-        expect(isPositiveInteger(-1)).toBe(false);
+        expect(isPositiveInteger(value)).toBe(false);
     });
 
     it("isPositiveInteger(1) - returns true", () =>
