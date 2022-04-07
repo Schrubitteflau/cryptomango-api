@@ -35,7 +35,7 @@ export const INVALID_CONTRACT_TYPES: ReadonlyArray<string> = [
 export const VALID_CONTRACT_TYPE: string = "erc20" as const;
 
 export const DEFAULT_FUZZ_VALUES: ReadonlyArray<any> = [
-    undefined, null, {}, -1, true, function() {}
+    undefined, null, {}, -1, true, function() {}, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY
 ] as const;
 
 export function createFuzzValuesSet(additionalValues: ReadonlyArray<any>): ReadonlyArray<any>
