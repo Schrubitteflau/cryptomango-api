@@ -1,3 +1,4 @@
+import { PositiveInteger } from "@Util/TypeUtils";
 import { ChecksumAddress, isValidChecksumAddress, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
 import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
 
@@ -10,9 +11,9 @@ export interface IBaseToken
     // Transaction which created this ERC20 contract
     creationTransaction: TransactionHash;
     // Timestamp when the transaction was added to the blockchain
-    creationTimestamp: number;
+    creationTimestamp: PositiveInteger;
     // Index of the creation transaction in his block
-    creationTransactionIndex: number;
+    creationTransactionIndex: PositiveInteger;
 }
 
 export const baseTokenSchemaSpecs = {

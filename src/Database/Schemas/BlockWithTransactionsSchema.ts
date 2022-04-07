@@ -1,18 +1,19 @@
 import { Schema } from "mongoose";
 
-import { BlockHash, isValidBlockHash, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
+import { BlockHash, BlockNumber, isValidBlockHash, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
 import { required, requiredPositiveInteger, requiredStringWithValidator, stringType, unique, validate } from "./PropertyValidators";
+import { PositiveInteger } from "@Util/TypeUtils";
 
 export interface IBlockWithTransactions
 {
     // The id is the block number
-    _id: number;
+    _id: BlockNumber;
     // Block number
-    number: number;
+    number: BlockNumber;
     // Block hash
     hash: BlockHash;
     // Timestamp when it was added to the blockchain (mined or validated)
-    timestamp: number;
+    timestamp: PositiveInteger;
     // Transactions hashes
     transactions: ReadonlyArray<TransactionHash>;
     // Contract creation transactions hashes

@@ -1,7 +1,8 @@
 import { Schema } from "mongoose";
 
-import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash, isValidTransactionHash, isValidBlockHash, isValidChecksumAddress, isValidContractBytecode } from "@Util/TypeUtils/EVM";
+import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash, isValidTransactionHash, isValidBlockHash, isValidChecksumAddress, isValidContractBytecode, BlockNumber } from "@Util/TypeUtils/EVM";
 import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
+import { PositiveInteger } from "@Util/TypeUtils";
 
 // Schema of a transaction which results in a contract creation
 export interface IContractCreationTransaction
@@ -13,7 +14,7 @@ export interface IContractCreationTransaction
     // Hash of the block
     blockHash: BlockHash;
     // Number of the block
-    blockNumber: number;
+    blockNumber: BlockNumber;
     // Address of the sender
     from: ChecksumAddress;
     // Bytecode of contract creation
@@ -21,9 +22,9 @@ export interface IContractCreationTransaction
     // Address of the created contract
     contractAddress: ChecksumAddress;
     // Timestamp of the block where the transaction was mined
-    blockTimestamp: number;
+    blockTimestamp: PositiveInteger;
     // Index of the transaction in the block (0 for the first, 1 for the second...)
-    indexInBlock: number;
+    indexInBlock: PositiveInteger;
 }
 
 export const contractCreationTransactionSchema = new Schema<IContractCreationTransaction>({

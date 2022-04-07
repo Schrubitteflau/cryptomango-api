@@ -2,11 +2,12 @@ import { Schema, PopulatedDoc } from "mongoose";
 
 import { IUser } from "./UserSchema";
 import { required, requiredPositiveInteger, unique } from "./PropertyValidators";
+import { PositiveInteger } from "@Util/TypeUtils";
 
 interface ITokenSwipePayload
 {
-    creationTimestamp: number;
-    creationTransactionIndex: number;
+    creationTimestamp: PositiveInteger;
+    creationTransactionIndex: PositiveInteger;
 }
 
 export interface ITokenSwipe
