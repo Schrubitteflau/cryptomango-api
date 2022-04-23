@@ -1,6 +1,6 @@
 import { Network } from "@Networks";
 import { logger, throwRandomErrorIfEnabled, waitSeconds } from "@Util";
-import { isNull, isPositiveInteger } from "@Util/TypeUtils";
+import { isNull, isValidPositiveInteger } from "@Util/TypeUtils";
 import { AbstractNetworkService } from "./AbstractNetworkService";
 import type { BlockWithTransactions } from "@Types/EthersTypes";
 
@@ -24,9 +24,9 @@ export interface IBlocksDownloaderServiceConfig
 
 export declare interface BlocksDownloaderService {
     // Raw downloaded block, with all the transactions data
-    on(event: "block", listener: (block: BlockWithTransactions) => void): this;
+    on(event: "rawBlock", listener: (block: BlockWithTransactions) => void): this;
 
-    emit(event: "block", block: BlockWithTransactions): any;
+    emit(event: "rawBlock", block: BlockWithTransactions): any;
 }
 
 /**
@@ -49,11 +49,12 @@ export class BlocksDownloaderService extends AbstractNetworkService
         // Makes the shortcut property _network and some helper methods available
         super(_config.network);
 
+        //@TODO uncomment
         logger.info(`Created a BlocksDownloaderService instance for ${this._network.getFullName()}`);
 
-        if (isPositiveInteger(_config.fromBlock) && isPositiveInteger(_config.toBlock) && _config.fromBlock >= _config.toBlock)
+        if (isValidPositiveInteger(_config.fromBlock) && isValidPositiveInteger(_config.toBlock) && _config.fromBlock >= _config.toBlock)
         {
-            throw new Error("fromBlock must be >= toBlock");
+            throw new Error("fromBlock must be < toBlock");
         }
     }
 
@@ -117,11 +118,6 @@ export class BlocksDownloaderService extends AbstractNetworkService
         }
     }
 
-    public isStarted(): boolean
-    {
-        return this._state.isStarted;
-    }
-
     /**
      * It will start downloading the blocks one by one and emitting events
      */
@@ -145,7 +141,8 @@ export class BlocksDownloaderService extends AbstractNetworkService
         {
             // The last downloaded block will be the targetBlock
             const block: BlockWithTransactions = await this._network.getBlockWithTransactions(this._state.currentBlock);
-            this.emit("block", block);
+            this.emit("rawBlock", block);
+            //@TODO enlever ça
             throwRandomErrorIfEnabled();
 
             logger.info(`Fetched block #${block.number}`);
@@ -154,11 +151,15 @@ export class BlocksDownloaderService extends AbstractNetworkService
             {
                 // We stay stuck until at least one new block is added
                 await this._waitUntilNewBlocks();
-
             }
 
             this._state.currentBlock++;
         }
+    }
+
+    public isStarted(): boolean
+    {
+        return this._state.isStarted;
     }
 
     /**

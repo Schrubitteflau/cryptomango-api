@@ -1,18 +1,25 @@
 import { IRawNetwork } from "@Config";
 import type { BlockWithTransactions } from "@Types/EthersTypes";
 import { IBlockWithTransactions, IContractCreationTransaction, IERC20Token, IERC721NFT, IERC1155MultiToken } from "@Schemas";
-import { formatBlock, FormatBlockReturn } from "@Formatters";
 import { isNull } from "@Util/TypeUtils";
 import { logger } from "@Util";
-import { ChecksumAddress } from "@Util/TypeUtils/EVM";
+import { assertValidChainId, ChainId, ChecksumAddress } from "@Util/TypeUtils/EVM";
 import { providers } from "ethers";
 import { ContractType, createContractWrapper, ERC1155Wrapper, ERC20Wrapper, ERC721Wrapper } from "@EVM/ContractsWrappers";
 import { ContractIndexerService, BlocksDownloaderService } from "@NetworkServices";
 import { HydratedDocument } from "mongoose";
-import { createNetworkRelatedRepository } from "@Repositories";
-import { FlushResult, ValidationResult } from "Database/Repositories/AbstractRepository";
+import { createNetworkRelatedRepository, FlushResult, ValidationResult } from "@Repositories";
+import { BlockWithTransactionsWrapper, blockWithTransactionsWrapperFactory } from "@Formatters";
+import EventEmitter from "events";
 
-export class Network
+export declare interface Network {
+    // Emitted when a block is received and successfully wrapped into a BlockWithTransactionsWrapper
+    on(event: "blockWithTransactions", listener: (blockWithTransactions: BlockWithTransactionsWrapper) => void): this;
+
+    emit(event: "blockWithTransactions", blockWithTransactions: BlockWithTransactionsWrapper): any;
+}
+
+export class Network extends EventEmitter
 {
     private readonly _jsonRpcProvider: providers.JsonRpcProvider = new providers.JsonRpcProvider(
         this._config.jsonRpcProviderUrl
@@ -39,13 +46,16 @@ export class Network
         network: this
     });
     private readonly _contractIndexerService: ContractIndexerService = new ContractIndexerService(
-        this._blocksDownloaderService
+        this
     );
 
     public constructor
     (
         private readonly _config: IRawNetwork,
-    ) { }
+    )
+    {
+        super();
+    }
 
     /**
      * Format a collection name to make it unique to the network
@@ -57,26 +67,42 @@ export class Network
         return `${this._config.collectionPrefix}_${collectionName}`;
     }
 
-    /**
-     * Called when a new block is downloaded by the BlocksDownloaderService of this network
-     * @param block Raw data containing the block and its transactions data
-     */
-    private async _handleNewBlock(block: BlockWithTransactions): Promise<void>
+    private _onRawBlock(rawBlock: BlockWithTransactions): void
     {
-        const formatBlockReturn: FormatBlockReturn = formatBlock(block);
-
-        if (!formatBlockReturn.isSuccessful)
-        {
-            return logger.error(`Failed to format block #${block.number}`);
+        // @TODO try catch pas ouf
+        try {
+            const wrapper: BlockWithTransactionsWrapper = blockWithTransactionsWrapperFactory.create(rawBlock);
+            this.emit("blockWithTransactions", wrapper);
+            this._store(wrapper);
         }
+        catch (error) {
+            logger.error(`Failed to format block #${rawBlock.number}, error : ${error}`);
+        }
+    }
+
+    /**
+     * Called each time a new block is downloaded a formatted by the FormattedBlocksProviderService
+     * @param block Block data and its contract creation transactions
+     */
+    private async _store(blockWithTransactions: BlockWithTransactionsWrapper): Promise<void>
+    {
+        //@TODO réduire ce code en simplifiant l'API de Repository
+        const block: IBlockWithTransactions = {
+            _id: blockWithTransactions.number,
+            number: blockWithTransactions.number,
+            hash: blockWithTransactions.hash,
+            timestamp: blockWithTransactions.timestamp,
+            contractCreationTransactions: blockWithTransactions.getContractCreationTransactionsHashes(),
+            transactions: blockWithTransactions.getAllTransactionHashes()
+        };
 
         const blockValidationResult: ValidationResult = this._repositories.blockWithTransactions.insert(
-            formatBlockReturn.block
+            block
         );
 
         if (blockValidationResult.isValid === false)
         {
-            return logger.error(`Invalid block document #${formatBlockReturn.block.number}`);
+            return logger.error(`Invalid block document #${block.number}`);
         }
 
         const blockFlushResult: FlushResult<IBlockWithTransactions> = await this._repositories.blockWithTransactions.flush();
@@ -86,9 +112,23 @@ export class Network
             logger.info(`Stored block #${blockDocument.number}`);
         }
 
-        for (const contractCreationTransaction of formatBlockReturn.contractCreationTransactions)
+        for (const contractCreationTransaction of blockWithTransactions.getContractCreationTransactions())
         {
-            const validationResult: ValidationResult = this._repositories.contractCreationTransactions.insert(contractCreationTransaction);
+            const transaction: IContractCreationTransaction = {
+                _id: contractCreationTransaction.hash,
+                blockHash: contractCreationTransaction.blockHash,
+                blockNumber: contractCreationTransaction.blockNumber,
+                blockTimestamp: contractCreationTransaction.blockTimestamp,
+                contractAddress: contractCreationTransaction.contractAddress,
+                creationBytecode: contractCreationTransaction.contractBytecode,
+                from: contractCreationTransaction.from,
+                hash: contractCreationTransaction.hash,
+                indexInBlock: contractCreationTransaction.indexInBlock
+            };
+
+            const validationResult: ValidationResult = this._repositories.contractCreationTransactions.insert(
+                transaction
+            );
 
             if (validationResult.isValid === false)
             {
@@ -101,7 +141,7 @@ export class Network
 
         if (storedContractCreationTransactionsCount > 0)
         {
-            logger.info(`Stored ${storedContractCreationTransactionsCount} contractCreationTransactions of block #${formatBlockReturn.block.number}`);
+            logger.info(`Stored ${storedContractCreationTransactionsCount} contractCreationTransactions of block #${block.number}`);
         }
     }
 
@@ -162,8 +202,10 @@ export class Network
         return this._config.fullName;
     }
 
-    public getChainId(): number
+    public getChainId(): ChainId
     {
+        //@TODO pas performant, check à chaque fois
+        assertValidChainId(this._config.chainId);
         return this._config.chainId;
     }
 
@@ -212,7 +254,7 @@ export class Network
      */
     public startSyncing(): void
     {
-        this._blocksDownloaderService.on("block", this._handleNewBlock.bind(this));
+        this._blocksDownloaderService.on("rawBlock", this._onRawBlock.bind(this));
         this._contractIndexerService.on("ERC20Token", this._handleNewERC20Token.bind(this));
         this._contractIndexerService.on("ERC721NFT", this._handleNewERC721NFT.bind(this));
         this._contractIndexerService.on("ERC1155MultiToken", this._handleNewERC1155MultiToken.bind(this));

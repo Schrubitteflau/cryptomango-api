@@ -1,10 +1,8 @@
 export {
-    BlockWithTransactionsFormatter,
-    FormatBlockReturn,
-    format as formatBlock,
-} from "./BlockWithTransactionsFormatter";
+    factory as blockWithTransactionsWrapperFactory
+} from "./BlockWithTransactionsWrapper";
 
-export {
-    TransactionResponseFormatter,
-    format as formatContractCreationTransaction,
-} from "./TransactionResponseFormatter";
+export type {
+    BlockWithTransactionsWrapper,
+    BlockWithTransactionsWrapperFactory
+} from "./BlockWithTransactionsWrapper";
