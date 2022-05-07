@@ -3,8 +3,8 @@ import fs from "fs";
 
 import { providers } from "ethers";
 
-import { ContractType } from "../../src/EVM/BytecodeAnalyzer";
-import { assertValidChecksumAddress, assertValidContractBytecode, ChecksumAddress, ContractBytecode } from "../../src/EVM/Types";
+import { assertValidChecksumAddress, assertValidContractBytecode, ChecksumAddress, ContractBytecode } from "@Util/TypeUtils/EVM";
+import { ContractType } from "@EVM/BytecodeAnalyzer";
 
 type ContractsData = {
     [type in ContractType]: Array<ChecksumAddress>

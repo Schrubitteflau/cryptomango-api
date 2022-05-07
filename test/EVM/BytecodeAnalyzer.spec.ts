@@ -1,8 +1,10 @@
-import { BytecodeAnalyzer, ContractType } from "../../src/EVM/BytecodeAnalyzer";
-import { ContractBytecode } from "../../src/EVM/Types";
-import * as helpers from "./BytecodeAnalyzerTestingHelpers";
 
+import { ContractBytecode } from "@Util/TypeUtils/EVM";
+import { BytecodeAnalyzer, ContractTypeOrUnknown } from "@EVM/BytecodeAnalyzer";
+
+import * as helpers from "./BytecodeAnalyzerTestingHelpers";
 import type { FormattedContractsData } from "./BytecodeAnalyzerTestingHelpers";
+
 
 const testCases: FormattedContractsData = helpers.getTestCases();
 
@@ -19,7 +21,7 @@ describe.each(testCases)("Test BytecodeAnalyzer.ts with $expectedType at $addres
 
     test(`Contract at ${address} should be resolved as ${expectedType} type`, () =>
     {
-        const determinedType: ContractType = bytecodeAnalyzer.determineContractType();
+        const determinedType: ContractTypeOrUnknown = bytecodeAnalyzer.determineContractType();
         expect(determinedType).toBe(expectedType);
     })
 });

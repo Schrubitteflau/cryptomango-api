@@ -1,19 +1,19 @@
-import { isPositiveInteger } from "@Util/TypeUtils";
+import { isValidPositiveInteger } from "@Util/TypeUtils";
 
-describe("testing isPositiveInteger", () =>
+describe("testing isValidPositiveInteger", () =>
 {
     const notPositiveIntegerValues: ReadonlyArray<any> = [
         0, -1, null, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, {}, "", []
     ];
 
-    it.each(notPositiveIntegerValues)("isPositiveInteger(%s) - returns false", (value: any) =>
+    it.each(notPositiveIntegerValues)("isValidPositiveInteger(%s) - returns false", (value: any) =>
     {
-        expect(isPositiveInteger(value)).toBe(false);
+        expect(isValidPositiveInteger(value)).toBe(false);
     });
 
-    it("isPositiveInteger(1) - returns true", () =>
+    it("isValidPositiveInteger(1) - returns true", () =>
     {
-        expect(isPositiveInteger(1)).toBe(true);
+        expect(isValidPositiveInteger(1)).toBe(true);
     });
 
 });

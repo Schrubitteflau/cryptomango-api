@@ -1,11 +1,11 @@
 import { Axios, AxiosResponse } from "axios";
 import express from "express";
 
-import { authErrorHandler, globalErrorHandler, invalidUserDataErrorHandler, mongooseErrorHandler } from "@API/ErrorHandlers";
+import { authErrorHandler, globalErrorHandler, invalidUserDataErrorHandler } from "@API/ErrorHandlers";
 import { jwtMiddleware } from "@API/Middlewares";
 import { isUndefined } from "@Util/TypeUtils";
 
-import { axiosHelper, auth, apiExpectations, expressApp, dataSamples } from "../helpers";
+import { axiosHelper, auth, api, expressApp, fuzz } from "../helpers";
 
 const app: express.Application = express();
 
@@ -15,7 +15,6 @@ app
     // Error handlers
     .use(invalidUserDataErrorHandler)
     .use(authErrorHandler)
-    .use(mongooseErrorHandler)
     .use(globalErrorHandler)
 
 .get("/protected", (
@@ -36,7 +35,7 @@ interface IAccessDeniedTestCase
 
 const accessDeniedTestCases: ReadonlyArray<IAccessDeniedTestCase> = [
     { testName: "no authentication token" },
-    ...dataSamples.INVALID_AUTH_TOKENS.map((token: string) => {
+    ...fuzz.INVALID_AUTH_TOKENS.map((token: string) => {
         return { testName: "invalid authentication token", accessToken: token }
     })
 ] as const;
@@ -71,7 +70,7 @@ describe("testing jwtMiddleware with /protected endpoint", () =>
         test.each(accessDeniedTestCases)("/protected - $testName", async (testCase: IAccessDeniedTestCase ) =>
         {
             const response = await _doProtectedRequest(testCase.accessToken);
-            apiExpectations.expectErrorResponse(response, apiExpectations.accessDenied);
+            api.expectErrorResponse(response, api.errorResponses.accessDenied);
         });
     });
 
