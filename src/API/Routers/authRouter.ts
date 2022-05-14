@@ -1,4 +1,4 @@
-import express from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { sign as jwtSign } from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 
@@ -7,10 +7,12 @@ import { getGlobalRepository, UserRepository } from "@Repositories";
 import { IUser } from "@Schemas";
 import { HydratedDocument } from "mongoose";
 import { isNull } from "@Util/TypeUtils";
-import { assertValidChecksumAddress, ChecksumAddress, isValidChecksumAddress } from "@Util/TypeUtils/EVM";
+import { assertValidChecksumAddress, ChecksumAddress } from "@Util/TypeUtils/EVM";
 import { ethers } from "ethers";
 import { InvalidUserDataError, WalletSignatureAuthError } from "../Errors";
 import { isValidMessageSignature } from "@Util/TypeUtils/EVM";
+import { extractChecksumAddressFromString } from "@API/Extractors";
+
 
 export interface IJwtPayload
 {
@@ -25,7 +27,7 @@ export interface IJwtBody extends IJwtPayload
     jti: string;
 }
 
-export const authRouter: express.Router = express.Router();
+export const authRouter: Router = Router();
 const userRepository: UserRepository = getGlobalRepository("User");
 
 interface IMessageToSign
@@ -43,17 +45,15 @@ function getMessageToSign(address: ChecksumAddress): string
     return JSON.stringify(obj, null, 4);
 }
 
-authRouter.post("/connectWallet", async (req: express.Request, res: express.Response) =>
+authRouter.post("/connectWallet", async (req: Request, res: Response, next: NextFunction) =>
 {
-    let { address, signature } = req.body;
-
-    if (!isValidChecksumAddress(address))
-    {
-        throw new InvalidUserDataError("Invalid address format");
-    }
+    const { signature } = req.body;
+    const address = extractChecksumAddressFromString(req.body.address);
 
     if (!isValidMessageSignature(signature))
     {
+        // @TODO nothrow
+        //return next(new InvalidUserDataError("Invalid signature format"));
         throw new InvalidUserDataError("Invalid signature format");
     }
 

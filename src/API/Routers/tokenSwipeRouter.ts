@@ -1,4 +1,4 @@
-import express from "express";
+import { Router } from "express";
 
 import { Network } from "@Networks";
 import { RequestWithQuery, ResponseWithLocals } from "@Types/Express";
@@ -23,7 +23,7 @@ interface IFollowTokenQuery
 
 interface IDismissTokenQuery extends IFollowTokenQuery {}
 
-export const tokenSwipeRouter: express.Router = express.Router();
+export const tokenSwipeRouter: Router = Router();
 
 tokenSwipeRouter
     .use(jwtMiddleware)
