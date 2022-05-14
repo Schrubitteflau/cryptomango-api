@@ -5,7 +5,7 @@ export enum LogLevel {
     LEVEL_INFO,
     LEVEL_WARNING,
     LEVEL_ERROR
-};
+}
 
 export class Logger
 {

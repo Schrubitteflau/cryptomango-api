@@ -34,8 +34,8 @@ type BuildErrorTestCasesParam<T> = Partial<{
 
 /*
   Input example: {
-    invalidAddress: [ { address: "0xa1", signature: "0xs1" }, { address: "0xa2", signature: "0xs2" } ],
-    chainIdNotFound: [ { chainId: "890" }, { chainId: "6789" } ]
+    invalidAddress: [{ address: "0xa1", signature: "0xs1" }, { address: "0xa2", signature: "0xs2" }],
+    chainIdNotFound: [{ chainId: "890" }, { chainId: "6789" }]
   }
 
   Expected output: [
@@ -54,7 +54,9 @@ export function buildErrorTestCases<ParamsType>(errorAndRequestParams: BuildErro
     for (errorResponseName in errorAndRequestParams)
     {
         const errorResponse: IApiErrorResponse = errorResponses[errorResponseName];
-        const requestParams: ReadonlyArray<ParamsType> = errorAndRequestParams[errorResponseName]!;
+        const requestParams: ReadonlyArray<ParamsType> | undefined = errorAndRequestParams[errorResponseName];
+
+        if (!Array.isArray(requestParams)) continue;
 
         const toAppend: ExpectedApiResponseForParams<ParamsType> = requestParams.map((params: ParamsType) => ({
             ...params,

@@ -9,6 +9,7 @@
         "esModuleInterop": true,
         "strictNullChecks": true,
         "noImplicitOverride": true,
+        "resolveJsonModule": true,
         "lib": [ "ES2020.String" ],
         "baseUrl": "./src",
         "typeRoots": [ "@types", "./node_modules/@types" ],

@@ -3,9 +3,12 @@ import fs from "fs";
 
 import { providers } from "ethers";
 
-import { assertValidChecksumAddress, assertValidContractBytecode, ChecksumAddress, ContractBytecode } from "@Util/TypeUtils/EVM";
+import { assertValidChecksumAddress, assertValidContractBytecode, ChecksumAddress, ContractBytecode, toChecksumAddress } from "@Util/TypeUtils/EVM";
 import { ContractType } from "@EVM/BytecodeAnalyzer";
 
+import BytecodeAnalyzerCacheContracts from "./BytecodeAnalyzerCache/contracts.json";
+
+// ContractsData
 type ContractsData = {
     [type in ContractType]: Array<ChecksumAddress>
 };
@@ -15,9 +18,8 @@ type ContractsDataEntries = Array<ContractsDataEntry>;
 
 export type FormattedContractsData = Array<{ expectedType: ContractType, address: ChecksumAddress }>;
 
-const contractsToTest: ContractsData = require("./BytecodeAnalyzerCache/contracts.json");
-
 const cacheFolder: string = path.join(__dirname, "BytecodeAnalyzerCache", "cache");
+const contractsToTest: ContractsData = BytecodeAnalyzerCacheContracts as any;
 
 fs.mkdirSync(cacheFolder, {
     recursive: true
@@ -37,8 +39,10 @@ export function getTestCases(): FormattedContractsData
     {
         for (const address of addresses)
         {
-            assertValidChecksumAddress(address);
-            formatted.push({ address, expectedType });
+            formatted.push({
+                address: toChecksumAddress(address),
+                expectedType
+            });
         }
     }
 
