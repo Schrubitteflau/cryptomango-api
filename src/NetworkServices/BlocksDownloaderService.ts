@@ -20,7 +20,7 @@ export interface IBlocksDownloaderServiceConfig
     onSync: {
         cooldownSeconds: number
     }
-};
+}
 
 export declare interface BlocksDownloaderService {
     // Raw downloaded block, with all the transactions data

@@ -48,7 +48,7 @@ export function extractChecksumAddressFromString(address: string): ChecksumAddre
     {
         if (error instanceof AssertTypeError)
         {
-            throw new InvalidUserDataError("Invalid address");
+            throw new InvalidUserDataError("Invalid address format");
         }
         else
         {
