@@ -21,7 +21,7 @@ interface IFollowTokenQuery
     tokenAddress: string;
 }
 
-interface IDismissTokenQuery extends IFollowTokenQuery { }
+interface IDismissTokenQuery extends IFollowTokenQuery {}
 
 export const tokenSwipeRouter: express.Router = express.Router();
 
