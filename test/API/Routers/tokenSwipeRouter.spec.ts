@@ -266,7 +266,7 @@ describe("testing tokenSwipeRouter", () =>
         // A token whose timestamp is before the last token dismissed (current cursor) cannot be dismissed
         it("Dismiss a previously dismissed ERC1155 token", async () =>
         {
-            const response = await _dismissToken({ chainId, contractType: "erc1155", tokenAddress: _mockErc1155[5] });
+            const response = await _dismissToken({ chainId, contractType: "erc1155", tokenAddress: _mockErc1155[5].address });
             expect(response.status).toBe(200);
             expect(response.data.message).toBe("Ignored");
         });
@@ -283,13 +283,14 @@ describe("testing tokenSwipeRouter", () =>
         // The only thing we can't do is to go back in time
         it("Dismiss an ERC20 token which should be dismissed after others", async () =>
         {
-            const response1 = await _dismissToken({ chainId, contractType: "erc20", tokenAddress: _mockErc20[40].address });
+            idxErc20 = 40;
+            const response1 = await _dismissToken({ chainId, contractType: "erc20", tokenAddress: _mockErc20[idxErc20].address });
             expect(response1.status).toBe(200);
             expect(response1.data.message).toBe("OK");
             
             const response2 = await _getNextTokens({ chainId, contractType: "erc20 "});
             expect(response2.status).toBe(200);
-            expect(response2.data.tokens).toEqual(_mockErc20.slice(40, 40 + pagination));
+            expect(response2.data.tokens).toEqual(_mockErc20.slice(idxErc20, idxErc20 + pagination));
         });
     });
 });
