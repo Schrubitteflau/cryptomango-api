@@ -24,10 +24,22 @@ export function assertValidPositiveInteger(number: number): asserts number is Po
     }
 }
 
+export function toPositiveInteger(number: number): PositiveInteger
+{
+    assertValidPositiveInteger(number);
+    return number;
+}
+
 export function assertValidPositiveIntegerOrZero(number: number): asserts number is PositiveIntegerOrZero
 {
     if (!isValidPositiveInteger(number) && number !== 0)
     {
         throw new AssertTypeError(number, "positive integer or zero");
     }
+}
+
+export function toPositiveIntegerOrZero(number: number): PositiveIntegerOrZero
+{
+    assertValidPositiveIntegerOrZero(number);
+    return number;
 }

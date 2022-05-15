@@ -20,3 +20,9 @@ export function assertValidTransactionHash(hash: string): asserts hash is Transa
         throw new AssertTypeError(hash, "transaction hash");
     }
 }
+
+export function toTransactionHash(hash: string): TransactionHash
+{
+    assertValidTransactionHash(hash);
+    return hash;
+}
