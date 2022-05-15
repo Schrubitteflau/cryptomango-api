@@ -3,7 +3,8 @@ import { ethers } from "ethers";
 
 import { app } from "@API/init";
 
-import { api, axiosHelper, walletAuth, database, expressApp, fuzz, misc } from "../helpers";
+import { api, axiosHelper, walletAuth, database, expressApp, fuzz, misc, mock } from "../helpers";
+import { Network, networksManager } from "@Networks";
 
 interface IGetNextTokensParams
 {
@@ -50,6 +51,7 @@ describe("testing tokenSwipeRouter", () =>
     const _walletAddress: string = _wallet.address;
     const _getNextTokensUrl: string = expressApp.getEndpointUrl(endpoints.getNextTokens.endpoint);
     const _dismissTokenUrl: string = expressApp.getEndpointUrl(endpoints.dismissToken.endpoint);
+    const _network: Network = networksManager.getNetworks()[0];
     let _axiosAuth: Axios;
 
     function _doGetNextTokensRequest(params: IGetNextTokensParams)
@@ -70,6 +72,15 @@ describe("testing tokenSwipeRouter", () =>
     {
         await database.beforeAll();
         await expressApp.beforeAll(app);
+
+        const tokensCount: number = 50;
+        const [erc20, erc721, erc1155] = mock.createMockTokens(tokensCount);
+        for (let i = 0; i < tokensCount; i++)
+        {
+            await _network["_handleNewERC20Token"](erc20[i]);
+            await _network["_handleNewERC721NFT"](erc721[i]);
+            await _network["_handleNewERC1155MultiToken"](erc1155[i]);
+        }
 
         // Authenticate and get access token
         const authResponse = await _axiosNoAuth.post(expressApp.getEndpointUrl("/auth/connectWallet"), {
@@ -122,5 +133,10 @@ describe("testing tokenSwipeRouter", () =>
             const response = await _doDismissTokenRequest({ chainId, contractType, tokenAddress });
             api.expectErrorResponse(response, testCase.expectedResponse);
         });
+    });
+
+    describe("/getNextTokens and /dismissToken logic", () =>
+    {
+
     });
 });

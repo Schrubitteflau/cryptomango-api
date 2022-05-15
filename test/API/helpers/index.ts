@@ -7,3 +7,4 @@ export * as database from "./database";
 export * as expressApp from "./expressApp";
 export * as fuzz from "./fuzz";
 export * as misc from "./misc";
+export * as mock from "./mock";
