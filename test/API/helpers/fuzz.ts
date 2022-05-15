@@ -7,6 +7,8 @@ export const INVALID_ADDRESSES: ReadonlyArray<string> = [
     "<invalid format>"
 ] as const;
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as const;
+
 export const VALID_SIGNATURE: string = "0xfaf3c00184145c5ecb511d58271170aa07283ae44c62f5401c3de6e2407fae384301c1f34da4c70bff3a085c225862aa98db4d08c4d3daa36215d4fcf6cdd6381c" as const;
 export const INVALID_SIGNATURES: ReadonlyArray<string> = [
     // Missing "0x"
