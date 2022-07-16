@@ -1,7 +1,8 @@
-import express from "express";
+import { Request, Response, NextFunction } from "express";
 
 import { UserSession, userSessionsManager } from "../Users";
 import { isNull, isObject } from "@Util/TypeUtils";
+import { SessionNotExistError } from "@API/Errors/SessionNotExistError";
 
 export interface IUserSessionResponseLocals
 {
@@ -9,9 +10,9 @@ export interface IUserSessionResponseLocals
 }
 
 export function userSessionMiddleware(
-    req: express.Request,
-    res: express.Response<any, IUserSessionResponseLocals>,
-    next: express.NextFunction
+    req: Request,
+    res: Response<any, IUserSessionResponseLocals>,
+    next: NextFunction
 ): void
 {
     if (!isObject(req.jwtDecoded))
@@ -25,7 +26,7 @@ export function userSessionMiddleware(
 
     if (isNull(userSession))
     {
-        next(new Error(`UserSession for user #${userId} does not exist`));
+        next(new SessionNotExistError(userId));
         return;
     }
 
