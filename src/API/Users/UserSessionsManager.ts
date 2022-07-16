@@ -1,19 +1,78 @@
+import { logger } from "@Util";
 import { UserSession } from "./UserSession";
 
-// todo : regularily check expired sessions and clean them
+class UserSessionWrapper
+{
+    private _lastAccessed: number = Date.now();
+
+    public constructor
+    (
+        private readonly _userSession: UserSession,
+        private readonly _expirationTimeSeconds: number
+    ) { }
+
+    /**
+     * Get the wrapped UserSession and updates the internal _lastAccessed property to Date.now()
+     * 
+     * @returns {UserSession} The wrapped UserSession
+     */
+    public getSession(): UserSession
+    {
+        this._lastAccessed = Date.now();
+        return this._userSession;
+    }
+
+    /**
+     * @returns {boolean} Whether the session has not been accessed for more than _expirationTimeSeconds 
+     */
+    public isExpired(): boolean
+    {
+        return (this._lastAccessed + this._expirationTimeSeconds * 1000 < Date.now());
+    }
+
+    public destroy(): Promise<void>
+    {
+        return this._userSession.saveInDatabase();
+    }
+}
+
+// @TODO : regularily check expired sessions and clean them
 class UserSessionsManager
 {
-    // Key : user's id in the database ("_id" field)
-    private readonly _users = new Map<string, UserSession>();
+    // Key : string representation of the User's ID
+    private readonly _sessions: Map<string, UserSessionWrapper> = new Map<string, UserSessionWrapper>();
+
+    public constructor(cleanIntervalSeconds: number)
+    {
+        setInterval(() => this._cleanExpiredSessions(), cleanIntervalSeconds * 1000);
+    }
+
+    private _createWrapper(userSession: UserSession): UserSessionWrapper
+    {
+        return new UserSessionWrapper(userSession, 1);
+    }
+
+    private _cleanExpiredSessions(): void
+    {
+        for (const [ id, sessionWrapper ] of this._sessions)
+        {
+            if (sessionWrapper.isExpired())
+            {
+                sessionWrapper.destroy();
+                this._sessions.delete(id);
+                logger.info(`Cleaned user session ${id}`);
+            }
+        }
+    }
 
     public hasUserSession(userId: string): boolean
     {
-        return this._users.has(userId);
+        return this._sessions.has(userId);
     }
 
     public getUserSession(userId: string): UserSession | null
     {
-        return this._users.get(userId) || null;
+        return this._sessions.get(userId)?.getSession() || null;
     }
 
     public addUserSession(userSession: UserSession): void
@@ -22,11 +81,12 @@ class UserSessionsManager
 
         if (this.hasUserSession(id))
         {
-            throw new Error("Cannot add overwrite an existing user session");
+            logger.warning(`Trying to overwrite the session of User #${id}`);
+            return;
         }
 
-        this._users.set(id, userSession);
+        this._sessions.set(id, this._createWrapper(userSession));
     }
 }
 
-export const userSessionsManager: UserSessionsManager = new UserSessionsManager();
+export const userSessionsManager: UserSessionsManager = new UserSessionsManager(1);
