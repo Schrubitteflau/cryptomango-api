@@ -5,13 +5,23 @@ import { ERC20, ERC721WithoutSafeTransferFrom, ERC721SafeTransferFromV1, ERC721S
 
 type MethodIdByteLength = 1 | 2 | 3 | 4;
 
+// @TODO find a way to extends enum or refactor
+// export type ContractType = Exclude<ContractTypeOrUnknown, ContractTypeOrUnknown.Unknown>;
+
 export enum ContractType
+{
+    ERC20Token = "erc20",
+    ERC721NFT = "erc721",
+    ERC1155MultiToken = "erc1155"
+}
+
+export enum ContractTypeOrUnknown
 {
     ERC20Token = "erc20",
     ERC721NFT = "erc721",
     ERC1155MultiToken = "erc1155",
     Unknown = "unknown"
-};
+}
 
 export class BytecodeAnalyzer
 {
@@ -107,7 +117,7 @@ export class BytecodeAnalyzer
         return (this.isInterfaceImplemented(ERC1155));
     }
 
-    public determineContractType(): ContractType
+    public determineContractType(): ContractTypeOrUnknown
     {
         /* Check flow :
             1. If ERC1155, it can only be ERC1155 because it's the only interface which
@@ -119,17 +129,17 @@ export class BytecodeAnalyzer
 
         if (this.isERC1155Implemented())
         {
-            return ContractType.ERC1155MultiToken;
+            return ContractTypeOrUnknown.ERC1155MultiToken;
         }
         if (this.isERC721Implemented())
         {
-            return ContractType.ERC721NFT;
+            return ContractTypeOrUnknown.ERC721NFT;
         }
         if (this.isERC20Implemented())
         {
-            return ContractType.ERC20Token;
+            return ContractTypeOrUnknown.ERC20Token;
         }
 
-        return ContractType.Unknown;
+        return ContractTypeOrUnknown.Unknown;
     }
 }
