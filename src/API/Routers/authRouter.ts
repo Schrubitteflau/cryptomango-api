@@ -12,6 +12,7 @@ import { ethers } from "ethers";
 import { InvalidUserDataError, WalletSignatureAuthError } from "../Errors";
 import { isValidMessageSignature } from "@Util/TypeUtils/EVM";
 import { extractChecksumAddressFromString } from "@API/Extractors";
+import { RequestWithBody } from "@Types/Express";
 
 
 export interface IJwtPayload
@@ -25,6 +26,12 @@ export interface IJwtBody extends IJwtPayload
     iat: number;
     exp: number;
     jti: string;
+}
+
+interface IConnectWalletRequest
+{
+    signature: string;
+    address: string;
 }
 
 export const authRouter: Router = Router();
@@ -45,7 +52,7 @@ function getMessageToSign(address: ChecksumAddress): string
     return JSON.stringify(obj, null, 4);
 }
 
-authRouter.post("/connectWallet", async (req: Request, res: Response, next: NextFunction) =>
+authRouter.post("/connectWallet", async (req: RequestWithBody<IConnectWalletRequest>, res: Response, next: NextFunction) =>
 {
     const { signature } = req.body;
     const address = extractChecksumAddressFromString(req.body.address);
@@ -74,7 +81,8 @@ authRouter.post("/connectWallet", async (req: Request, res: Response, next: Next
 
     // Now we know that the user is the owner of the address
     const user: HydratedDocument<IUser> | null = await userRepository.findOneOrInsert({
-        address
+        address,
+        swipeState: {}
     });
 
     // We can't fetch or create the user in the database
@@ -91,7 +99,7 @@ authRouter.post("/connectWallet", async (req: Request, res: Response, next: Next
     // And sign it
     const jwt: string = jwtSign(jwtPayload, process.env.JWT_SECRET, {
         algorithm: "HS256",
-        expiresIn: "1h",
+        expiresIn: '300d',//"1h",
         jwtid: uuidv4()
     });
 
