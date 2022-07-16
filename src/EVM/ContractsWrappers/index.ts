@@ -21,6 +21,7 @@ const contractsTypesMapping = {
     }
 };
 
+// @TODO confusion between ContractType and the enum ContractType of BytecodeAnalyzer
 export type ContractType = keyof typeof contractsTypesMapping;
 type ContractFactory = typeof contractsTypesMapping[ContractType]["factory"];
 type ContractWrapper = typeof contractsTypesMapping[ContractType]["wrapper"];

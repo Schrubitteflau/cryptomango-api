@@ -99,6 +99,12 @@ export abstract class AbstractRepository<T>
      */
     public insert(data: DataOrDocument<T>): ValidationResult
     {
+        // TODO arrêter avec insert() et flush(), utiliser insertMany() à la place ?
+        // ou alors, passer par un autre objet mais il faut absolument gérer la concurrence
+        // entre plusieurs insertions qui peuvent avoir lieu au même moment
+        // si utilisation d'un objet qui stocke les documents à insérer en même temps
+        // alors, le repository doit vérifier avec une variable lock s'il n'est pas
+        // déjà en train de faire une opération
         const document: HydratedDocument<T> = this.createDocument(data);
         const validate: ValidationResult = this.validateDocument(document);
 
@@ -164,6 +170,13 @@ export abstract class AbstractRepository<T>
         }
 
         return null;
+    }
+
+    public async findLimit(limit: number): Promise<ReadonlyArray<HydratedDocument<T>>>
+    {
+        const documents: ReadonlyArray<HydratedDocument<T>> = await this._model.find().limit(limit);
+
+        return documents;
     }
 
     public async flush(): Promise<FlushResult<T>>
