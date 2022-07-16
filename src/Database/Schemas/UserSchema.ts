@@ -1,21 +1,43 @@
-import { PositiveInteger } from "@Util/TypeUtils";
+import { ContractType } from "@EVM/BytecodeAnalyzer";
+import { PositiveInteger, PositiveIntegerOrZero } from "@Util/TypeUtils";
 import { ChainId, ChecksumAddress, isValidChecksumAddress } from "@Util/TypeUtils/EVM";
 import { Schema } from "mongoose";
 
-import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
+import { required, requiredPositiveInteger, requiredPositiveIntegerOrZero, requiredStringWithValidator, unique } from "./PropertyValidators";
 
-// @TODO mettre dans autre fichier et utiliser dans basetokenschema ?
-interface IChainSwipeState {
+
+export interface IChainContractSwipeState {
     creationTimestamp: PositiveInteger;
-    creationTransactionIndex: PositiveInteger;
+    creationTransactionIndex: PositiveIntegerOrZero;
 }
 
-const chainSwipeStateSchema = new Schema<IChainSwipeState>({
+const chainContractSwipeStateSchema = new Schema<IChainContractSwipeState>({
     creationTimestamp: {
         ...requiredPositiveInteger()
     },
     creationTransactionIndex: {
-        ...requiredPositiveInteger()
+        ...requiredPositiveIntegerOrZero()
+    }
+});
+
+export interface IChainSwipeState {
+    [ContractType.ERC20Token]: IChainContractSwipeState;
+    [ContractType.ERC721NFT]: IChainContractSwipeState;
+    [ContractType.ERC1155MultiToken]: IChainContractSwipeState;
+}
+
+const chainSwipeStateSchema = new Schema<IChainSwipeState>({
+    [ContractType.ERC20Token]: {
+        required: required(),
+        type: chainContractSwipeStateSchema
+    },
+    [ContractType.ERC721NFT]: {
+        required: required(),
+        type: chainContractSwipeStateSchema
+    },
+    [ContractType.ERC1155MultiToken]: {
+        required: required(),
+        type: chainContractSwipeStateSchema
     }
 });
 
@@ -33,6 +55,7 @@ export const userSchema = new Schema<IUser>({
         ...requiredStringWithValidator(isValidChecksumAddress)
     },
     swipeState: {
+        required: required(),
         type: Schema.Types.Map,
         of: chainSwipeStateSchema
     }

@@ -1,120 +1,51 @@
-import { StrictContractType } from "@EVM/BytecodeAnalyzer";
-import { ITokenSwipe, IUser } from "@Models";
-import { Network } from "@Networks"; 
-import { IERC1155TokenSchema, IERC20TokenSchema, IERC721TokenSchema } from "@Schemas";
-import { TokenSwipeService } from "@Services";
-import { MongooseDocument } from "@Types";
-import { AllowedSchemas } from "Repositories/AbstractTokenRepository";
-import { TokenSwipeCache } from "./TokenSwipeCache";
-
-interface IGetNextTokenSwipeConfig
-{
-    network: Network;
-    tokenType: StrictContractType;
-}
+import { HydratedDocument } from "mongoose";
+import { IChainContractSwipeState, IChainSwipeState, IUser } from "@Schemas";
+import { ChainId } from "@Util/TypeUtils/EVM";
+import { Network } from "@Networks";
+import { isObject, toPositiveInteger, toPositiveIntegerOrZero } from "@Util/TypeUtils";
 
 export class UserSession
 {
-    private readonly _tokenSwipeCache = new TokenSwipeCache();
-
     public constructor
     (
-        private readonly _userDocument: MongooseDocument<IUser>,
-        private readonly _tokenSwipeDocument: MongooseDocument<ITokenSwipe>
+        private readonly _userDocument: HydratedDocument<IUser>
     ) { }
 
     /**
-     * @returns {string} this id of the User document
+     * @returns The string representation of the unique id of the User in the database
      */
     public getId(): string
     {
         return this._userDocument.id;
     }
 
-    public getNextTokenSwipe(config: IGetNextTokenSwipeConfig & { tokenType: StrictContractType.ERC20Token }): Promise<Array<IERC20TokenSchema>>;
-    public getNextTokenSwipe(config: IGetNextTokenSwipeConfig & { tokenType: StrictContractType.ERC721NFT }): Promise<Array<IERC721TokenSchema>>;
-    public getNextTokenSwipe(config: IGetNextTokenSwipeConfig & { tokenType: StrictContractType.ERC1155MultiToken }): Promise<Array<IERC1155TokenSchema>>;
-
-    public async getNextTokenSwipe(config: IGetNextTokenSwipeConfig): Promise<Array<AllowedSchemas>>
+    /**
+     * @param network 
+     * @returns The IChainSwipeState entry for the provided chainId
+     * If no entry is found, it creates the entry in the underlying document with default values
+     */
+    public getSwipeState(network: Network): IChainSwipeState
     {
-        const tokenSwipeService: TokenSwipeService = config.network.getTokenSwipeService();
-        let afterCreationTimestamp: number = 0;
-        let afterCreationTransactionIndex: number = 0;
+        const chainId: ChainId = network.getChainId();
+        const swipeState = this._userDocument.swipeState[chainId];
 
-        switch (config.tokenType)
-        {
-            case StrictContractType.ERC20Token:
-                afterCreationTimestamp = this._tokenSwipeDocument.erc20.creationTimestamp;
-                afterCreationTransactionIndex = this._tokenSwipeDocument.erc20.creationTransactionIndex;
-                break;
-            case StrictContractType.ERC721NFT:
-                afterCreationTimestamp = this._tokenSwipeDocument.erc721.creationTimestamp;
-                afterCreationTransactionIndex = this._tokenSwipeDocument.erc721.creationTransactionIndex;
-                break;
-            case StrictContractType.ERC1155MultiToken:
-                afterCreationTimestamp = this._tokenSwipeDocument.erc1155.creationTimestamp;
-                afterCreationTransactionIndex = this._tokenSwipeDocument.erc1155.creationTransactionIndex;
-                break;
+        if (!isObject(swipeState)) {
+            const defaultState: IChainContractSwipeState = {
+                creationTimestamp: toPositiveInteger(1),
+                creationTransactionIndex: toPositiveIntegerOrZero(0)
+            };
+            this._userDocument.swipeState[chainId] = {
+                erc20: { ...defaultState },
+                erc721: { ...defaultState },
+                erc1155: { ...defaultState }
+            };
         }
 
-        const tokensCursor = await tokenSwipeService.getNextTokens({
-            tokensCount: 10,
-            after: {
-                creationTimestamp: afterCreationTimestamp,
-                creationTransactionIndex: afterCreationTransactionIndex
-            },
-            contractType: config.tokenType
-        });
-
-        const tokens = await tokensCursor.toArray();
-
-        for (const token of tokens)
-        {
-            this._tokenSwipeCache.add({
-                contractType: config.tokenType,
-                networkUniqueId: config.network.getUniqueId(),
-                contractData: token
-            });
-        }
-
-        return tokens;
+        return this._userDocument.swipeState[chainId];
     }
 
-    public followToken(network: Network, contractType: StrictContractType, address: string): void
+    public async saveInDatabase(): Promise<void>
     {
-        const data = this._tokenSwipeCache.get({
-            networkUniqueId: network.getUniqueId(),
-            contractType,
-            contractAddress: address
-        });
-
-        if (data === null)
-        {
-            throw new Error("followToken -> data is null");
-        }
-
-        this._tokenSwipeDocument[contractType] = {
-            creationTimestamp: data.creationTimestamp,
-            creationTransactionIndex: data.creationTransactionIndex
-        };
-    }
-
-    public dismissToken(network: Network, contractType: StrictContractType, address: string): void
-    {
-        const data = this._tokenSwipeCache.get({
-            networkUniqueId: network.getUniqueId(),
-            contractType,
-            contractAddress: address
-        });
-
-        if (data === null)
-        {
-            throw new Error("followToken -> data is null");
-        }
-
-        this._tokenSwipeDocument[contractType] = {
-            creationTimestamp: data.creationTimestamp,
-            creationTransactionIndex: data.creationTransactionIndex
-        };
+        await this._userDocument.update();
     }
 }
