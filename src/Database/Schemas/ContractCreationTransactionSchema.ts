@@ -2,8 +2,7 @@ import { Schema } from "mongoose";
 
 import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash, isValidTransactionHash, isValidBlockHash, isValidChecksumAddress, isValidContractBytecode, BlockNumber } from "@Util/TypeUtils/EVM";
 import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
-import { PositiveInteger } from "@Util/TypeUtils";
-import { PositiveIntegerOrZero } from "@Util/TypeUtils/PositiveInteger";
+import { PositiveInteger, PositiveIntegerOrZero } from "@Util/TypeUtils";
 
 // Schema of a transaction which results in a contract creation
 export interface IContractCreationTransaction

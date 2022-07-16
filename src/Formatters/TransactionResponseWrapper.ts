@@ -11,9 +11,8 @@ import {
 
 import { IContractCreationTransaction } from "@Schemas";
 import type { TransactionResponse } from "@Types/EthersTypes";
-import { isNullOrUndefined, isUndefined, PositiveInteger } from "@Util/TypeUtils";
+import { isNullOrUndefined, isUndefined, PositiveInteger, PositiveIntegerOrZero, assertValidPositiveIntegerOrZero } from "@Util/TypeUtils";
 import { BlockWithTransactionsWrapper } from "./BlockWithTransactionsWrapper";
-import { assertValidPositiveIntegerOrZero, PositiveIntegerOrZero } from "@Util/TypeUtils/PositiveInteger";
 
 interface ISuccessfulFormatTransactionResult
 {
