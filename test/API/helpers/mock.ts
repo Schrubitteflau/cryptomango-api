@@ -1,8 +1,7 @@
 import { IERC1155MultiToken, IERC20Token, IERC721NFT } from "@Schemas";
-import { PositiveInteger, toPositiveInteger, toPositiveIntegerOrZero } from "@Util/TypeUtils";
+import { PositiveInteger, toPositiveInteger, toPositiveIntegerOrZero, PositiveIntegerOrZero } from "@Util/TypeUtils";
 import { ChecksumAddress, toChecksumAddress, TransactionHash } from "@Util/TypeUtils/EVM";
 import { toTransactionHash } from "@Util/TypeUtils/EVM/TransactionHash";
-import { PositiveIntegerOrZero } from "@Util/TypeUtils/PositiveInteger";
 
 export function createMockTokens(count: number = 10): [
     ReadonlyArray<IERC20Token>,
