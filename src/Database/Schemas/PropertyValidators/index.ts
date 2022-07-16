@@ -49,12 +49,21 @@ export function validate<T>(validator: ValidateFn<T>)
     }
 }
 
-export function requiredPositiveInteger()
+export function requiredPositiveIntegerOrZero()
 {
     return {
         type: numberType(),
         required: required(),
         min: min(0)
+    };
+}
+
+export function requiredPositiveInteger()
+{
+    return {
+        type: numberType(),
+        required: required(),
+        min: min(1)
     };
 }
 

@@ -1,7 +1,6 @@
-import { PositiveInteger } from "@Util/TypeUtils";
+import { PositiveInteger, PositiveIntegerOrZero } from "@Util/TypeUtils";
 import { ChecksumAddress, isValidChecksumAddress, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
-import { PositiveIntegerOrZero } from "@Util/TypeUtils/PositiveInteger";
-import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
+import { requiredPositiveInteger, requiredPositiveIntegerOrZero, requiredStringWithValidator, unique } from "./PropertyValidators";
 
 export interface IBaseToken
 {
@@ -27,5 +26,5 @@ export const baseTokenSchemaSpecs = {
     },
     creationTransaction: requiredStringWithValidator(isValidTransactionHash),
     creationTimestamp: requiredPositiveInteger(),
-    creationTransactionIndex: requiredPositiveInteger()
+    creationTransactionIndex: requiredPositiveIntegerOrZero()
 } as const;
