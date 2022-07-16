@@ -1,5 +1,5 @@
 import { HydratedDocument } from "mongoose";
-import { IChainContractSwipeState, IChainSwipeState, IUser } from "@Schemas";
+import { IChainContractSwipeState, ChainSwipeState, IUser } from "@Schemas";
 import { ChainId } from "@Util/TypeUtils/EVM";
 import { Network } from "@Networks";
 import { isObject, toPositiveInteger, toPositiveIntegerOrZero } from "@Util/TypeUtils";
@@ -24,7 +24,7 @@ export class UserSession
      * @returns The IChainSwipeState entry for the provided chainId
      * If no entry is found, it creates the entry in the underlying document with default values
      */
-    public getSwipeState(network: Network): IChainSwipeState
+    public getSwipeState(network: Network): ChainSwipeState
     {
         const chainId: ChainId = network.getChainId();
         const swipeState = this._userDocument.swipeState[chainId];
@@ -35,9 +35,9 @@ export class UserSession
                 creationTransactionIndex: toPositiveIntegerOrZero(0)
             };
             this._userDocument.swipeState[chainId] = {
-                erc20: { ...defaultState },
-                erc721: { ...defaultState },
-                erc1155: { ...defaultState }
+                ERC20: { ...defaultState },
+                ERC721: { ...defaultState },
+                ERC1155: { ...defaultState }
             };
         }
 

@@ -1,4 +1,4 @@
-import { ContractType } from "@EVM/BytecodeAnalyzer";
+import { ContractType } from "@EVM/ContractsWrappers";
 import { PositiveInteger, PositiveIntegerOrZero } from "@Util/TypeUtils";
 import { ChainId, ChecksumAddress, isValidChecksumAddress } from "@Util/TypeUtils/EVM";
 import { Schema } from "mongoose";
@@ -20,22 +20,20 @@ const chainContractSwipeStateSchema = new Schema<IChainContractSwipeState>({
     }
 });
 
-export interface IChainSwipeState {
-    [ContractType.ERC20Token]: IChainContractSwipeState;
-    [ContractType.ERC721NFT]: IChainContractSwipeState;
-    [ContractType.ERC1155MultiToken]: IChainContractSwipeState;
+export type ChainSwipeState = {
+    [key in ContractType]: IChainContractSwipeState;
 }
 
-const chainSwipeStateSchema = new Schema<IChainSwipeState>({
-    [ContractType.ERC20Token]: {
+const chainSwipeStateSchema = new Schema<ChainSwipeState>({
+    ERC20: {
         required: required(),
         type: chainContractSwipeStateSchema
     },
-    [ContractType.ERC721NFT]: {
+    ERC721: {
         required: required(),
         type: chainContractSwipeStateSchema
     },
-    [ContractType.ERC1155MultiToken]: {
+    ERC1155: {
         required: required(),
         type: chainContractSwipeStateSchema
     }
@@ -45,7 +43,7 @@ export interface IUser
 {
     address: ChecksumAddress;
     swipeState: {
-        [key: ChainId]: IChainSwipeState;
+        [key: ChainId]: ChainSwipeState;
     };
 }
 
