@@ -1,10 +1,11 @@
-import type { Axios } from "axios";
+import type { Axios, AxiosResponse } from "axios";
 import { ethers } from "ethers";
 
 import { app } from "@API/init";
 
 import { api, axiosHelper, walletAuth, database, expressApp, fuzz, misc, mock } from "../helpers";
 import { Network, networksManager } from "@Networks";
+
 
 interface IGetNextTokensParams
 {
@@ -77,6 +78,7 @@ describe("testing tokenSwipeRouter", () =>
 
         for (let i = 0; i < _mockTokensCount; i++)
         {
+            // @TODO beurk
             await _network["_handleNewERC20Token"](_mockErc20[i]);
             await _network["_handleNewERC721NFT"](_mockErc721[i]);
             await _network["_handleNewERC1155MultiToken"](_mockErc1155[i]);
@@ -144,48 +146,59 @@ describe("testing tokenSwipeRouter", () =>
         let idxErc721 = 0;
         let idxErc1155 = 0;
 
+        function expectTokensResponse(response: AxiosResponse, tokens: Array<any>)
+        {
+            expect(response.status).toBe(200);
+            expect(response.data.tokens).toEqual(
+                expect.arrayContaining(
+                    tokens.map(token => expect.objectContaining(token))
+                )
+            );
+        }
+
+        function expectTokenDimissedResponse(response: AxiosResponse)
+        {
+            expect(response.status).toBe(200);
+            expect(response.data.message).toBe("Token dismissed");
+        }
+
         it("Get next ERC20 tokens", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc20" });
-            expect(response.status).toBe(200);
-            expect(response.data.tokens).toEqual(_mockErc20.slice(idxErc20, idxErc20 + pagination));
+            expectTokensResponse(response, _mockErc20.slice(idxErc20, idxErc20 + pagination));
         });
 
         it("Dismiss 1 ERC20 token", async () =>
         {
             const response = await _dismissToken({ chainId, contractType: "erc20", tokenAddress: _mockErc20[idxErc20].address });
             expect(response.status).toBe(200);
-            expect(response.data.message).toBe("OK");
+            expect(response.data.message).toBe("Token dismissed");
             idxErc20++;
         });
 
         it("Get next ERC20 tokens", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc20" });
-            expect(response.status).toBe(200);
-            expect(response.data.tokens).toEqual(_mockErc20.slice(idxErc20, idxErc20 + pagination));
+            expectTokensResponse(response, _mockErc20.slice(idxErc20, idxErc20 + pagination));
         });
 
         it("Dismiss 1 ERC721 token", async () =>
         {
             const response = await _dismissToken({ chainId, contractType: "erc721", tokenAddress: _mockErc721[idxErc721].address });
-            expect(response.status).toBe(200);
-            expect(response.data.message).toBe("OK");
+            expectTokenDimissedResponse(response);
             idxErc721++;
         });
 
         it("Get next ERC20 tokens", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc20" });
-            expect(response.status).toBe(200);
-            expect(response.data.tokens).toEqual(_mockErc20.slice(idxErc20, idxErc20 + pagination));
+            expectTokensResponse(response, _mockErc20.slice(idxErc20, idxErc20 + pagination));
         });
 
         it("Get next ERC721 tokens", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc721" });
-            expect(response.status).toBe(200);
-            expect(response.data.tokens).toEqual(_mockErc721.slice(idxErc721, idxErc721 + pagination));
+            expectTokensResponse(response, _mockErc721.slice(idxErc721, idxErc721 + pagination));
         });
 
         it("Dismiss 45 ERC1155 tokens", async () =>
@@ -193,8 +206,7 @@ describe("testing tokenSwipeRouter", () =>
             for (let i = 0; i < 45; i++)
             {
                 const response = await _dismissToken({ chainId, contractType: "erc1155", tokenAddress: _mockErc1155[idxErc1155].address });
-                expect(response.status).toBe(200);
-                expect(response.data.message).toBe("OK");
+                expectTokenDimissedResponse(response)
                 idxErc1155++;
             }
         });
@@ -202,23 +214,20 @@ describe("testing tokenSwipeRouter", () =>
         it("Get next ERC1155 tokens (45 - 50)", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc1155" });
-            expect(response.status).toBe(200);
-            expect(response.data.tokens).toEqual(_mockErc1155.slice(idxErc1155, idxErc1155 + pagination));
+            expectTokensResponse(response, _mockErc1155.slice(idxErc1155, idxErc1155 + pagination));
         });
 
         it("Dismiss 1 ERC1155 token", async () =>
         {
             const response = await _dismissToken({ chainId, contractType: "erc1155", tokenAddress: _mockErc1155[idxErc1155].address });
-            expect(response.status).toBe(200);
-            expect(response.data.message).toBe("OK");
+            expectTokenDimissedResponse(response);
             idxErc1155++;
         });
 
         it("Get next ERC1155 tokens (46 - 50)", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc1155" });
-            expect(response.status).toBe(200);
-            expect(response.data.tokens).toEqual(_mockErc1155.slice(idxErc1155, idxErc1155 + pagination));
+            expectTokensResponse(response, _mockErc1155.slice(idxErc1155, idxErc1155 + pagination));
         });
 
         it("Dismiss 4 ERC1155 tokens", async () =>
@@ -226,8 +235,7 @@ describe("testing tokenSwipeRouter", () =>
             for (let i = 0; i < 4; i++)
             {
                 const response = await _dismissToken({ chainId, contractType: "erc1155", tokenAddress: _mockErc1155[idxErc1155].address });
-                expect(response.status).toBe(200);
-                expect(response.data.message).toBe("OK");
+                expectTokenDimissedResponse(response);
                 idxErc1155++;
             }
         });
@@ -235,32 +243,28 @@ describe("testing tokenSwipeRouter", () =>
         it("Get next ERC1155 (empty)", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc1155" });
-            expect(response.status).toBe(200);
-            // Empty array
-            expect(response.data.tokens).toEqual(_mockErc1155.slice(idxErc1155, idxErc1155 + pagination));
+            expectTokensResponse(response, _mockErc1155.slice(idxErc1155, idxErc1155 + pagination));
+            // Empty array : no more tokens
             expect(response.data.tokens).toEqual([]);
         });
 
         it("Dismiss 1 ERC721 token", async () =>
         {
             const response = await _dismissToken({ chainId, contractType: "erc721", tokenAddress: _mockErc721[idxErc721].address });
-            expect(response.status).toBe(200);
-            expect(response.data.message).toBe("OK");
+            expectTokenDimissedResponse(response);
             idxErc721++;
         });
 
         it("Get next ERC20 tokens", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc20" });
-            expect(response.status).toBe(200);
-            expect(response.data.tokens).toEqual(_mockErc20.slice(idxErc20, idxErc20 + pagination));
+            expectTokensResponse(response, _mockErc20.slice(idxErc20, idxErc20 + pagination));
         });
 
         it("Get next ERC721 tokens", async () =>
         {
             const response = await _getNextTokens({ chainId, contractType: "erc721" });
-            expect(response.status).toBe(200);
-            expect(response.data.tokens).toEqual(_mockErc20.slice(idxErc721, idxErc721 + pagination));
+            expectTokensResponse(response, _mockErc721.slice(idxErc721, idxErc721 + pagination));
         });
 
         // A token whose timestamp is before the last token dismissed (current cursor) cannot be dismissed
@@ -276,21 +280,22 @@ describe("testing tokenSwipeRouter", () =>
         {
             const response = await _dismissToken({ chainId, contractType: "erc20", tokenAddress: fuzz.ZERO_ADDRESS });
             expect(response.status).toBe(404);
-            expect(response.data.error).toBe("Token not found");
+            expect(response.data.error).toBe("Not found : Token not found");
         });
 
         // We can still dismiss the last token indexed before the others, which will be ignored
         // The only thing we can't do is to go back in time
         it("Dismiss an ERC20 token which should be dismissed after others", async () =>
         {
+            // We set the index at 40, and dismiss this token
             idxErc20 = 40;
             const response1 = await _dismissToken({ chainId, contractType: "erc20", tokenAddress: _mockErc20[idxErc20].address });
-            expect(response1.status).toBe(200);
-            expect(response1.data.message).toBe("OK");
-            
-            const response2 = await _getNextTokens({ chainId, contractType: "erc20 "});
-            expect(response2.status).toBe(200);
-            expect(response2.data.tokens).toEqual(_mockErc20.slice(idxErc20, idxErc20 + pagination));
+            expectTokenDimissedResponse(response1);
+
+            // So the next ones should be from 41 to 41 + pagination
+            idxErc20++;
+            const response2 = await _getNextTokens({ chainId, contractType: "erc20"});
+            expectTokensResponse(response2, _mockErc20.slice(idxErc20, idxErc20 + pagination));
         });
     });
 });
