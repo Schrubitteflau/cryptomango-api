@@ -6,6 +6,7 @@ import { logger } from "@Util";
 import { AbstractNetworkService } from "./AbstractNetworkService";
 import { Network } from "@Networks";
 import { IContractCreationTransactionResponseWrapper } from "Formatters/TransactionResponseWrapper";
+import { toPositiveInteger } from "@Util/TypeUtils";
 
 export declare interface ContractIndexerService {
     // Emitted when a new token is found by the indexer
@@ -82,14 +83,13 @@ export class ContractIndexerService extends AbstractNetworkService
      */
     private _extractBaseTokenProperties(transaction: IContractCreationTransactionResponseWrapper): IBaseToken
     {
-        const { hash, blockTimestamp, indexInBlock, contractAddress } = transaction;
+        const { hash, contractAddress, blockNumber, indexInBlock } = transaction;
 
         return {
             _id: contractAddress,
             address: contractAddress,
             creationTransaction: hash,
-            creationTimestamp: blockTimestamp,
-            creationTransactionIndex: indexInBlock
+            position: toPositiveInteger(blockNumber * 1000 + indexInBlock)
         };
     }
 

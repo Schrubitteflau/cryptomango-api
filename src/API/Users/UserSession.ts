@@ -1,8 +1,8 @@
 import { HydratedDocument } from "mongoose";
-import { IChainContractSwipeState, ChainSwipeState, IUser } from "@Schemas";
+import { ChainSwipeState, IUser } from "@Schemas";
 import { ChainId } from "@Util/TypeUtils/EVM";
 import { Network } from "@Networks";
-import { isObject, toPositiveInteger, toPositiveIntegerOrZero } from "@Util/TypeUtils";
+import { isObject, toPositiveInteger } from "@Util/TypeUtils";
 
 export class UserSession
 {
@@ -27,17 +27,13 @@ export class UserSession
     public getSwipeState(network: Network): ChainSwipeState
     {
         const chainId: ChainId = network.getChainId();
-        const swipeState = this._userDocument.swipeState[chainId];
+        const swipeState: ChainSwipeState = this._userDocument.swipeState[chainId];
 
         if (!isObject(swipeState)) {
-            const defaultState: IChainContractSwipeState = {
-                creationTimestamp: toPositiveInteger(1),
-                creationTransactionIndex: toPositiveIntegerOrZero(0)
-            };
             this._userDocument.swipeState[chainId] = {
-                ERC20: { ...defaultState },
-                ERC721: { ...defaultState },
-                ERC1155: { ...defaultState }
+                ERC20: toPositiveInteger(1),
+                ERC721: toPositiveInteger(1),
+                ERC1155: toPositiveInteger(1)
             };
         }
 

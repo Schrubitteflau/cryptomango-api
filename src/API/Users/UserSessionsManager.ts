@@ -44,7 +44,7 @@ class UserSessionsManager
 
     public constructor(cleanIntervalSeconds: number)
     {
-        setInterval(() => this._cleanExpiredSessions(), cleanIntervalSeconds * 1000);
+        //setInterval(() => this._cleanExpiredSessions(), cleanIntervalSeconds * 1000);
     }
 
     private _createWrapper(userSession: UserSession): UserSessionWrapper
@@ -89,4 +89,6 @@ class UserSessionsManager
     }
 }
 
-export const userSessionsManager: UserSessionsManager = new UserSessionsManager(1);
+// @TODO éviter d'exporter des instances car on peut pas tester la classe
+// -> singleton
+export const userSessionsManager: UserSessionsManager = new UserSessionsManager(60);

@@ -1,6 +1,6 @@
-import { PositiveInteger, PositiveIntegerOrZero } from "@Util/TypeUtils";
+import { PositiveInteger } from "@Util/TypeUtils";
 import { ChecksumAddress, isValidChecksumAddress, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
-import { requiredPositiveInteger, requiredPositiveIntegerOrZero, requiredStringWithValidator, unique } from "./PropertyValidators";
+import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
 
 export interface IBaseToken
 {
@@ -8,23 +8,20 @@ export interface IBaseToken
     _id: ChecksumAddress;
     // Address of the contract
     address: ChecksumAddress;
-    // Transaction which created this ERC20 contract
+    // Transaction which created this contract
     creationTransaction: TransactionHash;
-    // Timestamp when the transaction was added to the blockchain
-    creationTimestamp: PositiveInteger;
-    // Index of the creation transaction in its block (0 for the first, 1 for the second...)
-    creationTransactionIndex: PositiveIntegerOrZero;
+    // Position (order) of the contract in the chain, compared to the others contracts
+    // of the same type and in the same chain :
+    // BLOCK_NUMBER * CONSTANT + TX_POSITION_IN_BLOCK
+    position: PositiveInteger;
 }
 
 export const baseTokenSchemaSpecs = {
-    _id: {
-        ...requiredStringWithValidator(isValidChecksumAddress)
-    },
+    _id: requiredStringWithValidator(isValidChecksumAddress),
     address: {
         unique: unique(),
         ...requiredStringWithValidator(isValidChecksumAddress)
     },
     creationTransaction: requiredStringWithValidator(isValidTransactionHash),
-    creationTimestamp: requiredPositiveInteger(),
-    creationTransactionIndex: requiredPositiveIntegerOrZero()
+    position: requiredPositiveInteger()
 } as const;

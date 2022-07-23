@@ -1,42 +1,19 @@
 import { ContractType } from "@EVM/ContractsWrappers";
-import { PositiveInteger, PositiveIntegerOrZero } from "@Util/TypeUtils";
+import { PositiveInteger } from "@Util/TypeUtils";
 import { ChainId, ChecksumAddress, isValidChecksumAddress } from "@Util/TypeUtils/EVM";
 import { Schema } from "mongoose";
 
-import { required, requiredPositiveInteger, requiredPositiveIntegerOrZero, requiredStringWithValidator, unique } from "./PropertyValidators";
-
-
-export interface IChainContractSwipeState {
-    creationTimestamp: PositiveInteger;
-    creationTransactionIndex: PositiveIntegerOrZero;
-}
-
-const chainContractSwipeStateSchema = new Schema<IChainContractSwipeState>({
-    creationTimestamp: {
-        ...requiredPositiveInteger()
-    },
-    creationTransactionIndex: {
-        ...requiredPositiveIntegerOrZero()
-    }
-});
+import { required, requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
 
 export type ChainSwipeState = {
-    [key in ContractType]: IChainContractSwipeState;
+    // Key => type of the contract, Value => last seen position (see IBaseToken["position"])
+    [key in ContractType]: PositiveInteger;
 }
 
 const chainSwipeStateSchema = new Schema<ChainSwipeState>({
-    ERC20: {
-        required: required(),
-        type: chainContractSwipeStateSchema
-    },
-    ERC721: {
-        required: required(),
-        type: chainContractSwipeStateSchema
-    },
-    ERC1155: {
-        required: required(),
-        type: chainContractSwipeStateSchema
-    }
+    ERC20: requiredPositiveInteger(),
+    ERC721: requiredPositiveInteger(),
+    ERC1155: requiredPositiveInteger()
 });
 
 export interface IUser

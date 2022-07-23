@@ -1,9 +1,9 @@
 import { createModel } from "@Models";
 import { IERC721NFT } from "@Schemas";
 
-import { AbstractRepository } from "./AbstractRepository";
+import { AbstractTokenRepository } from "./AbstractTokenRepository";
 
-export class ERC721NFTRepository extends AbstractRepository<IERC721NFT>
+export class ERC721NFTRepository extends AbstractTokenRepository<IERC721NFT>
 {
     public constructor
     (

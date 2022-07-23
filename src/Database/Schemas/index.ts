@@ -1,5 +1,5 @@
 export { ITokenSwipe, tokenSwipeSchema } from "./TokenSwipeSchema";
-export { IUser, userSchema, IChainContractSwipeState, ChainSwipeState } from "./UserSchema";
+export { IUser, userSchema, ChainSwipeState } from "./UserSchema";
 export { IBlockWithTransactions, blockWithTransactionsSchema } from "./BlockWithTransactionsSchema";
 export { IContractCreationTransaction, contractCreationTransactionSchema } from "./ContractCreationTransactionSchema";
 export { IBaseToken } from "./BaseTokenSchema";

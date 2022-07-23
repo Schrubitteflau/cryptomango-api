@@ -1,9 +1,9 @@
 import { createModel } from "@Models";
 import { IERC1155MultiToken } from "@Schemas";
 
-import { AbstractRepository } from "./AbstractRepository";
+import { AbstractTokenRepository } from "./AbstractTokenRepository";
 
-export class ERC1155MultiTokenRepository extends AbstractRepository<IERC1155MultiToken>
+export class ERC1155MultiTokenRepository extends AbstractTokenRepository<IERC1155MultiToken>
 {
     public constructor
     (

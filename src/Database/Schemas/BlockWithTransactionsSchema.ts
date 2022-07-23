@@ -21,9 +21,7 @@ export interface IBlockWithTransactions
 }
 
 export const blockWithTransactionsSchema = new Schema<IBlockWithTransactions>({
-    _id: {
-        ...requiredPositiveInteger()
-    },
+    _id: requiredPositiveInteger(),
     number: {
         unique: unique(),
         ...requiredPositiveInteger()

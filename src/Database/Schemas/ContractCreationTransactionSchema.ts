@@ -28,17 +28,13 @@ export interface IContractCreationTransaction
 }
 
 export const contractCreationTransactionSchema = new Schema<IContractCreationTransaction>({
-    _id: {
-        ...requiredStringWithValidator(isValidTransactionHash)
-    },
+    _id: requiredStringWithValidator(isValidTransactionHash),
     hash: {
         unique: unique(),
         ...requiredStringWithValidator(isValidTransactionHash)
     },
     blockHash: requiredStringWithValidator(isValidBlockHash),
-    blockNumber: {
-        ...requiredPositiveInteger()
-    },
+    blockNumber: requiredPositiveInteger(),
     from: requiredStringWithValidator(isValidChecksumAddress),
     creationBytecode: requiredStringWithValidator(isValidContractBytecode),
     contractAddress: requiredStringWithValidator(isValidChecksumAddress),
