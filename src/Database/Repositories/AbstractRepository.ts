@@ -24,16 +24,40 @@ export type FlushResult<T> = {
     inserted: ReadonlyArray<HydratedDocument<T>>
 };
 
+class InsertBuffer<T>
+{
+    private readonly _documents: Array<HydratedDocument<T>> = [];
+
+    public constructor(
+        private readonly _repository: AbstractRepository<T>
+    ) {}
+
+    public add(data: DataOrDocument<T>): ValidationResult
+    {
+        const document: HydratedDocument<T> = this._repository.createDocument(data);
+        const validate: ValidationResult = this._repository.validateDocument(document);
+
+        if (validate.isValid === true)
+        {
+            this._documents.push(document);
+        }
+
+        return validate;
+    }
+
+    public insert(): Promise<Array<HydratedDocument<T>>>
+    {
+        return this._repository.createMany(this._documents);
+    }
+}
+
 // T : interface which represents the data scheme
 export abstract class AbstractRepository<T>
 {
-    // Raw validated data that needs to be saved in the collection
-    private _toInsert: Array<HydratedDocument<T>> = [];
-
-    protected constructor
-    (
+    // @TODO format every constructor like this
+    protected constructor(
         protected _model: Model<T>
-    ) { }
+    ) {}
 
     /**
      * @param data The object to check whether it is a document or not
@@ -46,31 +70,14 @@ export abstract class AbstractRepository<T>
         return (data instanceof Document);
     }
 
-    private async _doInsert(): Promise<ReadonlyArray<HydratedDocument<T>>>
-    {
-        if (this._toInsert.length === 0) return [];
-
-        /*
-            [options.ordered «Boolean» = true]
-                If true, will fail fast on the first error encountered.
-                If false, will insert all the documents it can and report errors later.
-        */
-
-        // @TODO blinder
-
-        const insertedDocuments: ReadonlyArray<HydratedDocument<T>> = await this._model.insertMany(this._toInsert, {
-            ordered: false
-        });
-
-        this._toInsert = [];
-
-        return insertedDocuments;
-    }
-
     public createDocument(data: DataOrDocument<T>): HydratedDocument<T>
     {
         if (this._isDocument(data)) return data;
 
+        // After a few tests, if data is a document, then it'll make a copy and return
+        // an object with the same properties, as a Document
+        // I don't know if it's intentional, but it's better to not recreate another
+        // Document instance if it's not really needed
         return new this._model(data);
     }
 
@@ -92,28 +99,31 @@ export abstract class AbstractRepository<T>
         };
     }
 
-    /**
-     * @param data The data to insert in the database
-     * @returns Whether or not the data is valid and will effectively be stored
-     * @warning Raw data should be passed to this method, not a document
-     */
-    public insert(data: DataOrDocument<T>): ValidationResult
+    // @TODO SHOULD ONLY PASS LITTERAL OBJECTS ?
+    public createOne(newDocument: T): Promise<HydratedDocument<T>>
     {
-        // TODO arrêter avec insert() et flush(), utiliser insertMany() à la place ?
-        // ou alors, passer par un autre objet mais il faut absolument gérer la concurrence
-        // entre plusieurs insertions qui peuvent avoir lieu au même moment
-        // si utilisation d'un objet qui stocke les documents à insérer en même temps
-        // alors, le repository doit vérifier avec une variable lock s'il n'est pas
-        // déjà en train de faire une opération
-        const document: HydratedDocument<T> = this.createDocument(data);
-        const validate: ValidationResult = this.validateDocument(document);
+        // @TODO can throw validation error
 
-        if (validate.isValid === true)
-        {
-            this._toInsert.push(document);
-        }
+        // Same as doing : new MyModel(doc).save()
+        // Because the new Document instance created by the constructor of MyModel doesn't come from
+        // a find query, its property isNew is set to false, so calling save() result in a creation
+        return this._model.create(newDocument);
+    }
 
-        return validate;
+    // @TODO SHOULD ONLY PASS LITTERAL OBJECTS ?
+    public createMany(newDocuments: ReadonlyArray<T>): Promise<Array<HydratedDocument<T>>>
+    {
+        /*
+            [options.ordered «Boolean» = true]
+                If true, will fail fast on the first error encountered.
+                If false, will insert all the documents it can and report errors later.
+            
+            The invalid documents will simply be ignored.
+            All the documents will be inserted in one single MongoDB query.
+        */
+        return this._model.insertMany(newDocuments, {
+            ordered: false
+        });
     }
 
     // @TODO blinder avec findOneResult
@@ -122,7 +132,7 @@ export abstract class AbstractRepository<T>
         return this._model.findOne(criterias).exec();
     }
 
-    public findById(id: RequireId<T>)
+    public findById(id: RequireId<T>): Promise<HydratedDocument<T> | null>
     {
         const emptyCriterias: Partial<T> = {};
         const idCriteria: { _id: RequireId<T> } = {
@@ -140,8 +150,7 @@ export abstract class AbstractRepository<T>
         return this.findOne(criterias);
     }
 
-    // @TODO bad code
-    public async findOneOrInsert(data: T): Promise<HydratedDocument<T> | null>
+    public async findOneOrInsert(data: T): Promise<HydratedDocument<T>>
     {
         const foundDocument: HydratedDocument<T> | null = await this.findOne(data);
 
@@ -150,39 +159,14 @@ export abstract class AbstractRepository<T>
             return foundDocument;
         }
 
-        if (this._toInsert.length > 0)
-        {
-            logger.warning(`findOneOrInsert : _toInsert is not empty`);
-        }
-
-        const validationResult: ValidationResult = this.insert(data);
-
-        if (!validationResult.isValid)
-        {
-            return null;
-        }
-
-        const documents: ReadonlyArray<HydratedDocument<T>> = await this._doInsert();
-
-        if (documents.length > 0)
-        {
-            return documents[0];
-        }
-
-        return null;
+        // @TODO can throw validation error
+        return this.createOne(data);
     }
 
-    public async findLimit(limit: number): Promise<ReadonlyArray<HydratedDocument<T>>>
+    public createInsertBuffer(): InsertBuffer<T>
     {
-        const documents: ReadonlyArray<HydratedDocument<T>> = await this._model.find().limit(limit);
-
-        return documents;
-    }
-
-    public async flush(): Promise<FlushResult<T>>
-    {
-        return {
-            inserted: await this._doInsert()
-        }
+        return new InsertBuffer(this);
     }
 }
+
+export type { InsertBuffer };
