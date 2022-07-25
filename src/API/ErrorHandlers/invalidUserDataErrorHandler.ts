@@ -1,8 +1,8 @@
-import express from "express";
+import { Request, Response, NextFunction } from "express";
 
 import { InvalidUserDataError } from "../Errors/InvalidUserDataError";
 
-export function invalidUserDataErrorHandler(error: any, req: express.Request, res: express.Response, next: express.NextFunction): void
+export function invalidUserDataErrorHandler(error: any, req: Request, res: Response, next: NextFunction): void
 {
     if (error instanceof InvalidUserDataError)
     {

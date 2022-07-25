@@ -1,4 +1,4 @@
-export { FlushResult, ValidationResult } from "./AbstractRepository";
+export type { InsertBuffer, ValidationResult } from "./AbstractRepository";
 import { BlockWithTransactionsRepository } from "./BlockWithTransactionsRepository";
 import { ContractCreationTransactionRepository } from "./ContractCreationTransactionRepository";
 import { ERC1155MultiTokenRepository } from "./ERC1155MultiTokenRepository";
