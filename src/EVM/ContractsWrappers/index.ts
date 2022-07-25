@@ -19,26 +19,23 @@ const contractsTypesMapping = {
         factory: ERC1155__factory,
         wrapper: ERC1155Wrapper
     }
-};
+} as const;
 
 // @TODO confusion between ContractType and the enum ContractType of BytecodeAnalyzer
 export type ContractType = keyof typeof contractsTypesMapping;
-type ContractFactory = typeof contractsTypesMapping[ContractType]["factory"];
-type ContractWrapper = typeof contractsTypesMapping[ContractType]["wrapper"];
 
-export function createContractWrapper(type: "ERC20", contractAddress: ChecksumAddress, provider: providers.JsonRpcProvider): ERC20Wrapper;
-export function createContractWrapper(type: "ERC721", contractAddress: ChecksumAddress, provider: providers.JsonRpcProvider): ERC721Wrapper;
-export function createContractWrapper(type: "ERC1155", contractAddress: ChecksumAddress, provider: providers.JsonRpcProvider): ERC1155Wrapper;
-export function createContractWrapper(type: ContractType, contractAddress: ChecksumAddress, provider: providers.JsonRpcProvider): InstanceType<ContractWrapper>;
-
-export function createContractWrapper(type: ContractType, contractAddress: ChecksumAddress, provider: providers.JsonRpcProvider): InstanceType<ContractWrapper>
+export function createContractWrapper<T extends ContractType>(
+    type: T,
+    contractAddress: ChecksumAddress,
+    provider: providers.JsonRpcProvider
+): InstanceType<typeof contractsTypesMapping[T]["wrapper"]>
 {
-    const factory: ContractFactory = contractsTypesMapping[type].factory;
-    const wrapper: ContractWrapper = contractsTypesMapping[type].wrapper;
+    const factory = contractsTypesMapping[type].factory;
+    const wrapper = contractsTypesMapping[type].wrapper;
 
     const contract = factory.connect(contractAddress, provider);
 
-    return new wrapper(contract as any);
+    return new wrapper(contract as any) as any;
 }
 
 export {

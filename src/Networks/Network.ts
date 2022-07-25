@@ -209,12 +209,7 @@ export class Network extends EventEmitter
         return (isNull(block) ? null : block.number);
     }
 
-    // @TODO refactor signatures
-    public createContractWrapper(type: "ERC20", contractAddress: ChecksumAddress): ERC20Wrapper;
-    public createContractWrapper(type: "ERC721", contractAddress: ChecksumAddress): ERC721Wrapper;
-    public createContractWrapper(type: "ERC1155", contractAddress: ChecksumAddress): ERC1155Wrapper;
-
-    public createContractWrapper(type: ContractType, contractAddress: ChecksumAddress)
+    public createContractWrapper<T extends ContractType>(type: T, contractAddress: ChecksumAddress)
     {
         return createContractWrapper(type, contractAddress, this._jsonRpcProvider);
     }
