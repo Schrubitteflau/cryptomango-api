@@ -160,7 +160,7 @@ export class Network extends EventEmitter
     private async _handleNewERC1155MultiToken(token: IERC1155MultiToken): Promise<void>
     {
         // @TODO potentielle erreur de validation
-        const inserted: HydratedDocument<IERC1155MultiToken> = await this._repositories.erc721Token.createOne(token);
+        const inserted: HydratedDocument<IERC1155MultiToken> = await this._repositories.erc1155Token.createOne(token);
 
         //logger.error(`Invalid erc1155Token document at address ${token.address}`);
 

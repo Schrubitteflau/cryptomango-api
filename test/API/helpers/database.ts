@@ -1,13 +1,12 @@
-import { connectMongoose } from "@Database/init";
-
 import { Mongoose } from "mongoose";
-import { exit } from "process";
+
+import { connectMongoose } from "@Database/init";
 
 let _mongoose: Mongoose;
 
 export async function beforeAll(): Promise<void>
 {
-    const databaseUrl: string = process.env.TESTING_MONGO_DATABASE_URL;
+    const databaseUrl: string = process.env.MONGO_DATABASE_URL;
     _mongoose = await connectMongoose(databaseUrl);
     const { db } = _mongoose.connection;
 
@@ -22,7 +21,7 @@ export async function beforeAll(): Promise<void>
             // See if there's a proper way to exit and don't run the tests
             //throw new Error(`Non-empty collection ${name} in database ${databaseUrl}`);
             console.log(`Non-empty collection ${name} in database ${databaseUrl}`);
-            exit(1);
+            process.exit(1);
         }
     }
 }

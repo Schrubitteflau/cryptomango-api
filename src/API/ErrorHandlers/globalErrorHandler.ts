@@ -1,7 +1,8 @@
 import { NotFoundError } from "@API/Errors";
-import express from "express";
+import { SessionNotExistError } from "@API/Errors/SessionNotExistError";
+import { Request, Response, NextFunction } from "express";
 
-export function globalErrorHandler(error: any, req: express.Request, res: express.Response, next: express.NextFunction): void
+export function globalErrorHandler(error: any, req: Request, res: Response, next: NextFunction): void
 {
     if (error instanceof NotFoundError)
     {
@@ -9,8 +10,18 @@ export function globalErrorHandler(error: any, req: express.Request, res: expres
             error: `Not found : ${error.message}`
         });
     }
-    
-    res.status(500).json({
-        error: "Internal error"
-    });
+    else if (error instanceof SessionNotExistError)
+    {
+        res.status(403).json({
+            error: "Please disconnect and reconnect your wallet"
+        });
+    }
+    else
+    {
+        console.log("Internal handled error ", error);
+
+        res.status(500).json({
+            error: "Internal error"
+        });
+    }
 }

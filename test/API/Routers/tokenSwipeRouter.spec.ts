@@ -5,8 +5,6 @@ import { app } from "@API/init";
 
 import { api, axiosHelper, walletAuth, database, expressApp, fuzz, misc, mock } from "../helpers";
 import { Network, networksManager } from "@Networks";
-import { ArrayIterator } from "../helpers/mock";
-import { IERC1155MultiToken, IERC20Token, IERC721NFT } from "@Schemas";
 
 
 interface IGetNextTokensParams
