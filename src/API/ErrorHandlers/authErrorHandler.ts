@@ -1,9 +1,20 @@
-import express from "express";
+import { Request, Response, NextFunction } from "express";
 import { UnauthorizedError } from "express-jwt";
 
 import { WalletSignatureAuthError } from "../Errors/WalletSignatureAuthError";
 
-export function authErrorHandler(error: any, req: express.Request, res: express.Response, next: express.NextFunction): void
+// @TODO mettre tous les error handlers dans 1 même fichier et rendre ça cool à écrire genre
+/*
+    createErrorHandlerMiddleware(
+        on(UnauthorizedError, ({ req: Request, res: Response, error: UnauthorizedError }) => {
+            res.status(403).json({
+                error: "Access denied"
+            });
+        }),
+        on(WalletSignatureAuthError): ...
+    )
+*/
+export function authErrorHandler(error: any, req: Request, res: Response, next: NextFunction): void
 {
     if (error instanceof UnauthorizedError)
     {

@@ -88,7 +88,7 @@ authRouter.post("/connectWallet", async (req: RequestWithBody<IConnectWalletRequ
     // We can't fetch or create the user in the database
     if (isNull(user))
     {
-        throw new Error("Unknown error");
+        throw new Error("Unknown error : cannot create or find user in the database");
     }
 
     // Build the JWT payload
@@ -99,6 +99,10 @@ authRouter.post("/connectWallet", async (req: RequestWithBody<IConnectWalletRequ
     // And sign it
     const jwt: string = jwtSign(jwtPayload, process.env.JWT_SECRET, {
         algorithm: "HS256",
+        // @TODO attention, il faut que le temps d'expiration ici soit le même
+        // que pour celui des sessions, car si la personne est toujours connectée
+        // mais inactive depuis longtemps et que la session a été supprimée,
+        // alors getUserSession() renverra null et SessionNotExistError sera levée
         expiresIn: '300d',//"1h",
         jwtid: uuidv4()
     });
@@ -109,6 +113,12 @@ authRouter.post("/connectWallet", async (req: RequestWithBody<IConnectWalletRequ
         const userSession: UserSession = new UserSession(user);
         userSessionsManager.addUserSession(userSession);
     }
+
+    // @TODO setcookie plutôt que localstorage = + sécure et + automatique côté client
+    // mais du coup côté client faudra stocker qqpart si on est login ou pas ?
+    // et aussi gérer le refresh des cookies pour que ça expire pas d'un coup pdt qu'on
+    // utilise l'appli ? endpoint /refreshAuth par ex qui fera un autre setcookie
+    //res.status(200).cookie()
 
     res.status(200).json({
         accessToken: jwt
