@@ -1,7 +1,6 @@
 import { Document, Error, HydratedDocument, Model } from "mongoose";
 
 import { isNull, isNullOrUndefined } from "@Util/TypeUtils";
-import { logger } from "@Util";
 
 type DataOrDocument<T> = T | HydratedDocument<T>;
 
@@ -20,9 +19,6 @@ type FindOneCriteriasType<T> = Partial<T> & { _id?: RequireId<T> };
 
 export type ValidationResult = SuccessfulValidationResult | FailedValidationResult;
 
-export type FlushResult<T> = {
-    inserted: ReadonlyArray<HydratedDocument<T>>
-};
 
 class InsertBuffer<T>
 {

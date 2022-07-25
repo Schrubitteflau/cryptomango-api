@@ -8,7 +8,9 @@ import { providers } from "ethers";
 import { ContractType, createContractWrapper, ERC1155Wrapper, ERC20Wrapper, ERC721Wrapper } from "@EVM/ContractsWrappers";
 import { ContractIndexerService, BlocksDownloaderService } from "@NetworkServices";
 import { HydratedDocument } from "mongoose";
-import { createNetworkRelatedRepository, FlushResult, ValidationResult } from "@Repositories";
+// @TODO unifier les 2 ContractType
+import { ContractType as ContractTypeEnum } from "@EVM/BytecodeAnalyzer";
+import { createNetworkRelatedRepository, InsertBuffer, ValidationResult } from "@Repositories";
 import { BlockWithTransactionsWrapper, blockWithTransactionsWrapperFactory } from "@Formatters";
 import EventEmitter from "events";
 
@@ -96,104 +98,73 @@ export class Network extends EventEmitter
             transactions: blockWithTransactions.getAllTransactionHashes()
         };
 
-        const blockValidationResult: ValidationResult = this._repositories.blockWithTransactions.insert(
+        const insertedBlock: HydratedDocument<IBlockWithTransactions> = await this._repositories.blockWithTransactions.createOne(
             block
         );
 
-        if (blockValidationResult.isValid === false)
-        {
-            return logger.error(`Invalid block document #${block.number}`);
-        }
+        logger.info(`Stored block #${insertedBlock.number}`);
 
-        const blockFlushResult: FlushResult<IBlockWithTransactions> = await this._repositories.blockWithTransactions.flush();
+        const cctxInsertBuffer: InsertBuffer<IContractCreationTransaction> = this._repositories.contractCreationTransactions.createInsertBuffer();
 
-        for (const blockDocument of blockFlushResult.inserted)
-        {
-            logger.info(`Stored block #${blockDocument.number}`);
-        }
-
-        for (const contractCreationTransaction of blockWithTransactions.getContractCreationTransactions())
+        for (const cctx of blockWithTransactions.getContractCreationTransactions())
         {
             const transaction: IContractCreationTransaction = {
-                _id: contractCreationTransaction.hash,
-                blockHash: contractCreationTransaction.blockHash,
-                blockNumber: contractCreationTransaction.blockNumber,
-                blockTimestamp: contractCreationTransaction.blockTimestamp,
-                contractAddress: contractCreationTransaction.contractAddress,
-                creationBytecode: contractCreationTransaction.contractBytecode,
-                from: contractCreationTransaction.from,
-                hash: contractCreationTransaction.hash,
-                indexInBlock: contractCreationTransaction.indexInBlock
+                _id: cctx.hash,
+                blockHash: cctx.blockHash,
+                blockNumber: cctx.blockNumber,
+                blockTimestamp: cctx.blockTimestamp,
+                contractAddress: cctx.contractAddress,
+                creationBytecode: cctx.contractBytecode,
+                from: cctx.from,
+                hash: cctx.hash,
+                indexInBlock: cctx.indexInBlock
             };
 
-            const validationResult: ValidationResult = this._repositories.contractCreationTransactions.insert(
-                transaction
-            );
+            const validationResult: ValidationResult = cctxInsertBuffer.add(transaction);
 
-            if (validationResult.isValid === false)
+            if (!validationResult.isValid)
             {
-                return logger.error(`Invalid contractCreationTransaction document #${contractCreationTransaction.hash} of block #${contractCreationTransaction.blockNumber}`);
+                return logger.error(`Invalid contractCreationTransaction document #${cctx.hash} of block #${cctx.blockNumber}`);
             }
         }
 
-        const contractCreationTransactionsFlushResult: FlushResult<IContractCreationTransaction> = await this._repositories.contractCreationTransactions.flush();
-        const storedContractCreationTransactionsCount: number = contractCreationTransactionsFlushResult.inserted.length;
+        const insertedCctx: ReadonlyArray<HydratedDocument<IContractCreationTransaction>> = await cctxInsertBuffer.insert();
 
-        if (storedContractCreationTransactionsCount > 0)
+        if (insertedCctx.length > 0)
         {
-            logger.info(`Stored ${storedContractCreationTransactionsCount} contractCreationTransactions of block #${block.number}`);
+            logger.info(`Stored ${insertedCctx.length} contractCreationTransactions of block #${block.number}`);
         }
     }
 
+    // @TODO voir si moyen de factoriser _handleNewERC20Token _handleNewERC721NFT et _handleNewERC1155MultiToken
     private async _handleNewERC20Token(token: IERC20Token): Promise<void>
     {
-        const validationResult: ValidationResult = this._repositories.erc20Token.insert(token);
+        // @TODO potentielle erreur de validation
+        const inserted: HydratedDocument<IERC20Token> = await this._repositories.erc20Token.createOne(token);
 
-        if (validationResult.isValid === false)
-        {
-            logger.error(`Invalid erc20Token document at address ${token.address}`);
-        }
+        //logger.error(`Invalid erc20Token document at address ${token.address}`);
 
-        const flushResult: FlushResult<IERC20Token> = await this._repositories.erc20Token.flush();
-
-        for (const document of flushResult.inserted)
-        {
-            logger.info(`Stored erc20Token document : ${document.name} $${document.symbol} at ${document.address}`);
-        }
+        logger.info(`Stored erc20Token document : ${inserted.name} $${inserted.symbol} at ${inserted.address}`);
     }
 
     private async _handleNewERC721NFT(token: IERC721NFT): Promise<void>
     {
-        const validationResult: ValidationResult = this._repositories.erc721Token.insert(token);
+        // @TODO potentielle erreur de validation
+        const inserted: HydratedDocument<IERC721NFT> = await this._repositories.erc721Token.createOne(token);
 
-        if (validationResult.isValid === false)
-        {
-            logger.error(`Invalid erc721Token document at address ${token.address}`);
-        }
+        //logger.error(`Invalid erc721Token document at address ${token.address}`);
 
-        const flushResult: FlushResult<IERC721NFT> = await this._repositories.erc721Token.flush();
-
-        for (const document of flushResult.inserted)
-        {
-            logger.info(`Stored erc721Token document : ${document.name} $${document.symbol} at ${document.address}`);
-        }
+        logger.info(`Stored erc721Token document : ${inserted.name} $${inserted.symbol} at ${inserted.address}`);
     }
 
     private async _handleNewERC1155MultiToken(token: IERC1155MultiToken): Promise<void>
     {
-        const validationResult: ValidationResult = this._repositories.erc1155Token.insert(token);
+        // @TODO potentielle erreur de validation
+        const inserted: HydratedDocument<IERC1155MultiToken> = await this._repositories.erc721Token.createOne(token);
 
-        if (validationResult.isValid === false)
-        {
-            logger.error(`Invalid erc1155Token document at address ${token.address}`);
-        }
+        //logger.error(`Invalid erc1155Token document at address ${token.address}`);
 
-        const flushResult: FlushResult<IERC1155MultiToken> = await this._repositories.erc1155Token.flush();
-
-        for (const document of flushResult.inserted)
-        {
-            logger.info(`Stored erc1155Token document : ${document.name} $${document.symbol} at ${document.address}`);
-        }
+        logger.info(`Stored erc1155Token document : ${inserted.name} $${inserted.symbol} at ${inserted.address}`);
     }
 
     /** Some getters **/
@@ -246,6 +217,20 @@ export class Network extends EventEmitter
     public createContractWrapper(type: ContractType, contractAddress: ChecksumAddress)
     {
         return createContractWrapper(type, contractAddress, this._jsonRpcProvider);
+    }
+
+    // @TODO typer et attention car ContractTypeEnum
+    public getRepositoryOfContractType(type: ContractTypeEnum)
+    {
+        switch (type)
+        {
+            case ContractTypeEnum.ERC20Token:
+                return this._repositories.erc20Token;
+            case ContractTypeEnum.ERC721NFT:
+                return this._repositories.erc721Token;
+            case ContractTypeEnum.ERC1155MultiToken:
+                return this._repositories.erc1155Token;
+        }
     }
 
     /**
