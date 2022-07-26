@@ -1,6 +1,5 @@
 import { Logger, LogLevel } from "./Logger";
 export { waitSeconds } from "./TimeUtils";
-export { throwRandomErrorIfEnabled } from "./Misc";
 
 // create @Logger namespace !
 

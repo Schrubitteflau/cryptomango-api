@@ -1,6 +1,7 @@
 import dateFormat from "dateformat";
 
-export enum LogLevel {
+export enum LogLevel
+{
     LEVEL_DEBUG,
     LEVEL_INFO,
     LEVEL_WARNING,
