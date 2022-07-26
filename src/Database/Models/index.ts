@@ -1,13 +1,13 @@
 import { Model, model, Schema } from "mongoose";
 
 import {
-    IBlockWithTransactions, blockWithTransactionsSchema,
-    IContractCreationTransaction, contractCreationTransactionSchema,
-    ITokenSwipe, tokenSwipeSchema,
-    IERC20Token, erc20TokenSchema,
-    IERC721NFT, erc721NFTSchema,
-    IERC1155MultiToken, erc1155MultiTokenSchema,
-    IUser, userSchema
+    blockWithTransactionsSchema,
+    contractCreationTransactionSchema,
+    tokenSwipeSchema,
+    erc20TokenSchema,
+    erc721NFTSchema,
+    erc1155MultiTokenSchema,
+    userSchema
 } from "@Schemas";
 
 const nameSchemaMapping = {
@@ -20,21 +20,16 @@ const nameSchemaMapping = {
     User: userSchema
 } as const;
 
-type ModelName = keyof typeof nameSchemaMapping;
+type ExtractDataTypeFromSchema<T> = T extends Schema<infer U> ? U : never;
 
-export function createModel(name: "BlockWithTransactions", collectionName: string): Model<IBlockWithTransactions>;
-export function createModel(name: "ContractCreationTransaction", collectionName: string): Model<IContractCreationTransaction>;
-export function createModel(name: "TokenSwipe", collectionName: string): Model<ITokenSwipe>;
-export function createModel(name: "ERC20Token", collectionName: string): Model<IERC20Token>;
-export function createModel(name: "ERC721NFT", collectionName: string): Model<IERC721NFT>;
-export function createModel(name: "ERC1155MultiToken", collectionName: string): Model<IERC1155MultiToken>;
-export function createModel(name: "User", collectionName: string): Model<IUser>;
-
-export function createModel<T>(name: ModelName, collectionName: string): Model<T>
+export function createModel<ModelName extends keyof typeof nameSchemaMapping>(
+    name: ModelName,
+    collectionName: string
+): Model<ExtractDataTypeFromSchema<typeof nameSchemaMapping[ModelName]>>
 {
     const schema: Schema = nameSchemaMapping[name];
 
-    return model<T>(
+    return model(
         name,
         schema,
         collectionName
