@@ -1,5 +1,5 @@
 import { Network } from "@Networks";
-import { logger, throwRandomErrorIfEnabled, waitSeconds } from "@Util";
+import { logger, waitSeconds } from "@Util";
 import { isNull, isValidPositiveInteger } from "@Util/TypeUtils";
 import { AbstractNetworkService } from "./AbstractNetworkService";
 import type { BlockWithTransactions } from "@Types/EthersTypes";
@@ -7,19 +7,19 @@ import type { BlockWithTransactions } from "@Types/EthersTypes";
 export interface IBlocksDownloaderServiceConfig
 {
     // If set to "auto", it will retrieve the last stored block and start from this one 
-    fromBlock: number | "auto",
+    fromBlock: number | "auto";
     // If set to "latest", it will constantly check for new blocks added once it's synchronized
-    toBlock: number | "latest",
+    toBlock: number | "latest";
     // The network on which operate to
-    network: Network,
+    network: Network;
     // Behavior when a fatal error occured during the block downloading
     onError: {
-        restartAfterSeconds: number
-    },
+        restartAfterSeconds: number;
+    };
     // Cooldown to wait until checking for the last block number once synchronized
     onSync: {
-        cooldownSeconds: number
-    }
+        cooldownSeconds: number;
+    };
 }
 
 export declare interface BlocksDownloaderService {
@@ -29,16 +29,23 @@ export declare interface BlocksDownloaderService {
     emit(event: "rawBlock", block: BlockWithTransactions): any;
 }
 
+interface IState
+{
+    currentBlock: number;
+    targetBlock: number;
+    status: "started" | "stopped" | "done";
+}
+
 /**
  * An instance of this class will simply download all the blocks of the
  * Network one by one, and emit an event each time a new block is downloaded
  */
 export class BlocksDownloaderService extends AbstractNetworkService
 {
-    private _state = {
+    private _state: IState = {
         currentBlock: 0,
         targetBlock: 0,
-        isStarted: false
+        status: "stopped"
     };
 
     public constructor
@@ -94,7 +101,6 @@ export class BlocksDownloaderService extends AbstractNetworkService
         {
             logger.info("toBlock is set to 'latest', fetching the last block number...");
             const latestBlockNumberOnChain: number = await this._network.getLatestBlockNumberOnChain();
-            throwRandomErrorIfEnabled();
             logger.info(`Latest block on chain is #${latestBlockNumberOnChain}`);
 
             this._state.targetBlock = latestBlockNumberOnChain;
@@ -113,7 +119,6 @@ export class BlocksDownloaderService extends AbstractNetworkService
         {
             logger.info(`Waiting for ${this._config.onSync.cooldownSeconds} seconds`);
             await waitSeconds(this._config.onSync.cooldownSeconds);
-            throwRandomErrorIfEnabled();
             await this._setTargetBlock();
         }
     }
@@ -123,18 +128,21 @@ export class BlocksDownloaderService extends AbstractNetworkService
      */
     private async _start(): Promise<void>
     {
-        if (this.isStarted())
+        if (this.isStarted)
         {
             throw new Error("Already started");
         }
 
-        this._state.isStarted = true;
-        logger.info(`Starting BlocksDownloaderService`);
-        logger.info(`Syncing until block #${this._config.toBlock}`);
+        this._state.status = "started";
+        logger.info(`Starting BlocksDownloaderService : syncing until block #${this._config.toBlock}`);
 
         await this._setCurrentBlock();
-        throwRandomErrorIfEnabled();
         await this._setTargetBlock();
+
+        if (this._state.currentBlock >= this._state.targetBlock)
+        {
+            logger.warning(`currentBlock (${this._state.currentBlock}) >= targetBlock (${this._state.targetBlock})`);
+        }
 
         // In all cases, we sync until we reach the targetBlock
         while (this._state.currentBlock <= this._state.targetBlock)
@@ -142,8 +150,6 @@ export class BlocksDownloaderService extends AbstractNetworkService
             // The last downloaded block will be the targetBlock
             const block: BlockWithTransactions = await this._network.getBlockWithTransactions(this._state.currentBlock);
             this.emit("rawBlock", block);
-            //@TODO enlever ça
-            throwRandomErrorIfEnabled();
 
             logger.info(`Fetched block #${block.number}`);
 
@@ -155,11 +161,18 @@ export class BlocksDownloaderService extends AbstractNetworkService
 
             this._state.currentBlock++;
         }
+
+        this._state.status = "done";
     }
 
-    public isStarted(): boolean
+    public get isStarted(): boolean
     {
-        return this._state.isStarted;
+        return (this._state.status === "started");
+    }
+
+    public get isDone(): boolean
+    {
+        return (this._state.status === "done");
     }
 
     /**
@@ -167,19 +180,29 @@ export class BlocksDownloaderService extends AbstractNetworkService
      */
     public async start(): Promise<void>
     {
-        while (true)
+        let loop: boolean = true;
+        while (loop)
         {
             try
             {
+                // If it ends normally, then it'll not throw an error and set the status to "done",
+                // which is checked in the finally clause
                 await this._start();
-                throwRandomErrorIfEnabled();
             }
             catch (error)
             {
-                this._state.isStarted = false;
+                this._state.status = "stopped";
                 logger.error(`An error occured, restarting in ${this._config.onError.restartAfterSeconds} seconds`);
+                console.log(error);
                 await waitSeconds(this._config.onError.restartAfterSeconds);
-                throwRandomErrorIfEnabled();
+            }
+            finally
+            {
+                if (this.isDone)
+                {
+                    logger.info("Done !");
+                    loop = false;
+                }
             }
         }
     }
