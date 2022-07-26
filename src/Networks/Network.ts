@@ -102,7 +102,7 @@ export class Network extends EventEmitter
             block
         );
 
-        logger.info(`Stored block #${insertedBlock.number}`);
+        logger.info(`Stored block #${insertedBlock.number} ${insertedBlock.hash}`);
 
         const cctxInsertBuffer: InsertBuffer<IContractCreationTransaction> = this._repositories.contractCreationTransactions.createInsertBuffer();
 
