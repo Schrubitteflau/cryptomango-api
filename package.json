@@ -7,6 +7,7 @@
     "test": "jest --runInBand",
     "lint": "eslint . --ext .ts",
     "build-scripts": "npx tsc -p tsconfig.build.json scripts/*.ts",
+    "prettier-format": "prettier --config .prettierrc 'src/index.ts' #'src/**/*.ts' --write",
     "gen-contracts-types": "npx typechain --target=ethers-v5 --out-dir 'src/EVM/Contracts' 'ABIs/**/*.json'",
     "start": "npx tsc -p tsconfig.build.json && node -r module-alias/register -r dotenv-flow/config dist/index.js",
     "dev": "concurrently -k -n \"Typescript,Node\" -p \"${npm_package_name}\" -c \"blue,green\" \"npx tsc -p tsconfig.build.json --watch\" \"nodemon -r module-alias/register -r dotenv-flow/config ${npm_package_main}\""
@@ -56,10 +57,13 @@
     "cheerio": "^1.0.0-rc.10",
     "concurrently": "^6.1.0",
     "eslint": "^8.12.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-jsdoc": "^38.1.6",
+    "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.0.0",
     "jest": "^27.3.1",
     "nodemon": "^2.0.7",
+    "prettier": "^2.7.1",
     "ts-jest": "^27.0.7",
     "typechain": "^5.1.2",
     "typescript": "^4.2.4"
