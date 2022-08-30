@@ -1,6 +1,5 @@
 # Idée générale
-Dans le futur, il faudra que j'opère plus bas niveau et que j'inspecte en détail le comportement de chaque transaction afin de voir si elles résultent en une création de smart contract. Cela permettrait d'indexer les données plus efficacement et de manière plus durable, mais va nécessiter de faire tourner un node (fast ? full ? archive ? => à déterminer).
-À ce moment-là il faudra donc installer des agents d'indexation sur chaque machine fesant tourner un node.
+Dans le futur, il faudra que j'opère plus bas niveau et que j'inspecte en détail le comportement de chaque transaction afin de voir si elles résultent en une création de smart contract. Cela permettrait d'indexer les données plus efficacement et de manière plus durable, mais va nécessiter de faire tourner un node. À ce moment-là il faudra donc installer des agents d'indexation sur chaque machine fesant tourner le node, l'indexation se fera sur cette même machine et `cryptomango-api` deviendra un aggrégateur, une passerelle pour accéder à ces informations.
 
 # Ressources potentiellement intéressantes :
 - https://banteg.mirror.xyz/3dbuIlaHh30IPITWzfT1MFfSg6fxSssMqJ7TcjaWecM
@@ -39,3 +38,18 @@ On peut également voir l'invocation flow ici : https://tools.blocksec.com/tx/et
 11. 0x442af784a788a5bd6f42a01ebe9f287a871243fb (Lido: Oracle)
 
 On peut facilement vérifier que tous ces contrats ont été créés par la transaction `0x3feabd79e8549ad68d1827c074fa7123815c80206498946293d5373a160fd866`, et `TraceAddress` permet de se rendre compte à quel niveau d'imbrication d'appel on se situe. Il faudrait tester la création d'un contrat engendrant la création d'un autre contrat (dans son constructeur et dans un appel de méthode), à plusieurs niveaux d'imbrications, afin de voir si vraiment toutes les créations de contrat sont interceptées, mais je pense que oui.
+
+# Utilisation de vmTrace
+
+Voir : https://github.com/banteg/vmtrace/blob/main/demo.py (ou `banteg_vmtrace_demo.py` si le repo n'existe plus)
+Lignes intéressantes :
+```python
+request_raw("trace_replayTransaction", [tx, ["vmTrace"]])
+request_raw("trace_replayBlockTransactions", [hex(height), ["vmTrace"]])
+```
+
+Il s'agit bien de `Parity traces`, non supportées par `geth`. `trace_replayBlockTransactions` pourrait s'avérer particulièrement intéssant également !
+
+Plug-in `geth` pour ajouter le support des `Parity traces` : https://github.com/openrelayxyz/plugeth-plugins/tree/master/packages/plugeth-parity
+
+Pour résumer, les prérequis seront donc un archive node supportant les `Parity traces`.
