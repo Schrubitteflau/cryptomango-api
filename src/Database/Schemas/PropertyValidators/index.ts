@@ -1,5 +1,7 @@
-import { isUndefined } from "@Util/TypeUtils";
 import { Schema, ValidateFn } from "mongoose";
+
+import { isUndefined } from "@Util/TypeUtils";
+
 
 export function stringType()
 {
@@ -16,7 +18,7 @@ export function required(message?: string): [ boolean, string ]
     return [ true, isUndefined(message) ? "{PATH} required, got '{VALUE}'" : message ];
 }
 
-export function notRequired(defaultValue: any): { required: false, default: any }
+export function notRequired(defaultValue?: any): { required: false, default: any }
 {
     return {
         // sparse: unique unless it is not defined (null and probably undefined)
@@ -46,7 +48,7 @@ export function validate<T>(validator: ValidateFn<T>)
     return {
         validator,
         message: "'{VALUE}' is not a valid {PATH}"
-    }
+    };
 }
 
 export function requiredPositiveIntegerOrZero()

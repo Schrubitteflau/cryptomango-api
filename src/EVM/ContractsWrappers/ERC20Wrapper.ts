@@ -1,76 +1,45 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { toError } from "@Util/TypeUtils";
-import { logger } from "@Util";
+
 import { ERC20 } from "../Contracts";
+import { BaseWrapper, RpcCallResult } from "./BaseWrapper";
 
-export class ERC20Wrapper
+export class ERC20Wrapper extends BaseWrapper
 {
-    public constructor
-    (
+    public constructor (
         private readonly _erc20: ERC20
-    ) { }
-
-    /**
-     * @alwaysResolve
-     */
-    public async decimals(): Promise<number | null>
-    {
-        try
-        {
-            return await this._erc20.decimals();
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+    ) {
+        super();
     }
 
     /**
      * @alwaysResolve
      */
-    public async name(): Promise<string | null>
+    public async decimals(): Promise<RpcCallResult<number>>
     {
-        try
-        {
-            return await this._erc20.name();
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+        return this._handleCall(this._erc20.decimals());
     }
 
     /**
      * @alwaysResolve
      */
-    public async symbol(): Promise<string | null>
+    public async name(): Promise<RpcCallResult<string>>
     {
-        try
-        {
-            return await this._erc20.symbol();
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+        return this._handleCall(this._erc20.name());
     }
 
     /**
      * @alwaysResolve
      */
-    public async balanceOf(owner: string): Promise<BigNumber | null>
+    public async symbol(): Promise<RpcCallResult<string>>
     {
-        try
-        {
-            return await this._erc20.balanceOf(owner);
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+        return this._handleCall(this._erc20.symbol());
+    }
+
+    /**
+     * @alwaysResolve
+     */
+    public async balanceOf(owner: string): Promise<RpcCallResult<BigNumber>>
+    {
+        return this._handleCall(this._erc20.balanceOf(owner));
     }
 }

@@ -1,59 +1,37 @@
-import { toError } from "@Util/TypeUtils";
-import { logger } from "@Util";
+import { BaseWrapper, RpcCallResult } from "./BaseWrapper";
 import { ERC721 } from "../Contracts";
 
-export class ERC721Wrapper
+
+export class ERC721Wrapper extends BaseWrapper
 {
     public constructor
     (
         private readonly _erc721: ERC721
-    ) { }
-
-    /**
-     * @alwaysResolve
-     */
-    public async tokenURI(tokenId: number): Promise<string | null>
-    {
-        try
-        {
-            return await this._erc721.tokenURI(tokenId);
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+    ) {
+        super();
     }
 
     /**
      * @alwaysResolve
      */
-    public async name(): Promise<string | null>
+    public async tokenURI(tokenId: number): Promise<RpcCallResult<string>>
     {
-        try
-        {
-            return await this._erc721.name();
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+        return this._handleCall(this._erc721.tokenURI(tokenId));
     }
 
     /**
      * @alwaysResolve
      */
-    public async symbol(): Promise<string | null>
+    public async name(): Promise<RpcCallResult<string>>
     {
-        try
-        {
-            return await this._erc721.symbol();
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+        return this._handleCall(this._erc721.name());
+    }
+
+    /**
+     * @alwaysResolve
+     */
+    public async symbol(): Promise<RpcCallResult<string>>
+    {
+        return this._handleCall(this._erc721.symbol());
     }
 }

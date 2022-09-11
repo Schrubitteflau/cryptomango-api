@@ -6,6 +6,8 @@ import { ERC20Wrapper } from "./ERC20Wrapper";
 import { ERC721Wrapper } from "./ERC721Wrapper";
 import { ERC1155Wrapper } from "./ERC1155Wrapper";
 
+export { RpcCallResult, ErrorType } from "./BaseWrapper";
+
 const contractsTypesMapping = {
     ERC20: {
         factory: ERC20__factory,

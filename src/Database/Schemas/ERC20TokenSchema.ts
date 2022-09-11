@@ -5,26 +5,23 @@ import { notRequired, numberType, stringType } from "./PropertyValidators";
 
 export interface IERC20Token extends IBaseToken
 {
-    // Decimals, null if decimals() function is not implemented
-    decimals: number | null;
-    // Name, null if name() function is not implemented
-    name: string | null;
-    // Symbol, null if symbol() function is not implemented
-    symbol: string | null;
+    decimals?: number | null;
+    name?: string | null;
+    symbol?: string | null;
 }
 
 export const erc20TokenSchema = new Schema<IERC20Token>({
     ...baseTokenSchemaSpecs,
     decimals: {
         type: numberType(),
-        ...notRequired(null)
+        ...notRequired()
     },
     name: {
         type: stringType(),
-        ...notRequired(null)
+        ...notRequired()
     },
     symbol: {
         type: stringType(),
-        ...notRequired(null)
+        ...notRequired()
     }
 });

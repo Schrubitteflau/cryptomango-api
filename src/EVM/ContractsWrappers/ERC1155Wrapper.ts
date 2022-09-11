@@ -1,43 +1,29 @@
-import { toError } from "@Util/TypeUtils";
-import { logger } from "@Util";
+import { BaseWrapper, RpcCallResult } from "./BaseWrapper";
 import { ERC1155 } from "../Contracts";
 
-export class ERC1155Wrapper
+
+export class ERC1155Wrapper extends BaseWrapper
 {
     public constructor
     (
         private readonly _erc1155: ERC1155
-    ) { }
-
-    /**
-     * @alwaysResolve
-     */
-    public async name(): Promise<string | null>
-    {
-        try
-        {
-            return await this._erc1155.name();
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+    ) {
+        super();
     }
 
     /**
      * @alwaysResolve
      */
-    public async symbol(): Promise<string | null>
+    public async name(): Promise<RpcCallResult<string>>
     {
-        try
-        {
-            return await this._erc1155.symbol();
-        }
-        catch (error)
-        {
-            logger.error(toError(error).message);
-            return null;
-        }
+        return this._handleCall(this._erc1155.name());
+    }
+
+    /**
+     * @alwaysResolve
+     */
+    public async symbol(): Promise<RpcCallResult<string>>
+    {
+        return this._handleCall(this._erc1155.symbol());
     }
 }
