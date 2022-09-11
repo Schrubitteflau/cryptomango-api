@@ -7,7 +7,10 @@ declare global
             MONGO_DATABASE_URL: string;
             TESTING_MONGO_DATABASE_URL: string;
 
-            APP_MODE: "api_only" | "api_sync" | "fast_sync_no_api";
+            // "true" | "false"
+            START_SYNCING: string;
+            START_API: string;
+
             API_PORT: string;
             JWT_SECRET: string;
 

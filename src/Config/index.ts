@@ -13,6 +13,7 @@ export interface IRawNetwork
     jsonRpcProviderUrl: string;
     collectionPrefix: string;
     isActive: boolean;
+    isSyncEnabled: boolean;
     blocksDownloading: Omit<IBlocksDownloaderServiceConfig, "network">
 }
 

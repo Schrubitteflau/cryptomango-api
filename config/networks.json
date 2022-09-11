@@ -5,6 +5,7 @@
         "jsonRpcProviderUrl": "https://bsc-dataseed.binance.org/",
         "collectionPrefix": "bsc",
         "isActive": true,
+        "isSyncEnabled": true,
         "blocksDownloading": {
             "fromBlock": 11643830,
             "toBlock": "latest",
