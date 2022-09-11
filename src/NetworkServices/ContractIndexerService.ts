@@ -1,5 +1,5 @@
 import { BytecodeAnalyzer, ContractTypeOrUnknown } from "@EVM/BytecodeAnalyzer";
-import { ERC20Wrapper, ERC721Wrapper, ERC1155Wrapper } from "@EVM/ContractsWrappers";
+import { ERC20Wrapper, ERC721Wrapper, ERC1155Wrapper, ErrorType, RpcCallResult } from "@EVM/ContractsWrappers";
 import { BlockWithTransactionsWrapper } from "@Formatters";
 import { IBaseToken, IERC20Token, IERC721NFT, IERC1155MultiToken } from "@Schemas";
 import { logger } from "@Util";
@@ -93,14 +93,34 @@ export class ContractIndexerService extends AbstractNetworkService
         };
     }
 
+    private _transformCallResultValue<T>(callResult: RpcCallResult<T>): T | null | undefined
+    {
+        if (callResult.isSuccess)
+        {
+            // OK, return the actual value
+            return callResult.value;
+        }
+
+        if (callResult.errorType === ErrorType.EVM_METHOD_NOT_IMPLEMENTED)
+        {
+            // null means that the contract doesn't implement the method
+            return null;
+        }
+
+        // undefined means that the value couldn't be retrieved, for an unknown reason, and we should try again later
+        return void 0;
+    }
+
     private async _handleERC20TokenContract(transaction: IContractCreationTransactionResponseWrapper): Promise<void>
     {
-        const contractWrapper: ERC20Wrapper = this._network.createContractWrapper("ERC20", transaction.contractAddress);
+        const contract: ERC20Wrapper = this._network.createContractWrapper("ERC20", transaction.contractAddress);
+        const [decimals, name, symbol] = await Promise.all([contract.decimals(), contract.name(), contract.symbol()]);
+
         const tokenData: IERC20Token = {
             ...this._extractBaseTokenProperties(transaction),
-            decimals: await contractWrapper.decimals(),
-            name: await contractWrapper.name(),
-            symbol: await contractWrapper.symbol()
+            decimals: this._transformCallResultValue(decimals),
+            name: this._transformCallResultValue(name),
+            symbol: this._transformCallResultValue(symbol)
         };
 
         logger.info(`[ContractIndexerService]::${this._network.getFullName()} : found ERC20 ${tokenData.name} $${tokenData.symbol} at ${transaction.contractAddress}`);
@@ -109,11 +129,13 @@ export class ContractIndexerService extends AbstractNetworkService
 
     private async _handleERC721NFTContract(transaction: IContractCreationTransactionResponseWrapper): Promise<void>
     {
-        const contractWrapper: ERC721Wrapper = this._network.createContractWrapper("ERC721", transaction.contractAddress);
+        const contract: ERC721Wrapper = this._network.createContractWrapper("ERC721", transaction.contractAddress);
+        const [name, symbol] = await Promise.all([contract.name(), contract.symbol()]);
+
         const tokenData: IERC721NFT = {
             ...this._extractBaseTokenProperties(transaction),
-            name: await contractWrapper.name(),
-            symbol: await contractWrapper.symbol()
+            name: this._transformCallResultValue(name),
+            symbol: this._transformCallResultValue(symbol)
         };
 
         logger.info(`[ContractIndexerService]::${this._network.getFullName()} : found ERC721 ${tokenData.name} $${tokenData.symbol} at ${transaction.contractAddress}`);
@@ -122,11 +144,13 @@ export class ContractIndexerService extends AbstractNetworkService
 
     private async _handleERC1155MultiTokenContract(transaction: IContractCreationTransactionResponseWrapper): Promise<void>
     {
-        const contractWrapper: ERC1155Wrapper = this._network.createContractWrapper("ERC1155", transaction.contractAddress);
+        const contract: ERC1155Wrapper = this._network.createContractWrapper("ERC1155", transaction.contractAddress);
+        const [name, symbol] = await Promise.all([contract.name(), contract.symbol()]);
+
         const tokenData: IERC1155MultiToken = {
             ...this._extractBaseTokenProperties(transaction),
-            name: await contractWrapper.name(),
-            symbol: await contractWrapper.symbol()
+            name: this._transformCallResultValue(name),
+            symbol: this._transformCallResultValue(symbol)
         };
 
         logger.info(`[ContractIndexerService]::${this._network.getFullName()} : found ERC1155 ${tokenData.name} $${tokenData.symbol} at ${transaction.contractAddress}`);
