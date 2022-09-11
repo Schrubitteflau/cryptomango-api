@@ -23,13 +23,8 @@ type ExtractDataTypeFromSchema<T> = T extends Schema<infer U> ? U : never;
 export function createModel<ModelName extends keyof typeof nameSchemaMapping>(
     name: ModelName,
     collectionName: string
-): Model<ExtractDataTypeFromSchema<typeof nameSchemaMapping[ModelName]>>
-{
+): Model<ExtractDataTypeFromSchema<typeof nameSchemaMapping[ModelName]>> {
     const schema: Schema = nameSchemaMapping[name];
 
-    return model(
-        name,
-        schema,
-        collectionName
-    );
+    return model(name, schema, collectionName);
 }

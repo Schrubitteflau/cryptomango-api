@@ -7,53 +7,42 @@ type DataOrDocument<T> = T | HydratedDocument<T>;
 type RequireId<T> = HydratedDocument<T>["_id"];
 
 type SuccessfulValidationResult = {
-    isValid: true
+    isValid: true;
 };
 
 type FailedValidationResult = {
     isValid: false;
-    validationError: Error.ValidationError
+    validationError: Error.ValidationError;
 };
 
 type FindOneCriteriasType<T> = Partial<T> & { _id?: RequireId<T> };
 
 export type ValidationResult = SuccessfulValidationResult | FailedValidationResult;
 
-
-class InsertBuffer<T>
-{
+class InsertBuffer<T> {
     private readonly _documents: Array<HydratedDocument<T>> = [];
 
-    public constructor(
-        private readonly _repository: AbstractRepository<T>
-    ) {}
+    public constructor(private readonly _repository: AbstractRepository<T>) {}
 
-    public add(data: DataOrDocument<T>): ValidationResult
-    {
+    public add(data: DataOrDocument<T>): ValidationResult {
         const document: HydratedDocument<T> = this._repository.createDocument(data);
         const validate: ValidationResult = this._repository.validateDocument(document);
 
-        if (validate.isValid === true)
-        {
+        if (validate.isValid === true) {
             this._documents.push(document);
         }
 
         return validate;
     }
 
-    public insert(): Promise<Array<HydratedDocument<T>>>
-    {
+    public insert(): Promise<Array<HydratedDocument<T>>> {
         return this._repository.createMany(this._documents);
     }
 }
 
 // T : interface which represents the data scheme
-export abstract class AbstractRepository<T>
-{
-    // @TODO format every constructor like this
-    protected constructor(
-        protected _model: Model<T>
-    ) {}
+export abstract class AbstractRepository<T> {
+    protected constructor(protected _model: Model<T>) {}
 
     /**
      * @param data The object to check whether it is a document or not
@@ -61,14 +50,14 @@ export abstract class AbstractRepository<T>
      * @warning The type HydratedDocument<T> contains T, so that's why this method exist,
      * because we can't rely on the type T to insure that this is not a document
      */
-    private _isDocument(data: T): data is HydratedDocument<T>
-    {
-        return (data instanceof Document);
+    private _isDocument(data: T): data is HydratedDocument<T> {
+        return data instanceof Document;
     }
 
-    public createDocument(data: DataOrDocument<T>): HydratedDocument<T>
-    {
-        if (this._isDocument(data)) return data;
+    public createDocument(data: DataOrDocument<T>): HydratedDocument<T> {
+        if (this._isDocument(data)) {
+            return data;
+        }
 
         // After a few tests, if data is a document, then it'll make a copy and return
         // an object with the same properties, as a Document
@@ -77,13 +66,11 @@ export abstract class AbstractRepository<T>
         return new this._model(data);
     }
 
-    public validateDocument(document: HydratedDocument<T>): ValidationResult
-    {
+    public validateDocument(document: HydratedDocument<T>): ValidationResult {
         const validationResult: Error.ValidationError | null = document.validateSync();
 
         // Mongoose returns undefined instead of null
-        if (isNullOrUndefined(validationResult))
-        {
+        if (isNullOrUndefined(validationResult)) {
             return {
                 isValid: true
             };
@@ -96,8 +83,7 @@ export abstract class AbstractRepository<T>
     }
 
     // @TODO SHOULD ONLY PASS LITTERAL OBJECTS ?
-    public createOne(newDocument: T): Promise<HydratedDocument<T>>
-    {
+    public createOne(newDocument: T): Promise<HydratedDocument<T>> {
         // @TODO can throw validation error
 
         // Same as doing : new MyModel(doc).save()
@@ -107,8 +93,7 @@ export abstract class AbstractRepository<T>
     }
 
     // @TODO SHOULD ONLY PASS LITTERAL OBJECTS ?
-    public createMany(newDocuments: ReadonlyArray<T>): Promise<Array<HydratedDocument<T>>>
-    {
+    public createMany(newDocuments: ReadonlyArray<T>): Promise<Array<HydratedDocument<T>>> {
         /*
             [options.ordered «Boolean» = true]
                 If true, will fail fast on the first error encountered.
@@ -123,13 +108,11 @@ export abstract class AbstractRepository<T>
     }
 
     // @TODO blinder avec findOneResult
-    public findOne(criterias: FindOneCriteriasType<T>): Promise<HydratedDocument<T> | null>
-    {
+    public findOne(criterias: FindOneCriteriasType<T>): Promise<HydratedDocument<T> | null> {
         return this._model.findOne(criterias).exec();
     }
 
-    public findById(id: RequireId<T>): Promise<HydratedDocument<T> | null>
-    {
+    public findById(id: RequireId<T>): Promise<HydratedDocument<T> | null> {
         const emptyCriterias: Partial<T> = {};
         const idCriteria: { _id: RequireId<T> } = {
             _id: id
@@ -146,12 +129,10 @@ export abstract class AbstractRepository<T>
         return this.findOne(criterias);
     }
 
-    public async findOneOrInsert(data: T): Promise<HydratedDocument<T>>
-    {
+    public async findOneOrInsert(data: T): Promise<HydratedDocument<T>> {
         const foundDocument: HydratedDocument<T> | null = await this.findOne(data);
 
-        if (!isNull(foundDocument))
-        {
+        if (!isNull(foundDocument)) {
             return foundDocument;
         }
 
@@ -159,8 +140,7 @@ export abstract class AbstractRepository<T>
         return this.createOne(data);
     }
 
-    public createInsertBuffer(): InsertBuffer<T>
-    {
+    public createInsertBuffer(): InsertBuffer<T> {
         return new InsertBuffer(this);
     }
 }

@@ -24,7 +24,7 @@ type NetworkRelatedRepositoryName = keyof typeof networkRelatedRepositories;
 export function createNetworkRelatedRepository<T extends NetworkRelatedRepositoryName>(name: T, collectionName: string): InstanceType<typeof networkRelatedRepositories[T]>
 {
     const repository = networkRelatedRepositories[name];
-    return (new repository(collectionName) as any);
+    return new repository(collectionName) as any;
 }
 
 export function getGlobalRepository<T extends GlobalRepositoryName>(name: T): typeof globalRepositories[T]

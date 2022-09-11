@@ -7,7 +7,7 @@
     "test": "jest --runInBand",
     "lint": "eslint . --ext .ts",
     "build-scripts": "npx tsc -p tsconfig.build.json scripts/*.ts",
-    "prettier-format": "prettier --config .prettierrc 'src/index.ts' #'src/**/*.ts' --write",
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' #'src/**/*.ts' --write",
     "gen-contracts-types": "npx typechain --target=ethers-v5 --out-dir 'src/EVM/Contracts' 'ABIs/**/*.json'",
     "start": "npx tsc -p tsconfig.build.json && node -r module-alias/register -r dotenv-flow/config dist/index.js",
     "dev": "concurrently -k -n \"Typescript,Node\" -p \"${npm_package_name}\" -c \"blue,green\" \"npx tsc -p tsconfig.build.json --watch\" \"nodemon -r module-alias/register -r dotenv-flow/config ${npm_package_main}\""

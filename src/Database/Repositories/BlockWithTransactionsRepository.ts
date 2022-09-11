@@ -4,13 +4,8 @@ import { HydratedDocument } from "mongoose";
 
 import { AbstractRepository } from "./AbstractRepository";
 
-export class BlockWithTransactionsRepository extends AbstractRepository<IBlockWithTransactions>
-{
-    public constructor
-    (
-        collectionName: string
-    )
-    {
+export class BlockWithTransactionsRepository extends AbstractRepository<IBlockWithTransactions> {
+    public constructor(collectionName: string) {
         super(createModel("BlockWithTransactions", collectionName));
     }
 
@@ -19,8 +14,7 @@ export class BlockWithTransactionsRepository extends AbstractRepository<IBlockWi
      * Retrieve the most recent block stored in our database
      * @returns A promise resolved by a document representing a IBlockWithTransactions, or null if the collection is empty
      */
-    public async getLatest(): Promise<HydratedDocument<IBlockWithTransactions> | null>
-    {
+    public async getLatest(): Promise<HydratedDocument<IBlockWithTransactions> | null> {
         return this._model.findOne({}).sort({ number: -1 }).exec();
     }
 }
