@@ -4,11 +4,11 @@ declare const validPositiveInteger: unique symbol;
 declare const validPositiveIntegerOrZero: unique symbol;
 
 export type PositiveInteger = number & {
-    [validPositiveInteger]: true
+    [validPositiveInteger]: true;
 };
 
 export type PositiveIntegerOrZero = number & {
-    [validPositiveIntegerOrZero]: true
+    [validPositiveIntegerOrZero]: true;
 };
 
 export function isValidPositiveInteger(value: any): value is PositiveInteger
@@ -28,6 +28,11 @@ export function toPositiveInteger(number: number): PositiveInteger
 {
     assertValidPositiveInteger(number);
     return number;
+}
+
+export function isValidPositiveIntegerOrZero(value: any): value is PositiveIntegerOrZero
+{
+    return (isValidPositiveInteger(value) || value === 0);
 }
 
 export function assertValidPositiveIntegerOrZero(number: number): asserts number is PositiveIntegerOrZero

@@ -1,5 +1,6 @@
 import { NotFoundError } from "@API/Errors";
 import { SessionNotExistError } from "@API/Errors/SessionNotExistError";
+import { logger } from "@Util";
 import { Request, Response, NextFunction } from "express";
 
 export function globalErrorHandler(error: any, req: Request, res: Response, next: NextFunction): void
@@ -18,7 +19,7 @@ export function globalErrorHandler(error: any, req: Request, res: Response, next
     }
     else
     {
-        console.log("Internal handled error ", error);
+        logger.error("Internal unhandled error ", error);
 
         res.status(500).json({
             error: "Internal error"
