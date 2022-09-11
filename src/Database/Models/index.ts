@@ -3,7 +3,6 @@ import { Model, model, Schema } from "mongoose";
 import {
     blockWithTransactionsSchema,
     contractCreationTransactionSchema,
-    tokenSwipeSchema,
     erc20TokenSchema,
     erc721NFTSchema,
     erc1155MultiTokenSchema,
@@ -13,7 +12,6 @@ import {
 const nameSchemaMapping = {
     BlockWithTransactions: blockWithTransactionsSchema,
     ContractCreationTransaction: contractCreationTransactionSchema,
-    TokenSwipe: tokenSwipeSchema,
     ERC20Token: erc20TokenSchema,
     ERC721NFT: erc721NFTSchema,
     ERC1155MultiToken: erc1155MultiTokenSchema,
