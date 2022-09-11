@@ -27,14 +27,13 @@ class NetworksManager
         return this._networks.find((network: Network) => network.getChainId() === chainId) || null;
     }
 
-    public getNetworks(): ReadonlyArray<Network>
+    public getNetworks(filter: { syncEnabledOnly?: boolean; } = {}): ReadonlyArray<Network>
     {
+        if (filter.syncEnabledOnly === true)
+        {
+            return this._networks.filter((network: Network) => network.isSyncEnabled);
+        }
         return this._networks;
-    }
-
-    public getNetworksToSync(): ReadonlyArray<Network>
-    {
-        return this._networks.filter((network: Network) => network.isSyncEnabled);
     }
 }
 

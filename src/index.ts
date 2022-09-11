@@ -1,32 +1,42 @@
-import { BlocksProviderService, ContractIndexerService } from "@Services";
-import { BSC, Ethereum } from "@Networks";
-import { BytecodeAnalyzer } from "@EVM/BytecodeAnalyzer";
-import { ethers } from "ethers";
-import { assertValidContractBytecode } from "@EVM/Types";
-import { ERC1155 } from "@EVM/Interfaces";
+import { Mongoose } from "mongoose";
 
+import { connectMongoose } from "@Database/init";
+import { app, listen } from "@API/init";
+import { Network, networksManager } from "@Networks";
+import { logger } from "@Util";
 
-async function main()
+async function startSyncing(): Promise<void>
 {
-    /*const blocks = new BlocksProviderService("auto", "latest", 20, BSC);
-    const contracts = new ContractIndexerService(blocks);*/
+    const networks: ReadonlyArray<Network> = networksManager.getNetworks({
+        syncEnabledOnly: true
+    });
 
-    //const t = "0x0590b6d7985c56b921932209a92f6e8d5ca2ca62fe7ca6c7b1f98e7662dadfd2";
-    //const t = "0xfefb4f26c63ea2ae0ae682aff52c5dbd9b1d210e8069423f37491283928ac994"
-    const t = "0xada108d509e0ab8083798f9c4994f793cfb28bbc02c7dc357d4a65228cb5ff32"
+    for (const network of networks)
+    {
+        network.startSyncing();
+    }
+}
 
-    const b = await Ethereum.getJsonRpcProvider().getTransaction(t);
-    const bytecode = b.data;
-    assertValidContractBytecode(bytecode);
-    const a = new BytecodeAnalyzer(bytecode);
-    const r = a.isInterfaceImplemented(ERC1155);
+async function startApi(): Promise<void>
+{
+    const { port } = await listen();
+    logger.info(`API listening on port ${port}`);
+}
 
-    console.log(r)
+async function main(): Promise<void>
+{
+    const { START_API, START_SYNCING } = process.env;
+    const mongoose: Mongoose = await connectMongoose(process.env.MONGO_DATABASE_URL);
 
-    /*const blocks = new BlocksProviderService(11930400, "latest", 10, Ethereum);
-    const contracts = new ContractIndexerService(blocks);
+    if (START_API.toLowerCase() === "true")
+    {
+        startApi();
+    }
 
-    blocks.start();*/
+    if (START_SYNCING.toLowerCase() === "true")
+    {
+        startSyncing();
+    }
 }
 
 main();
