@@ -31,6 +31,11 @@ class NetworksManager
     {
         return this._networks;
     }
+
+    public getNetworksToSync(): ReadonlyArray<Network>
+    {
+        return this._networks.filter((network: Network) => network.isSyncEnabled);
+    }
 }
 
 export const networksManager: NetworksManager = new NetworksManager();

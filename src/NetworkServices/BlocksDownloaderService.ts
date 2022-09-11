@@ -192,8 +192,7 @@ export class BlocksDownloaderService extends AbstractNetworkService
             catch (error)
             {
                 this._state.status = "stopped";
-                logger.error(`An error occured, restarting in ${this._config.onError.restartAfterSeconds} seconds`);
-                console.log(error);
+                logger.error(`An error occured, restarting in ${this._config.onError.restartAfterSeconds} seconds`, error);
                 await waitSeconds(this._config.onError.restartAfterSeconds);
             }
             finally

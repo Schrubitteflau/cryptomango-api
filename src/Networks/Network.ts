@@ -5,7 +5,7 @@ import { isNull } from "@Util/TypeUtils";
 import { logger } from "@Util";
 import { assertValidChainId, ChainId, ChecksumAddress } from "@Util/TypeUtils/EVM";
 import { providers } from "ethers";
-import { ContractType, createContractWrapper, ERC1155Wrapper, ERC20Wrapper, ERC721Wrapper } from "@EVM/ContractsWrappers";
+import { ContractType, createContractWrapper } from "@EVM/ContractsWrappers";
 import { ContractIndexerService, BlocksDownloaderService } from "@NetworkServices";
 import { HydratedDocument } from "mongoose";
 // @TODO unifier les 2 ContractType
@@ -13,6 +13,19 @@ import { ContractType as ContractTypeEnum } from "@EVM/BytecodeAnalyzer";
 import { createNetworkRelatedRepository, InsertBuffer, ValidationResult } from "@Repositories";
 import { BlockWithTransactionsWrapper, blockWithTransactionsWrapperFactory } from "@Formatters";
 import EventEmitter from "events";
+
+export class SyncNotEnabledError extends Error
+{
+    public constructor
+    (
+        message: string
+    )
+    {
+        super(message);
+        this.name = "SyncNotEnabledError";
+    }
+}
+
 
 export declare interface Network {
     // Emitted when a block is received and successfully wrapped into a BlockWithTransactionsWrapper
@@ -36,7 +49,7 @@ export class Network extends EventEmitter
         erc721Token: this._formatCollectionName("erc721Token"),
         erc1155Token: this._formatCollectionName("erc1155Token")
     } as const;
-    private readonly _repositories = {
+    public readonly _repositories = {
         blockWithTransactions: createNetworkRelatedRepository("BlockWithTransactions", this._collectionNames.blockWithTransactions),
         contractCreationTransactions: createNetworkRelatedRepository("ContractCreationTransaction", this._collectionNames.contractCreationTransaction),
         erc20Token: createNetworkRelatedRepository("ERC20Token", this._collectionNames.erc20Token),
@@ -51,8 +64,7 @@ export class Network extends EventEmitter
         this
     );
 
-    public constructor
-    (
+    public constructor(
         private readonly _config: IRawNetwork,
     )
     {
@@ -78,7 +90,7 @@ export class Network extends EventEmitter
             this._store(wrapper);
         }
         catch (error) {
-            logger.error(`Failed to format block #${rawBlock.number}, error : ${error}`);
+            logger.error(`Failed to format block #${rawBlock.number}, error : ${error}`, error);
         }
     }
 
@@ -124,7 +136,9 @@ export class Network extends EventEmitter
 
             if (!validationResult.isValid)
             {
-                return logger.error(`Invalid contractCreationTransaction document #${cctx.hash} of block #${cctx.blockNumber}`);
+                logger.error(`Invalid contractCreationTransaction document #${cctx.hash} of block #${cctx.blockNumber}`);
+                logger.error(cctx);
+                return;
             }
         }
 
@@ -180,6 +194,11 @@ export class Network extends EventEmitter
         return this._config.chainId;
     }
 
+    public get isSyncEnabled(): boolean
+    {
+        return this._config.isSyncEnabled;
+    }
+
     /**
      * Fetch the block data and its transactions of the block specified by blockNumber
      * @param blockNumber 
@@ -206,7 +225,7 @@ export class Network extends EventEmitter
     {
         const block: HydratedDocument<IBlockWithTransactions> | null = await this._repositories.blockWithTransactions.getLatest();
 
-        return (isNull(block) ? null : block.number);
+        return block?.number || null;
     }
 
     public createContractWrapper<T extends ContractType>(type: T, contractAddress: ChecksumAddress)
@@ -231,9 +250,16 @@ export class Network extends EventEmitter
     /**
      * Starts all the services required to download and index the blocks.
      * These services only emits data, they don't have access to the database.
+     * 
+     * @throws SyncNotEnabledError
      */
     public startSyncing(): void
     {
+        if (!this.isSyncEnabled)
+        {
+            throw new SyncNotEnabledError("Sync is not enabled");
+        }
+
         this._blocksDownloaderService.on("rawBlock", this._onRawBlock.bind(this));
         this._contractIndexerService.on("ERC20Token", this._handleNewERC20Token.bind(this));
         this._contractIndexerService.on("ERC721NFT", this._handleNewERC721NFT.bind(this));
