@@ -15,7 +15,7 @@
     ],
     "rules": {
         "jsdoc/require-jsdoc": [
-            "error",
+            "warn",
             {
                 "require": {
                     // "ArrowFunctionExpression": true,
@@ -27,13 +27,13 @@
                 }
             }
         ],
-        "jsdoc/require-throws": "error",
+        "jsdoc/require-throws": "warn",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-inferrable-types": "off",
         "no-constant-condition": "off",
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-unused-vars": "off",
-        "prettier/prettier": "error"
+        "prettier/prettier": "warn"
     }
 }
