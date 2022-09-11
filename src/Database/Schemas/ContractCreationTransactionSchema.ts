@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 
 import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash, isValidTransactionHash, isValidBlockHash, isValidChecksumAddress, isValidContractBytecode, BlockNumber } from "@Util/TypeUtils/EVM";
-import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
+import { requiredPositiveInteger, requiredPositiveIntegerOrZero, requiredStringWithValidator, unique } from "./PropertyValidators";
 import { PositiveInteger, PositiveIntegerOrZero } from "@Util/TypeUtils";
 
 // Schema of a transaction which results in a contract creation
@@ -34,10 +34,10 @@ export const contractCreationTransactionSchema = new Schema<IContractCreationTra
         ...requiredStringWithValidator(isValidTransactionHash)
     },
     blockHash: requiredStringWithValidator(isValidBlockHash),
-    blockNumber: requiredPositiveInteger(),
+    blockNumber: requiredPositiveIntegerOrZero(),
     from: requiredStringWithValidator(isValidChecksumAddress),
     creationBytecode: requiredStringWithValidator(isValidContractBytecode),
     contractAddress: requiredStringWithValidator(isValidChecksumAddress),
     blockTimestamp: requiredPositiveInteger(),
-    indexInBlock: requiredPositiveInteger()
+    indexInBlock: requiredPositiveIntegerOrZero()
 });

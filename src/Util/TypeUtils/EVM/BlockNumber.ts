@@ -1,4 +1,4 @@
-import { isValidPositiveInteger } from "../PositiveInteger";
+import { isValidPositiveIntegerOrZero } from "../PositiveInteger";
 import { AssertTypeError } from "../AssertTypeError";
 
 declare const validBlockNumber: unique symbol;
@@ -9,7 +9,7 @@ export type BlockNumber = number & {
 
 export function isValidBlockNumber(blockNumber: number): blockNumber is BlockNumber
 {
-    return (isValidPositiveInteger(blockNumber));
+    return (isValidPositiveIntegerOrZero(blockNumber));
 }
 
 export function assertValidBlockNumber(blockNumber: number): asserts blockNumber is BlockNumber

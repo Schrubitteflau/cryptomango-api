@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 
 import { BlockHash, BlockNumber, isValidBlockHash, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
-import { required, requiredPositiveInteger, requiredStringWithValidator, stringType, unique, validate } from "./PropertyValidators";
+import { required, requiredPositiveInteger, requiredPositiveIntegerOrZero, requiredStringWithValidator, stringType, unique, validate } from "./PropertyValidators";
 import { PositiveInteger } from "@Util/TypeUtils";
 
 export interface IBlockWithTransactions
@@ -21,10 +21,10 @@ export interface IBlockWithTransactions
 }
 
 export const blockWithTransactionsSchema = new Schema<IBlockWithTransactions>({
-    _id: requiredPositiveInteger(),
+    _id: requiredPositiveIntegerOrZero(),
     number: {
         unique: unique(),
-        ...requiredPositiveInteger()
+        ...requiredPositiveIntegerOrZero()
     },
     hash: {
         unique: unique(),
