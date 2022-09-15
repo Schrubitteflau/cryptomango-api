@@ -129,17 +129,6 @@ export abstract class AbstractRepository<T> {
         return this.findOne(criterias);
     }
 
-    public async findOneOrInsert(data: T): Promise<HydratedDocument<T>> {
-        const foundDocument: HydratedDocument<T> | null = await this.findOne(data);
-
-        if (!isNull(foundDocument)) {
-            return foundDocument;
-        }
-
-        // @TODO can throw validation error
-        return this.createOne(data);
-    }
-
     public createInsertBuffer(): InsertBuffer<T> {
         return new InsertBuffer(this);
     }

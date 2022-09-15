@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { Router, Response, NextFunction } from "express";
 import { sign as jwtSign } from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 
@@ -79,11 +79,14 @@ authRouter.post("/connectWallet", async (req: RequestWithBody<IConnectWalletRequ
         throw new WalletSignatureAuthError("Failed to authenticate wallet");
     }
 
-    // Now we know that the user is the owner of the address
-    const user: HydratedDocument<IUser> | null = await userRepository.findOneOrInsert({
+    const rawUser: IUser = {
         address,
         swipeState: {}
-    });
+    };
+
+    // Now we know that the user is the owner of the address
+    const user: HydratedDocument<IUser> =
+        (await userRepository.findOne(rawUser)) || (await userRepository.createOne(rawUser));
 
     // We can't fetch or create the user in the database
     if (isNull(user))

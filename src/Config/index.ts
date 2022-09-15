@@ -18,10 +18,10 @@ export interface IRawNetwork {
 
 export type RawNetworksList = ReadonlyArray<IRawNetwork>;
 
-function readJsonConfigFile<T>(filename: string): T {
+function readJsonConfigFile(filename: string): any {
     const filePath: string = path.join(CONFIG_FOLDER, filename);
     const data: string = fs.readFileSync(filePath, "utf-8");
     return JSON.parse(data);
 }
 
-export const networksConfig: RawNetworksList = readJsonConfigFile<RawNetworksList>("networks.json");
+export const networksConfig: RawNetworksList = readJsonConfigFile("networks.json");
