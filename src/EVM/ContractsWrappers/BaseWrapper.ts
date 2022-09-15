@@ -3,7 +3,6 @@ import { errors } from "ethers";
 import { logger } from "@Util";
 import { toError } from "@Util/TypeUtils";
 
-
 interface EthersJsonRpcError extends Error {
     reason: string;
     code: string;
@@ -41,29 +40,26 @@ interface RpcCallResultError {
 
 export type RpcCallResult<T> = RpcCallResultSuccess<T> | RpcCallResultError;
 
-export abstract class BaseWrapper
-{
-    private _isEthersJsonRpcError(error: Error): error is EthersJsonRpcError
-    {
+export abstract class BaseWrapper {
+    private _isEthersJsonRpcError(error: Error): error is EthersJsonRpcError {
         const { reason, code, error: err } = error as EthersJsonRpcError;
 
-        return typeof(reason) === "string" &&
-                typeof(code) === "string" &&
-                typeof(err) === "object" &&
-                typeof(err.body) === "string";
+        return (
+            typeof reason === "string" &&
+            typeof code === "string" &&
+            typeof err === "object" &&
+            typeof err.body === "string"
+        );
     }
 
-    protected _determineErrorType(error: Error): ErrorType
-    {
-        if (!this._isEthersJsonRpcError(error))
-        {
+    protected _determineErrorType(error: Error): ErrorType {
+        if (!this._isEthersJsonRpcError(error)) {
             logger.error(`${ErrorType.INVALID_FORMAT} => `, error);
-            return ErrorType.INVALID_FORMAT
+            return ErrorType.INVALID_FORMAT;
         }
 
         // See : https://docs.ethers.io/v5/api/utils/logger/#errors--call-exception
-        if (error.code === errors.CALL_EXCEPTION)
-        {
+        if (error.code === errors.CALL_EXCEPTION) {
             return ErrorType.EVM_METHOD_NOT_IMPLEMENTED;
         }
 
@@ -71,16 +67,14 @@ export abstract class BaseWrapper
         return ErrorType.UNHANDLED;
     }
 
-    protected _success<T>(value: T): RpcCallResultSuccess<T>
-    {
+    protected _success<T>(value: T): RpcCallResultSuccess<T> {
         return {
             isSuccess: true,
             value
         };
     }
 
-    protected _error(err: unknown): RpcCallResultError
-    {
+    protected _error(err: unknown): RpcCallResultError {
         const error: Error = toError(err);
 
         return {
@@ -90,14 +84,10 @@ export abstract class BaseWrapper
         };
     }
 
-    protected async _handleCall<T>(call: Promise<T>): Promise<RpcCallResult<T>>
-    {
-        try
-        {
+    protected async _handleCall<T>(call: Promise<T>): Promise<RpcCallResult<T>> {
+        try {
             return this._success(await call);
-        }
-        catch (error)
-        {
+        } catch (error) {
             return this._error(error);
         }
     }

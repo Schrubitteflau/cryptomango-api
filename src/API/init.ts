@@ -7,20 +7,16 @@ import "express-async-errors";
 import { authRouter, tokenSwipeRouter } from "./Routers";
 import { authErrorHandler, invalidUserDataErrorHandler, globalErrorHandler } from "./ErrorHandlers";
 
-
 export const app: express.Application = express();
 export const LISTEN_PORT: number = parseInt(process.env.API_PORT, 10);
 
-interface IListenResult
-{
+interface IListenResult {
     server: Server;
     port: number;
 }
 
-export function listen(): Promise<IListenResult>
-{
-    return new Promise((resolve) =>
-    {
+export function listen(): Promise<IListenResult> {
+    return new Promise((resolve) => {
         const server: Server = app.listen(LISTEN_PORT, () => {
             resolve({
                 server,
@@ -42,5 +38,4 @@ app
     // Error handlers
     .use(invalidUserDataErrorHandler)
     .use(authErrorHandler)
-    .use(globalErrorHandler)
-;
+    .use(globalErrorHandler);

@@ -2,8 +2,7 @@ import { PositiveInteger } from "@Util/TypeUtils";
 import { ChecksumAddress, isValidChecksumAddress, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
 import { requiredPositiveInteger, requiredStringWithValidator, unique } from "./PropertyValidators";
 
-export interface IBaseToken
-{
+export interface IBaseToken {
     // The id is the address
     _id: ChecksumAddress;
     // Address of the contract

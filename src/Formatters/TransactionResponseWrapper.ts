@@ -11,17 +11,21 @@ import {
 
 import { IContractCreationTransaction } from "@Schemas";
 import type { TransactionResponse } from "@Types/EthersTypes";
-import { isNullOrUndefined, isUndefined, PositiveInteger, PositiveIntegerOrZero, assertValidPositiveIntegerOrZero } from "@Util/TypeUtils";
+import {
+    isNullOrUndefined,
+    isUndefined,
+    PositiveInteger,
+    PositiveIntegerOrZero,
+    assertValidPositiveIntegerOrZero
+} from "@Util/TypeUtils";
 import { BlockWithTransactionsWrapper } from "./BlockWithTransactionsWrapper";
 
-interface ISuccessfulFormatTransactionResult
-{
+interface ISuccessfulFormatTransactionResult {
     isSuccessful: true;
     contractCreationTransaction: IContractCreationTransaction;
 }
 
-interface IFailedFormatTransactionResult
-{
+interface IFailedFormatTransactionResult {
     isSuccessful: false;
 }
 
@@ -39,40 +43,31 @@ interface IContractCreation {
 
 export type IsContractCreationReturn = INotContractCreation | IContractCreation;
 
-export interface IValidatedData
-{
+export interface IValidatedData {
     hash: TransactionHash;
     from: ChecksumAddress;
     indexInBlock: PositiveIntegerOrZero;
 }
 
-export class ValidationError extends Error
-{
-    public constructor
-    (
-        message: string
-    )
-    {
+export class ValidationError extends Error {
+    public constructor(message: string) {
         super(message);
         this.name = "ValidationError";
     }
 }
 
-class TransactionResponseWrapperFactory
-{
+class TransactionResponseWrapperFactory {
     /**
      * @throws {AssertTypeError}
      * @throws {ValidationError}
      */
-    public create(transaction: TransactionResponse, block: BlockWithTransactionsWrapper): TransactionResponseWrapper
-    {
+    public create(transaction: TransactionResponse, block: BlockWithTransactionsWrapper): TransactionResponseWrapper {
         const { hash, from, blockHash } = transaction;
         const indexInBlock: number = block.getIndexOfTransaction(transaction);
 
         // The transaction must have been mined and included in the this block
         // If the blockHashes are equals, we can rely on the properties of block
-        if (blockHash !== block.hash)
-        {
+        if (blockHash !== block.hash) {
             throw new ValidationError("Different block hashes");
         }
 
@@ -93,51 +88,41 @@ export interface IContractCreationTransactionResponseWrapper extends Transaction
     contractBytecode: ContractBytecode;
 }
 
-class TransactionResponseWrapper
-{
+class TransactionResponseWrapper {
     private _isContractCreationData: IsContractCreationReturn | null = null;
 
-    public constructor
-    (
+    public constructor(
         private readonly _transaction: TransactionResponse,
         private readonly _block: BlockWithTransactionsWrapper,
         private readonly _validatedData: IValidatedData
     ) {}
 
-    public get hash(): TransactionHash
-    {
+    public get hash(): TransactionHash {
         return this._validatedData.hash;
     }
 
-    public get from(): ChecksumAddress
-    {
+    public get from(): ChecksumAddress {
         return this._validatedData.from;
     }
 
-    public get blockHash(): BlockHash
-    {
+    public get blockHash(): BlockHash {
         return this._block.hash;
     }
 
-    public get blockNumber(): BlockNumber
-    {
+    public get blockNumber(): BlockNumber {
         return this._block.number;
     }
 
-    public get blockTimestamp(): PositiveInteger
-    {
+    public get blockTimestamp(): PositiveInteger {
         return this._block.timestamp;
     }
 
-    public get indexInBlock(): PositiveIntegerOrZero
-    {
+    public get indexInBlock(): PositiveIntegerOrZero {
         return this._validatedData.indexInBlock;
     }
 
-    private get _contractCreationData(): IsContractCreationReturn
-    {
-        if (this._isContractCreationData === null)
-        {
+    private get _contractCreationData(): IsContractCreationReturn {
+        if (this._isContractCreationData === null) {
             this._isContractCreationData = this._isContractCreation();
         }
         return this._isContractCreationData;
@@ -145,43 +130,35 @@ class TransactionResponseWrapper
 
     /* contractCreationData shortcuts */
 
-    public get contractAddress(): ChecksumAddress | null
-    {
-        return (this._contractCreationData.isContractCreation ? this._contractCreationData.contractAddress : null);
+    public get contractAddress(): ChecksumAddress | null {
+        return this._contractCreationData.isContractCreation ? this._contractCreationData.contractAddress : null;
     }
 
-    public get contractBytecode(): ContractBytecode | null
-    {
-        return (this._contractCreationData.isContractCreation ? this._contractCreationData.contractBytecode : null);
+    public get contractBytecode(): ContractBytecode | null {
+        return this._contractCreationData.isContractCreation ? this._contractCreationData.contractBytecode : null;
     }
 
-    public isContractCreation(): this is IContractCreationTransactionResponseWrapper
-    {
+    public isContractCreation(): this is IContractCreationTransactionResponseWrapper {
         return this._contractCreationData.isContractCreation;
     }
 
-    private _isContractCreation(): IsContractCreationReturn
-    {
+    private _isContractCreation(): IsContractCreationReturn {
         /* https://docs.soliditylang.org/en/latest/introduction-to-smart-contracts.html#index-8
         If the target account is not set (the transaction does not have a recipient or the recipient is set to null),
         the transaction creates a new contract */
 
         // The property "creates" is valid but does not appear in TypeScript definition
-        const { to, creates, data } = this._transaction as (TransactionResponse & { creates?: string; });
+        const { to, creates, data } = this._transaction as TransactionResponse & { creates?: string };
 
-        if (isNullOrUndefined(to) && !isUndefined(creates))
-        {
-            try
-            {
+        if (isNullOrUndefined(to) && !isUndefined(creates)) {
+            try {
                 assertValidContractBytecode(data);
                 return {
                     isContractCreation: true,
                     contractAddress: toChecksumAddress(creates),
                     contractBytecode: data
                 };
-            }
-            catch (error)
-            {
+            } catch (error) {
                 return {
                     isContractCreation: false
                 };

@@ -1,11 +1,18 @@
 import { Schema } from "mongoose";
 
 import { BlockHash, BlockNumber, isValidBlockHash, isValidTransactionHash, TransactionHash } from "@Util/TypeUtils/EVM";
-import { required, requiredPositiveInteger, requiredPositiveIntegerOrZero, requiredStringWithValidator, stringType, unique, validate } from "./PropertyValidators";
+import {
+    required,
+    requiredPositiveInteger,
+    requiredPositiveIntegerOrZero,
+    requiredStringWithValidator,
+    stringType,
+    unique,
+    validate
+} from "./PropertyValidators";
 import { PositiveInteger } from "@Util/TypeUtils";
 
-export interface IBlockWithTransactions
-{
+export interface IBlockWithTransactions {
     // The id is the block number
     _id: BlockNumber;
     // Block number
@@ -32,19 +39,23 @@ export const blockWithTransactionsSchema = new Schema<IBlockWithTransactions>({
     },
     timestamp: requiredPositiveInteger(),
     transactions: {
-        type: [{
-            type: stringType(),
-            required: required("Empty entry in transactions list"),
-            validate: validate(isValidTransactionHash)
-        }],
+        type: [
+            {
+                type: stringType(),
+                required: required("Empty entry in transactions list"),
+                validate: validate(isValidTransactionHash)
+            }
+        ],
         required: required()
     },
     contractCreationTransactions: {
-        type: [{
-            type: stringType(),
-            required: required("Empty entry in contractCreationTransactions list"),
-            validate: validate(isValidTransactionHash)
-        }],
+        type: [
+            {
+                type: stringType(),
+                required: required("Empty entry in contractCreationTransactions list"),
+                validate: validate(isValidTransactionHash)
+            }
+        ],
         required: required()
     }
 });

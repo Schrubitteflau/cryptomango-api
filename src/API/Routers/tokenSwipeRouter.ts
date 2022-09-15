@@ -4,22 +4,24 @@ import { Network } from "@Networks";
 import { RequestWithQuery, ResponseWithLocals } from "@Types/Express";
 
 import { jwtMiddleware, userSessionMiddleware, IUserSessionResponseLocals } from "../Middlewares";
-import { extractChecksumAddressFromString, extractContractTypeFromString, extractNetworkFromString } from "@API/Extractors";
+import {
+    extractChecksumAddressFromString,
+    extractContractTypeFromString,
+    extractNetworkFromString
+} from "@API/Extractors";
 import { ContractType } from "@EVM/BytecodeAnalyzer";
 import { ChecksumAddress } from "@Util/TypeUtils/EVM";
 import { ChainSwipeState } from "@Schemas";
 import { ContractType as AnotherContractType } from "@EVM/ContractsWrappers";
 import { isNull, PositiveInteger } from "@Util/TypeUtils";
-import { InvalidUserDataError, NotFoundError } from "@API/Errors";
+import { NotFoundError } from "@API/Errors";
 
-interface IGetNextTokensQuery
-{
+interface IGetNextTokensQuery {
     chainId: string;
     contractType: string;
 }
 
-interface IFollowTokenQuery
-{
+interface IFollowTokenQuery {
     chainId: string;
     contractType: string;
     tokenAddress: string;

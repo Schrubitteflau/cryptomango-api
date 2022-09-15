@@ -3,8 +3,7 @@ import { Schema } from "mongoose";
 import { baseTokenSchemaSpecs, IBaseToken } from "./BaseTokenSchema";
 import { notRequired, stringType } from "./PropertyValidators";
 
-export interface IERC1155MultiToken extends IBaseToken
-{
+export interface IERC1155MultiToken extends IBaseToken {
     name?: string | null;
     symbol?: string | null;
 }

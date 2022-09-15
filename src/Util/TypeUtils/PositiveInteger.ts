@@ -11,40 +11,32 @@ export type PositiveIntegerOrZero = number & {
     [validPositiveIntegerOrZero]: true;
 };
 
-export function isValidPositiveInteger(value: any): value is PositiveInteger
-{
-    return ((typeof value === "number") && (value % 1 === 0) && (value > 0));
+export function isValidPositiveInteger(value: any): value is PositiveInteger {
+    return typeof value === "number" && value % 1 === 0 && value > 0;
 }
 
-export function assertValidPositiveInteger(number: number): asserts number is PositiveInteger
-{
-    if (!isValidPositiveInteger(number))
-    {
+export function assertValidPositiveInteger(number: number): asserts number is PositiveInteger {
+    if (!isValidPositiveInteger(number)) {
         throw new AssertTypeError(number, "positive integer");
     }
 }
 
-export function toPositiveInteger(number: number): PositiveInteger
-{
+export function toPositiveInteger(number: number): PositiveInteger {
     assertValidPositiveInteger(number);
     return number;
 }
 
-export function isValidPositiveIntegerOrZero(value: any): value is PositiveIntegerOrZero
-{
-    return (isValidPositiveInteger(value) || value === 0);
+export function isValidPositiveIntegerOrZero(value: any): value is PositiveIntegerOrZero {
+    return isValidPositiveInteger(value) || value === 0;
 }
 
-export function assertValidPositiveIntegerOrZero(number: number): asserts number is PositiveIntegerOrZero
-{
-    if (!isValidPositiveInteger(number) && number !== 0)
-    {
+export function assertValidPositiveIntegerOrZero(number: number): asserts number is PositiveIntegerOrZero {
+    if (!isValidPositiveInteger(number) && number !== 0) {
         throw new AssertTypeError(number, "positive integer or zero");
     }
 }
 
-export function toPositiveIntegerOrZero(number: number): PositiveIntegerOrZero
-{
+export function toPositiveIntegerOrZero(number: number): PositiveIntegerOrZero {
     assertValidPositiveIntegerOrZero(number);
     return number;
 }

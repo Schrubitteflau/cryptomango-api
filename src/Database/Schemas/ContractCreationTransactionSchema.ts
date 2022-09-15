@@ -1,12 +1,26 @@
 import { Schema } from "mongoose";
 
-import { ContractBytecode, ChecksumAddress, TransactionHash, BlockHash, isValidTransactionHash, isValidBlockHash, isValidChecksumAddress, isValidContractBytecode, BlockNumber } from "@Util/TypeUtils/EVM";
-import { requiredPositiveInteger, requiredPositiveIntegerOrZero, requiredStringWithValidator, unique } from "./PropertyValidators";
+import {
+    ContractBytecode,
+    ChecksumAddress,
+    TransactionHash,
+    BlockHash,
+    isValidTransactionHash,
+    isValidBlockHash,
+    isValidChecksumAddress,
+    isValidContractBytecode,
+    BlockNumber
+} from "@Util/TypeUtils/EVM";
+import {
+    requiredPositiveInteger,
+    requiredPositiveIntegerOrZero,
+    requiredStringWithValidator,
+    unique
+} from "./PropertyValidators";
 import { PositiveInteger, PositiveIntegerOrZero } from "@Util/TypeUtils";
 
 // Schema of a transaction which results in a contract creation
-export interface IContractCreationTransaction
-{
+export interface IContractCreationTransaction {
     // The id is the hash of the transaction
     _id: TransactionHash;
     // Hash of the transaction

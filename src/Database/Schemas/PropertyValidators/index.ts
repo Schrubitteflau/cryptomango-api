@@ -2,24 +2,19 @@ import { Schema, ValidateFn } from "mongoose";
 
 import { isUndefined } from "@Util/TypeUtils";
 
-
-export function stringType()
-{
+export function stringType() {
     return Schema.Types.String;
 }
 
-export function numberType()
-{
+export function numberType() {
     return Schema.Types.Number;
 }
 
-export function required(message?: string): [ boolean, string ]
-{
-    return [ true, isUndefined(message) ? "{PATH} required, got '{VALUE}'" : message ];
+export function required(message?: string): [boolean, string] {
+    return [true, isUndefined(message) ? "{PATH} required, got '{VALUE}'" : message];
 }
 
-export function notRequired(defaultValue?: any): { required: false, default: any }
-{
+export function notRequired(defaultValue?: any): { required: false; default: any } {
     return {
         // sparse: unique unless it is not defined (null and probably undefined)
         required: false,
@@ -28,31 +23,26 @@ export function notRequired(defaultValue?: any): { required: false, default: any
 }
 
 // We return a boolean only, so we don't specify any error message because we use a plugin which checks unique keys
-export function unique(): boolean
-{
+export function unique(): boolean {
     return true;
 }
 
-export function minlength(length: number): [ number, string ]
-{
-    return [ length, `Expected {PATH} to be at least ${length} characters long, got '{VALUE}'` ];
+export function minlength(length: number): [number, string] {
+    return [length, `Expected {PATH} to be at least ${length} characters long, got '{VALUE}'`];
 }
 
-export function min(min: number): [ number, string ]
-{
-    return [ min, `Expected {PATH} to have be > ${min}, got '{VALUE}'` ];
+export function min(min: number): [number, string] {
+    return [min, `Expected {PATH} to have be > ${min}, got '{VALUE}'`];
 }
 
-export function validate<T>(validator: ValidateFn<T>)
-{
+export function validate<T>(validator: ValidateFn<T>) {
     return {
         validator,
         message: "'{VALUE}' is not a valid {PATH}"
     };
 }
 
-export function requiredPositiveIntegerOrZero()
-{
+export function requiredPositiveIntegerOrZero() {
     return {
         type: numberType(),
         required: required(),
@@ -60,8 +50,7 @@ export function requiredPositiveIntegerOrZero()
     };
 }
 
-export function requiredPositiveInteger()
-{
+export function requiredPositiveInteger() {
     return {
         type: numberType(),
         required: required(),
@@ -69,8 +58,7 @@ export function requiredPositiveInteger()
     };
 }
 
-export function requiredStringWithValidator<T>(validator: ValidateFn<T>)
-{
+export function requiredStringWithValidator<T>(validator: ValidateFn<T>) {
     return {
         type: stringType(),
         required: required(),

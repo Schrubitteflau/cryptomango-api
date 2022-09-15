@@ -8,62 +8,73 @@ import { Network } from "@Networks";
 import { IContractCreationTransactionResponseWrapper } from "Formatters/TransactionResponseWrapper";
 import { toPositiveInteger } from "@Util/TypeUtils";
 
+// @TODO enlever les I au nom des interfaces
+// trouver nom plus court : IContractCreationTransactionResponseWrapper
+
 export declare interface ContractIndexerService {
     // Emitted when a new token is found by the indexer
-    on(event: "ERC20Token", listener: (token: IERC20Token, creationTransaction: IContractCreationTransactionResponseWrapper) => void): this;
-    on(event: "ERC721NFT", listener: (token: IERC721NFT, creationTransaction: IContractCreationTransactionResponseWrapper) => void): this;
-    on(event: "ERC1155MultiToken", listener: (token: IERC1155MultiToken, creationTransaction: IContractCreationTransactionResponseWrapper) => void): this;
+    on(
+        event: "ERC20Token",
+        listener: (token: IERC20Token, creationTransaction: IContractCreationTransactionResponseWrapper) => void
+    ): this;
+    on(
+        event: "ERC721NFT",
+        listener: (token: IERC721NFT, creationTransaction: IContractCreationTransactionResponseWrapper) => void
+    ): this;
+    on(
+        event: "ERC1155MultiToken",
+        listener: (token: IERC1155MultiToken, creationTransaction: IContractCreationTransactionResponseWrapper) => void
+    ): this;
 
-    emit(event: "ERC20Token", token: IERC20Token, creationTransaction: IContractCreationTransactionResponseWrapper): any;
+    emit(
+        event: "ERC20Token",
+        token: IERC20Token,
+        creationTransaction: IContractCreationTransactionResponseWrapper
+    ): any;
     emit(event: "ERC721NFT", token: IERC721NFT, creationTransaction: IContractCreationTransactionResponseWrapper): any;
-    emit(event: "ERC1155MultiToken", token: IERC1155MultiToken, creationTransaction: IContractCreationTransactionResponseWrapper): any;
+    emit(
+        event: "ERC1155MultiToken",
+        token: IERC1155MultiToken,
+        creationTransaction: IContractCreationTransactionResponseWrapper
+    ): any;
 }
 
 /**
  * This service only focuses on analyzing newly created contracts and determining if they corresponds to one of
  * these 3 token standards : ERC20, ERC721 or ERC1155.
  */
-export class ContractIndexerService extends AbstractNetworkService
-{
-    public constructor
-    (
-        network: Network
-    )
-    {
+export class ContractIndexerService extends AbstractNetworkService {
+    public constructor(network: Network) {
         super(network);
     }
 
     /**
      * Called each time a block is received by the Network and successfully wrapped
      */
-    private _handleBlockWithTransactionsWrapper(blockWithTransactions: BlockWithTransactionsWrapper): void
-    {
-        for (const transaction of blockWithTransactions.getContractCreationTransactions())
-        {
-            if (transaction.isContractCreation())
-            {
+    private _handleBlockWithTransactionsWrapper(blockWithTransactions: BlockWithTransactionsWrapper): void {
+        for (const transaction of blockWithTransactions.getContractCreationTransactions()) {
+            if (transaction.isContractCreation()) {
                 this._handleContractCreationTransaction(transaction);
-            }
-            else
-            {
+            } else {
                 // @TODO ne devrait jamais arriver
-                logger.error("ContractIndexerService::_handleContractCreationTransaction => isContractCreation is false");
+                logger.error(
+                    "ContractIndexerService::_handleContractCreationTransaction => isContractCreation is false"
+                );
             }
         }
     }
 
     /**
      * Determine the contract type created in a contract creation transaction and call a specific handling method
+     *
      * @param transaction A wrapper around the contract creation transaction. We assume that the transaction is
      * a contract creation transaction, it must have been checked before
      */
-    private _handleContractCreationTransaction(transaction: IContractCreationTransactionResponseWrapper): void
-    {
+    private _handleContractCreationTransaction(transaction: IContractCreationTransactionResponseWrapper): void {
         const bytecodeAnalyzer: BytecodeAnalyzer = new BytecodeAnalyzer(transaction.contractBytecode);
         const contractType: ContractTypeOrUnknown = bytecodeAnalyzer.determineContractType();
 
-        switch (contractType)
-        {
+        switch (contractType) {
             case ContractTypeOrUnknown.ERC20Token:
                 this._handleERC20TokenContract(transaction);
                 break;
@@ -78,11 +89,10 @@ export class ContractIndexerService extends AbstractNetworkService
 
     /**
      * Extract the required properties for a IBaseToken
+     *
      * @param transaction Contract creation transaction
-     * @returns 
      */
-    private _extractBaseTokenProperties(transaction: IContractCreationTransactionResponseWrapper): IBaseToken
-    {
+    private _extractBaseTokenProperties(transaction: IContractCreationTransactionResponseWrapper): IBaseToken {
         const { hash, contractAddress, blockNumber, indexInBlock } = transaction;
 
         return {
@@ -93,16 +103,13 @@ export class ContractIndexerService extends AbstractNetworkService
         };
     }
 
-    private _transformCallResultValue<T>(callResult: RpcCallResult<T>): T | null | undefined
-    {
-        if (callResult.isSuccess)
-        {
+    private _transformCallResultValue<T>(callResult: RpcCallResult<T>): T | null | undefined {
+        if (callResult.isSuccess) {
             // OK, return the actual value
             return callResult.value;
         }
 
-        if (callResult.errorType === ErrorType.EVM_METHOD_NOT_IMPLEMENTED)
-        {
+        if (callResult.errorType === ErrorType.EVM_METHOD_NOT_IMPLEMENTED) {
             // null means that the contract doesn't implement the method
             return null;
         }
@@ -111,8 +118,7 @@ export class ContractIndexerService extends AbstractNetworkService
         return void 0;
     }
 
-    private async _handleERC20TokenContract(transaction: IContractCreationTransactionResponseWrapper): Promise<void>
-    {
+    private async _handleERC20TokenContract(transaction: IContractCreationTransactionResponseWrapper): Promise<void> {
         const contract: ERC20Wrapper = this._network.createContractWrapper("ERC20", transaction.contractAddress);
         const [decimals, name, symbol] = await Promise.all([contract.decimals(), contract.name(), contract.symbol()]);
 
@@ -123,7 +129,9 @@ export class ContractIndexerService extends AbstractNetworkService
             symbol: this._transformCallResultValue(symbol)
         };
 
-        logger.info(`[ContractIndexerService]::${this._network.getFullName()} : found ERC20 ${tokenData.name} $${tokenData.symbol} at ${transaction.contractAddress}`);
+        logger.info(
+            `[ContractIndexerService]::${this._network.getFullName()} : found ERC20 ${tokenData.name} $${tokenData.symbol} at ${transaction.contractAddress}`
+        );
         this.emit("ERC20Token", tokenData, transaction);
     }
 
@@ -142,8 +150,7 @@ export class ContractIndexerService extends AbstractNetworkService
         this.emit("ERC721NFT", tokenData, transaction);
     }
 
-    private async _handleERC1155MultiTokenContract(transaction: IContractCreationTransactionResponseWrapper): Promise<void>
-    {
+    private async _handleERC1155MultiTokenContract(transaction: IContractCreationTransactionResponseWrapper): Promise<void> {
         const contract: ERC1155Wrapper = this._network.createContractWrapper("ERC1155", transaction.contractAddress);
         const [name, symbol] = await Promise.all([contract.name(), contract.symbol()]);
 
@@ -153,15 +160,16 @@ export class ContractIndexerService extends AbstractNetworkService
             symbol: this._transformCallResultValue(symbol)
         };
 
-        logger.info(`[ContractIndexerService]::${this._network.getFullName()} : found ERC1155 ${tokenData.name} $${tokenData.symbol} at ${transaction.contractAddress}`);
+        logger.info(
+            `[ContractIndexerService]::${this._network.getFullName()} : found ERC1155 ${tokenData.name} $${tokenData.symbol} at ${transaction.contractAddress}`
+        );
         this.emit("ERC1155MultiToken", tokenData, transaction);
     }
 
     /**
      * Start listening to new wrapped blocks and their transations
      */
-    public start(): void
-    {
+    public start(): void {
         this._network.on("blockWithTransactions", this._handleBlockWithTransactionsWrapper.bind(this));
     }
 }

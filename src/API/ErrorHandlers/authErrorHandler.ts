@@ -14,22 +14,16 @@ import { WalletSignatureAuthError } from "../Errors/WalletSignatureAuthError";
         on(WalletSignatureAuthError): ...
     )
 */
-export function authErrorHandler(error: any, req: Request, res: Response, next: NextFunction): void
-{
-    if (error instanceof UnauthorizedError)
-    {
+export function authErrorHandler(error: any, req: Request, res: Response, next: NextFunction): void {
+    if (error instanceof UnauthorizedError) {
         res.status(403).json({
             error: "Access denied"
         });
-    }
-    else if (error instanceof WalletSignatureAuthError)
-    {
+    } else if (error instanceof WalletSignatureAuthError) {
         res.status(403).json({
             error: error.message
         });
-    }
-    else
-    {
+    } else {
         next(error);
     }
 }

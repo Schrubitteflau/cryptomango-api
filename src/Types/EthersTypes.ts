@@ -1,4 +1,1 @@
-export type {
-    BlockWithTransactions,
-    TransactionResponse
-} from "@ethersproject/abstract-provider";
+export type { BlockWithTransactions, TransactionResponse } from "@ethersproject/abstract-provider";

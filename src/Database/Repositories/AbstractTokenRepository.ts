@@ -9,7 +9,9 @@ interface IFindTokenAfterPositionParam {
     limit: number;
 }
 
-export abstract class AbstractTokenRepository<T extends IERC20Token | IERC721NFT | IERC1155MultiToken> extends AbstractRepository<T> {
+export abstract class AbstractTokenRepository<
+    T extends IERC20Token | IERC721NFT | IERC1155MultiToken
+> extends AbstractRepository<T> {
     public async findTokenAfterPosition({ position, limit }: IFindTokenAfterPositionParam) {
         // @TODO update with new tricks
         const documents: ReadonlyArray<HydratedDocument<T>> = await this._model.find({

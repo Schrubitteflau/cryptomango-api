@@ -14,22 +14,18 @@ import { isValidMessageSignature } from "@Util/TypeUtils/EVM";
 import { extractChecksumAddressFromString } from "@API/Extractors";
 import { RequestWithBody } from "@Types/Express";
 
-
-export interface IJwtPayload
-{
+export interface IJwtPayload {
     userId: string;
     address: ChecksumAddress;
 }
 
-export interface IJwtBody extends IJwtPayload
-{
+export interface IJwtBody extends IJwtPayload {
     iat: number;
     exp: number;
     jti: string;
 }
 
-interface IConnectWalletRequest
-{
+interface IConnectWalletRequest {
     signature: string;
     address: string;
 }
@@ -37,14 +33,12 @@ interface IConnectWalletRequest
 export const authRouter: Router = Router();
 const userRepository: UserRepository = getGlobalRepository("User");
 
-interface IMessageToSign
-{
+interface IMessageToSign {
     message: string;
     address: ChecksumAddress;
 }
 
-function getMessageToSign(address: ChecksumAddress): string
-{
+function getMessageToSign(address: ChecksumAddress): string {
     const obj: IMessageToSign = {
         message: "Welcome to cryptomango !",
         address: address

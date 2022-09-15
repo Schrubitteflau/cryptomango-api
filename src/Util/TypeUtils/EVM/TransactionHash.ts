@@ -3,26 +3,22 @@ import { AssertTypeError } from "../AssertTypeError";
 declare const validTransactionHash: unique symbol;
 
 export type TransactionHash = string & {
-    [validTransactionHash]: true
+    [validTransactionHash]: true;
 };
 
-export function isValidTransactionHash(hash: string): hash is TransactionHash
-{
+export function isValidTransactionHash(hash: string): hash is TransactionHash {
     const regex: RegExp = /^0x[0-9a-fA-F]{64}$/;
 
-    return (regex.test(hash));
+    return regex.test(hash);
 }
 
-export function assertValidTransactionHash(hash: string): asserts hash is TransactionHash
-{
-    if (!isValidTransactionHash(hash))
-    {
+export function assertValidTransactionHash(hash: string): asserts hash is TransactionHash {
+    if (!isValidTransactionHash(hash)) {
         throw new AssertTypeError(hash, "transaction hash");
     }
 }
 
-export function toTransactionHash(hash: string): TransactionHash
-{
+export function toTransactionHash(hash: string): TransactionHash {
     assertValidTransactionHash(hash);
     return hash;
 }

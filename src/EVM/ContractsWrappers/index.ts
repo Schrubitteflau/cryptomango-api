@@ -30,8 +30,7 @@ export function createContractWrapper<T extends ContractType>(
     type: T,
     contractAddress: ChecksumAddress,
     provider: providers.JsonRpcProvider
-): InstanceType<typeof contractsTypesMapping[T]["wrapper"]>
-{
+): InstanceType<typeof contractsTypesMapping[T]["wrapper"]> {
     const factory = contractsTypesMapping[type].factory;
     const wrapper = contractsTypesMapping[type].wrapper;
 
@@ -40,8 +39,4 @@ export function createContractWrapper<T extends ContractType>(
     return new wrapper(contract as any) as any;
 }
 
-export {
-    ERC20Wrapper,
-    ERC721Wrapper,
-    ERC1155Wrapper
-};
+export { ERC20Wrapper, ERC721Wrapper, ERC1155Wrapper };

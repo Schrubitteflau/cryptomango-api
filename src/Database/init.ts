@@ -7,13 +7,11 @@ import uniqueValidator from "mongoose-unique-validator";
     message: "Expected {PATH} to be unique"
 });*/
 
-function initMongoose(mongoose: Mongoose): void
-{
+function initMongoose(mongoose: Mongoose): void {
     //mongoose.set("cloneSchemas", true);
 }
 
-export async function connectMongoose(uri: string): Promise<Mongoose>
-{
+export async function connectMongoose(uri: string): Promise<Mongoose> {
     logger.info(`Connecting to database ${uri}...`);
     const mongoose = await connect(uri, {
         useNewUrlParser: true,
