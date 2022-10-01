@@ -1,19 +1,73 @@
 [
     {
-        "chainId": 56,
-        "fullName": "Binance Smart Chain",
-        "jsonRpcProviderUrl": "https://bsc-dataseed.binance.org/",
-        "collectionPrefix": "bsc",
+        "chainId": 1,
+        "fullName": "Ethereum Mainnet",
+        "jsonRpcProviderUrl": "https://mainnet.infura.io/v3/e434f92cd79444278105cec2fbc511dc",
+        "collectionPrefix": "eth",
         "isActive": true,
-        "isSyncEnabled": true,
+        "isSyncEnabled": false,
         "blocksDownloading": {
-            "fromBlock": 11643830,
+            "fromBlock": 15268751,
             "toBlock": "latest",
             "onError": {
                 "restartAfterSeconds": 60
             },
             "onSync": {
                 "cooldownSeconds": 60
+            }
+        }
+    },
+    {
+        "chainId": 56,
+        "fullName": "Binance Smart Chain",
+        "jsonRpcProviderUrl": "https://bsc.getblock.io/mainnet/?api_key=bc25b918-f5c7-4df1-8fa8-cafb242d6f12",
+        "collectionPrefix": "bsc",
+        "isActive": true,
+        "isSyncEnabled": true,
+        "blocksDownloading": {
+            "fromBlock": 20115052,
+            "toBlock": "latest",
+            "onError": {
+                "restartAfterSeconds": 60
+            },
+            "onSync": {
+                "cooldownSeconds": 60
+            }
+        }
+    },
+    {
+        "chainId": 137,
+        "fullName": "Polygon",
+        "jsonRpcProviderUrl": "https://polygon-rpc.com/",
+        "collectionPrefix": "polygon",
+        "isActive": true,
+        "isSyncEnabled": false,
+        "blocksDownloading": {
+            "fromBlock": 31469179,
+            "toBlock": "latest",
+            "onError": {
+                "restartAfterSeconds": 60
+            },
+            "onSync": {
+                "cooldownSeconds": 60
+            }
+        }
+    },
+    {
+        "chainId": 2000,
+        "fullName": "DogeChain",
+        "jsonRpcProviderUrl": "https://rpc03-sg.dogechain.dog",
+        "collectionPrefix": "dogechain",
+        "isActive": true,
+        "isSyncEnabled": false,
+        "blocksDownloading": {
+            "fromBlock": "auto",
+            "toBlock": "latest",
+            "onError": {
+                "restartAfterSeconds": 2
+            },
+            "onSync": {
+                "cooldownSeconds": 5
             }
         }
     }
