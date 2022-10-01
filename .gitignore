@@ -1,5 +1,7 @@
 test/EVM/BytecodeAnalyzerCache/cache
 
+db-export
+
 # Logs
 logs
 *.log
