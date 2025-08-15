@@ -39,6 +39,8 @@ On peut également voir l'invocation flow ici : https://tools.blocksec.com/tx/et
 
 On peut facilement vérifier que tous ces contrats ont été créés par la transaction `0x3feabd79e8549ad68d1827c074fa7123815c80206498946293d5373a160fd866`, et `TraceAddress` permet de se rendre compte à quel niveau d'imbrication d'appel on se situe. Il faudrait tester la création d'un contrat engendrant la création d'un autre contrat (dans son constructeur et dans un appel de méthode), à plusieurs niveaux d'imbrications, afin de voir si vraiment toutes les créations de contrat sont interceptées, mais je pense que oui.
 
+Infura (et sûrement d'autres RPC providers) proposent une trace API : <https://www.infura.io/blog/post/introducing-the-infura-trace-api-gain-deeper-insights-from-the-ethereum-execution-layer>. Sinon, pour effectuer des tests divers et de la recherche, la plateform Shadow permet de créer des shadowforks : <https://docs.shadow.xyz/>. Shadow unlocks edit mode on any contract, giving you precise control over its event logs and view functions without affecting mainnet.
+
 ### Utilisation de vmTrace
 
 Voir : https://github.com/banteg/vmtrace/blob/main/demo.py (ou `banteg_vmtrace_demo.py` si le repo n'existe plus)
